@@ -1,0 +1,13 @@
+{
+  "frameCount": 83,
+  "playbackFrameCount": 79,
+  "excludedFrameIndices": [66, 67, 68, 69],
+  "excludedSources": ["69.png", "70.png", "71.png", "72.png"],
+  "width": 720,
+  "height": 1024,
+  "format": "webp",
+  "pathPrefix": "/hero/moringa/sequence/frame-",
+  "scrollHeightVh": 266,
+  "anchorCenterX": 360.0,
+  "anchorBottom": 918
+}

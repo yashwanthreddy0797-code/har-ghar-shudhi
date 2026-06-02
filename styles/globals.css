@@ -35,16 +35,16 @@ html.lenis body {
 }
 
 body {
-  background: var(--luxury-black);
-  color: var(--luxury-cream);
+  background: #ffffff;
+  color: #1a1a1a;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
-  background: rgba(201, 169, 98, 0.25);
-  color: var(--luxury-cream);
+  background: rgba(61, 107, 79, 0.2);
+  color: #1a1a1a;
 }
 
 /* GPU compositing layers */
@@ -52,6 +52,47 @@ body {
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+}
+
+.cinematic-visual-layer {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+.cinematic-product-frame {
+  background: transparent;
+  box-shadow: none;
+}
+
+.cinematic-product-image {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.12));
+}
+
+.cinematic-light-sweep {
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.4) 48%,
+    rgba(61, 107, 79, 0.12) 50%,
+    rgba(255, 255, 255, 0.4) 52%,
+    transparent 65%
+  );
+  transform: translate3d(-130%, 0, 0);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cinematic-ending-vignette {
+  background: radial-gradient(
+    ellipse 75% 70% at 50% 50%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.35) 72%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
+  pointer-events: none;
 }
 
 .video-layer {
@@ -70,8 +111,8 @@ body {
 .text-scrim {
   background: linear-gradient(
     90deg,
-    rgba(5, 5, 5, 0.72) 0%,
-    rgba(5, 5, 5, 0.45) 55%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.65) 55%,
     transparent 100%
   );
 }
@@ -79,8 +120,8 @@ body {
 .text-scrim-center {
   background: radial-gradient(
     ellipse 90% 80% at 50% 50%,
-    rgba(5, 5, 5, 0.55) 0%,
-    rgba(5, 5, 5, 0.2) 55%,
+    rgba(255, 255, 255, 0.88) 0%,
+    rgba(255, 255, 255, 0.45) 55%,
     transparent 100%
   );
 }
@@ -88,8 +129,8 @@ body {
 .text-scrim-right {
   background: linear-gradient(
     270deg,
-    rgba(5, 5, 5, 0.72) 0%,
-    rgba(5, 5, 5, 0.45) 55%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.65) 55%,
     transparent 100%
   );
 }
@@ -97,7 +138,7 @@ body {
 .cinematic-gradient {
   background: radial-gradient(
     ellipse 70% 50% at 50% 100%,
-    rgba(13, 59, 46, 0.2) 0%,
+    rgba(61, 107, 79, 0.06) 0%,
     transparent 65%
   );
   pointer-events: none;
@@ -106,17 +147,17 @@ body {
 .video-overlay {
   background: linear-gradient(
       to bottom,
-      rgba(5, 5, 5, 0.5) 0%,
-      rgba(5, 5, 5, 0.15) 38%,
-      rgba(5, 5, 5, 0.35) 72%,
-      rgba(5, 5, 5, 0.65) 100%
+      rgba(255, 255, 255, 0.35) 0%,
+      transparent 38%,
+      transparent 72%,
+      rgba(255, 255, 255, 0.25) 100%
     ),
     linear-gradient(
       to right,
-      rgba(5, 5, 5, 0.35) 0%,
+      rgba(255, 255, 255, 0.2) 0%,
       transparent 30%,
       transparent 70%,
-      rgba(5, 5, 5, 0.35) 100%
+      rgba(255, 255, 255, 0.2) 100%
     );
   pointer-events: none;
 }
@@ -144,20 +185,379 @@ body {
 }
 
 .cta-button:hover {
-  border-color: rgba(201, 169, 98, 0.5);
+  border-color: rgba(61, 107, 79, 0.55);
   transform: translate3d(0, -1px, 0);
+}
+
+.cinematic-cta:hover {
+  background: rgba(232, 242, 235, 0.9);
+  color: #2d5239;
 }
 
 .bullet-dot {
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: var(--luxury-gold);
+  background: #3d6b4f;
   opacity: 0.85;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .scene-layer {
     transition: none !important;
+  }
+
+  .cinematic-scroll-container {
+    height: auto !important;
+    min-height: 100vh;
+  }
+}
+
+/* ── Hero scroll experience (fixed product + layered scroll) ── */
+
+.product-experience[data-product="moringa"] {
+  background-color: transparent;
+}
+
+.product-experience[data-product="moringa"] .moringa-insights {
+  margin-top: 0;
+}
+
+.product-experience[data-product="moringa"] .product-scroll-zone {
+  background-color: #0d3b2e;
+}
+
+.product-experience[data-product="moringa"] .hero-bg-gradient {
+  background: radial-gradient(
+    ellipse 85% 55% at 50% 72%,
+    rgba(26, 92, 71, 0.35) 0%,
+    transparent 70%
+  );
+}
+
+.product-experience[data-product="moringa"] .hero-bottle-stage,
+.product-experience[data-product="moringa"] .hero-bottle-slot {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.product-experience[data-product="moringa"] .hero-bottle-stack {
+  position: relative;
+  isolation: isolate;
+}
+
+.product-experience[data-product="moringa"] .hero-frame-canvas {
+  opacity: 1;
+}
+
+.product-experience[data-product="moringa"] .hero-bottle-slot[data-hero-ready="true"] .hero-bottle-poster {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.product-experience[data-product="moringa"] .hero-fixed-product {
+  opacity: 1;
+  visibility: visible;
+}
+
+.product-experience[data-product="moringa"] .product-scroll-zone > div {
+  overflow: visible;
+}
+
+.product-experience[data-product="moringa"] .hero-moringa-callout {
+  will-change: transform, opacity;
+}
+
+.product-experience[data-product="ashwagandha"] .hero-ashwagandha-callout {
+  will-change: transform, opacity;
+}
+
+.product-experience[data-product="ashwagandha"] .hero-ashwagandha-callout-media::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 98, 0.12);
+  pointer-events: none;
+}
+
+.product-experience[data-product="honey"] .hero-honey-callout {
+  will-change: transform, opacity;
+}
+
+.product-experience[data-product="honey"] .hero-honey-callouts-right-wrap {
+  justify-content: center;
+}
+
+.product-experience[data-product="honey"] .hero-honey-callouts--right {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.product-experience[data-product="honey"] .hero-honey-callout-media::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 168, 75, 0.12);
+  pointer-events: none;
+}
+
+.product-experience[data-product="moringa"] .hero-moringa-callout-media::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(201, 169, 98, 0.15);
+  pointer-events: none;
+}
+
+.product-experience[data-product="honey"] .product-scroll-zone {
+  background-color: #3d2a10;
+}
+
+.product-experience[data-product="honey"] .hero-bg-gradient {
+  background: radial-gradient(
+    ellipse 85% 55% at 50% 72%,
+    rgba(212, 168, 75, 0.22) 0%,
+    transparent 70%
+  );
+}
+
+.product-experience[data-product="honey"] .hero-bottle-stage {
+  opacity: 1;
+  visibility: visible;
+}
+
+.product-experience[data-product="honey"] .product-scroll-zone > div {
+  overflow: visible;
+}
+
+.product-experience[data-product="ashwagandha"] .product-scroll-zone {
+  background-color: #3d2518;
+}
+
+.product-experience[data-product="ashwagandha"] .hero-bg-gradient {
+  background: radial-gradient(
+    ellipse 85% 55% at 50% 72%,
+    rgba(201, 169, 98, 0.18) 0%,
+    transparent 70%
+  );
+}
+
+.product-experience[data-product="ashwagandha"] .hero-bottle-stage {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hero-experience {
+  /* no isolation — keeps fixed bottle z-index working across sections */
+}
+
+.hero-spotlight {
+  display: none;
+}
+
+.hero-product-image:not(.hero-bottle-layer),
+.hero-bottle-body,
+.hero-bottle-cap {
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.35));
+}
+
+.hero-product-image,
+.hero-bottle-layer {
+  transform: translate3d(0, 0, 0);
+}
+
+/* Frame-sequence renders carry their own lighting/shadow — no CSS shadow,
+   otherwise the silhouette blurs into a dark oval behind the product. */
+.hero-frame-layer .hero-bottle-layer,
+.hero-frame-layer .hero-product-image {
+  filter: none;
+}
+
+.hero-bottle-stack {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+.hero-frame-layer {
+  will-change: opacity, visibility;
+  background: transparent;
+}
+
+.hero-frame-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+.hero-frame-layer .hero-bottle-layer {
+  object-position: center bottom;
+}
+
+.hero-bottle-layer-wrap {
+  line-height: 0;
+}
+
+.hero-bottle-layer {
+  display: block;
+  object-fit: contain;
+  object-position: center top;
+  vertical-align: top;
+}
+
+.hero-bottle-neck-fill {
+  display: none;
+}
+
+.hero-bottle-closed {
+  position: relative;
+  z-index: 5;
+}
+
+.hero-bottle-body {
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.35));
+  transform: translate3d(0, 0, 0);
+}
+
+/* Cap canvas matches body size; JS shifts it onto the neck before lift */
+.hero-bottle-cap-wrap {
+  will-change: opacity;
+  z-index: 10;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.hero-bottle-cap-inner {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+}
+
+.hero-bottle-cap {
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
+  backface-visibility: hidden;
+}
+
+.hero-bottle-sequence {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.hero-bg-gradient {
+  background: radial-gradient(
+    ellipse 90% 60% at 50% 100%,
+    rgba(0, 0, 0, 0.25) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+.hero-moringa-texture {
+  background: linear-gradient(
+      135deg,
+      rgba(201, 169, 98, 0.15) 0%,
+      transparent 50%
+    ),
+    linear-gradient(
+      160deg,
+      #c9a962 0%,
+      #b8924a 25%,
+      #a67c3a 50%,
+      #8f6b32 75%,
+      #7a5a28 100%
+    );
+  background-size: 100% 100%, 200% 200%;
+}
+
+.hero-ashwagandha-texture {
+  background: linear-gradient(
+      135deg,
+      rgba(201, 169, 98, 0.2) 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      165deg,
+      #8b6344 0%,
+      #6b4a2e 30%,
+      #4a3228 55%,
+      #3d2518 80%,
+      #2f1c12 100%
+    );
+  background-size: 100% 100%, 200% 200%;
+}
+
+.hero-honey-texture {
+  background: linear-gradient(
+      135deg,
+      rgba(212, 168, 75, 0.2) 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      165deg,
+      #d4a84b 0%,
+      #b8924a 22%,
+      #8f6b32 45%,
+      #5c4018 72%,
+      #3d2a10 100%
+    );
+  background-size: 100% 100%, 200% 200%;
+}
+
+.brand-standard-grid {
+  background-image:
+    linear-gradient(rgba(61, 107, 79, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(61, 107, 79, 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.brand-standard-manifesto-accent {
+  background:
+    radial-gradient(
+      ellipse 80% 60% at 100% 0%,
+      rgba(201, 169, 98, 0.18) 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.04) 0%,
+      transparent 45%
+    );
+}
+
+.hero-cta {
+  pointer-events: auto;
+}
+
+.hero-logos-bar {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Frosted nav — content shows through at ~50% with blur */
+.nav-glass-hero {
+  background: rgba(8, 10, 9, 0.5);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.nav-glass-light {
+  background: rgba(255, 255, 255, 0.52);
+  -webkit-backdrop-filter: blur(16px) saturate(170%);
+  backdrop-filter: blur(16px) saturate(170%);
+  border-bottom-color: rgba(229, 231, 227, 0.6);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-fixed-product {
+    position: absolute !important;
+  }
+
+  .hero-scroll-runway {
+    height: 0 !important;
   }
 }

@@ -6,9 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "checkout:logo": "node scripts/set-checkout-logo.mjs",
+    "prepare-moringa-sequence": "python3 scripts/prepare-moringa-sequence.py",
+    "moringa:remove-bg": "python3 scripts/remove-moringa-frame-background.py",
+    "moringa:optimize": "python3 scripts/optimize-moringa-sequence.py",
+    "honey:optimize": "python3 scripts/optimize-honey-sequence.py",
+    "ashwagandha:optimize": "python3 scripts/optimize-ashwagandha-sequence.py",
+    "cinematic:assets": "python3 scripts/prepare-cinematic-assets.py"
   },
   "dependencies": {
+    "@shopify/storefront-api-client": "^1.0.10",
     "@studio-freight/lenis": "^1.0.42",
     "framer-motion": "^11.18.2",
     "gsap": "^3.12.7",

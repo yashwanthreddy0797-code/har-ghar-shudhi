@@ -35,10 +35,44 @@ A large file (~45MB+) is fine for GitHub under the 100MB per-file limit; for fas
 | `npm run start`| Serve production build|
 | `npm run lint` | ESLint                |
 
+## Shopify (Phase 1 — Headless)
+
+Copy `env.example` to `.env.local` and add your Shopify credentials:
+
+```bash
+cp env.example .env.local
+```
+
+```env
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your_storefront_access_token
+SHOPIFY_API_VERSION=2025-10
+```
+
+**What's wired up:**
+- Live products & collections from Shopify Storefront API
+- Cart (add / update / remove) with cookie persistence
+- Checkout redirect to Shopify hosted checkout
+- Product variant selection with real availability
+- Search at `/search?q=...`
+
+Create a custom app in **Shopify Admin → Settings → Apps → Develop apps**, enable **Storefront API** scopes, and copy the public Storefront access token.
+
+### Checkout (Har Ghar Shudhi — on your site)
+
+The cart **Checkout** button goes to **`/checkout`** on this Next.js app — fully branded **Har Ghar Shudhi** (not Shopify / Two Brothers). Orders are confirmed on **`/checkout/complete`**.
+
+Shopify is still used for the **product catalog and cart** via the Storefront API. When you connect your own Har Ghar Shudhi Shopify store in `.env.local`, swap the domain and tokens; checkout UI stays on your site.
+
+Brand logo image: `public/brand/har-ghar-shudhi-logo.png` (used in header, footer, checkout, and favicon).
+
+Optional: `scripts/set-checkout-logo.mjs` only applies if you later use Shopify hosted checkout on **your** store.
+
 ## Stack
 
 - Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS
-- GSAP + ScrollTrigger, Lenis (`@studio-freight/lenis`), Framer Motion (available), Lucide icons
+- **Shopify Storefront API** (`@shopify/storefront-api-client`)
+- GSAP + ScrollTrigger, Lenis (`@studio-freight/lenis`), Lucide icons
 
 ## GitHub → Lovable
 

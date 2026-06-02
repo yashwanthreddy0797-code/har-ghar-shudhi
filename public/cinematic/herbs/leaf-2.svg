@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 180" fill="none" aria-hidden="true">
+  <path
+    d="M70 8 C35 48 22 96 70 172 C118 96 105 48 70 8Z"
+    fill="#145a42"
+    fill-opacity="0.8"
+    stroke="#c9a962"
+    stroke-opacity="0.3"
+    stroke-width="1.5"
+  />
+  <path d="M70 22 V158" stroke="#c9a962" stroke-opacity="0.2" stroke-width="1" />
+</svg>

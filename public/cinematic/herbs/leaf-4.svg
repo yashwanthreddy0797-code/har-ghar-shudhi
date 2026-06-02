@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130 170" fill="none" aria-hidden="true">
+  <path
+    d="M65 6 C30 42 20 88 65 164 C110 88 100 42 65 6Z"
+    fill="#1a6b4f"
+    fill-opacity="0.75"
+    stroke="#c9a962"
+    stroke-opacity="0.28"
+    stroke-width="1.5"
+  />
+  <path d="M65 18 V150" stroke="#c9a962" stroke-opacity="0.18" stroke-width="1" />
+</svg>

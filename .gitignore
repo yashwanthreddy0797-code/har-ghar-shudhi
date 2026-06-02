@@ -20,6 +20,18 @@
 
 # misc
 .DS_Store
+
+# Raw hero scroll frames (optimize with npm run moringa:optimize)
+/public/hero/moringa/source/
+/public/hero/moringa/sequence/*.jpg
+/public/hero/moringa/sequence/*.png
+/public/hero/moringa/sequence/ezgif-*
+/public/hero/honey/source/
+/public/hero/honey/sequence/*.jpg
+/public/hero/honey/sequence/*.png
+/public/hero/ashwagandha/source/
+/public/hero/ashwagandha/sequence/*.jpg
+/public/hero/ashwagandha/sequence/*.png
 *.pem
 
 # debug
@@ -30,9 +42,11 @@ yarn-error.log*
 
 # env files
 .env*
+!env.example
 
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
+next-env.d.ts

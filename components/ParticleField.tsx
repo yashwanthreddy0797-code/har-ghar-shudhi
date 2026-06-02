@@ -76,8 +76,8 @@ export default function ParticleField() {
           p.y,
           p.size * 2.5
         );
-        gradient.addColorStop(0, `rgba(201, 169, 98, ${p.opacity})`);
-        gradient.addColorStop(1, "rgba(201, 169, 98, 0)");
+        gradient.addColorStop(0, `rgba(61, 107, 79, ${p.opacity})`);
+        gradient.addColorStop(1, "rgba(61, 107, 79, 0)");
 
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -110,7 +110,7 @@ export default function ParticleField() {
   return (
     <canvas
       ref={canvasRef}
-      className="pointer-events-none absolute inset-0 z-[4] hidden opacity-[0.18] md:block"
+      className="pointer-events-none absolute inset-0 z-[4] hidden opacity-[0.14] md:block"
       aria-hidden
     />
   );

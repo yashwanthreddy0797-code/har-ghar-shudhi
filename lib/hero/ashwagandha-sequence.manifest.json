@@ -1,0 +1,29 @@
+{
+  "frameCount": 120,
+  "playbackFrameCount": 113,
+  "excludedFrameIndices": [
+    20,
+    32,
+    33,
+    46,
+    62,
+    89,
+    98
+  ],
+  "excludedSources": [
+    "20.png",
+    "32.png",
+    "33.png",
+    "46.png",
+    "62.png",
+    "89.png",
+    "98.png"
+  ],
+  "width": 720,
+  "height": 1280,
+  "format": "webp",
+  "pathPrefix": "/hero/ashwagandha/sequence/frame-",
+  "scrollHeightVh": 629,
+  "anchorCenterX": 360.0,
+  "anchorBottom": 1148
+}
