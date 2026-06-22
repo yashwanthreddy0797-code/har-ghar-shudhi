@@ -10,8 +10,6 @@ import {
 } from "@/lib/hero/cinematicVideoScroll";
 import { isScrollExperienceReady, onLenisInit } from "@/lib/scroll/lenisReady";
 import {
-  MOBILE_MAX_WIDTH,
-  useIsMobileViewport,
   useResponsiveScrollHeight,
   preferNativeScroll,
   cinematicScrollHeightForViewport,
@@ -24,34 +22,52 @@ import {
   tickerDeltaSeconds,
 } from "@/lib/scroll/smoothProgress";
 
-function waitForVideoReady(video: HTMLVideoElement, timeoutMs = 4500) {
+function waitForVideoReady(video: HTMLVideoElement, timeoutMs = 4500): Promise<boolean> {
   return Promise.race([
-    new Promise<void>((resolve) => {
-      const finish = () => {
-        video.removeEventListener("loadedmetadata", finish);
-        video.removeEventListener("loadeddata", finish);
-        video.removeEventListener("canplay", finish);
-        video.removeEventListener("error", finish);
-        resolve();
+    new Promise<boolean>((resolve) => {
+      const finish = (ok: boolean) => {
+        video.removeEventListener("loadedmetadata", onMeta);
+        video.removeEventListener("loadeddata", onMeta);
+        video.removeEventListener("canplay", onMeta);
+        video.removeEventListener("error", onError);
+        resolve(ok);
       };
 
-      if (
-        video.readyState >= HTMLMediaElement.HAVE_METADATA &&
-        Number.isFinite(video.duration) &&
-        video.duration > 0
-      ) {
-        resolve();
+      const hasDuration = () =>
+        Number.isFinite(video.duration) && video.duration > 0;
+
+      const onMeta = () => {
+        if (hasDuration()) finish(true);
+      };
+
+      const onError = () => finish(false);
+
+      if (hasDuration()) {
+        resolve(true);
         return;
       }
 
-      video.addEventListener("loadedmetadata", finish, { once: true });
-      video.addEventListener("loadeddata", finish, { once: true });
-      video.addEventListener("canplay", finish, { once: true });
-      video.addEventListener("error", finish, { once: true });
+      video.addEventListener("loadedmetadata", onMeta);
+      video.addEventListener("loadeddata", onMeta);
+      video.addEventListener("canplay", onMeta);
+      video.addEventListener("error", onError, { once: true });
       video.load();
     }),
-    new Promise<void>((resolve) => window.setTimeout(resolve, timeoutMs)),
+    new Promise<boolean>((resolve) =>
+      window.setTimeout(() => {
+        resolve(
+          Number.isFinite(video.duration) && video.duration > 0
+        );
+      }, timeoutMs)
+    ),
   ]);
+}
+
+function beginVideoPreload(video: HTMLVideoElement) {
+  video.preload = "auto";
+  if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+    video.load();
+  }
 }
 
 interface CinematicFullscreenVideoScrollSectionProps {
@@ -90,19 +106,16 @@ export default function CinematicFullscreenVideoScrollSection({
     videoLogoOverlay,
   } = config;
   const t = CINEMATIC_VIDEO_THEMES[theme];
-  const isMobile = useIsMobileViewport();
   const responsiveScrollVh = useResponsiveScrollHeight(
     scrollHeightVh,
     cinematicScrollHeightForViewport
   );
 
   useEffect(() => {
-    if (!isMobile) return;
     const video = videoRef.current;
     if (!video) return;
-    video.preload = "auto";
-    video.load();
-  }, [isMobile, src]);
+    beginVideoPreload(video);
+  }, [src]);
 
   useLayoutEffect(() => {
     let ctx: { revert: () => void } | undefined;
@@ -111,10 +124,22 @@ export default function CinematicFullscreenVideoScrollSection({
     let syncScroll: (() => void) | undefined;
     let detachSeek: (() => void) | undefined;
     let sectionObserver: IntersectionObserver | undefined;
-    let setupStarted = false;
+    let setupComplete = false;
+    let setupInFlight = false;
+    let setupRetryTimer: number | undefined;
+
+    const scheduleSetupRetry = (delayMs = 450) => {
+      if (cancelled || setupComplete) return;
+      window.clearTimeout(setupRetryTimer);
+      setupRetryTimer = window.setTimeout(() => {
+        setupInFlight = false;
+        void setup();
+      }, delayMs);
+    };
 
     const setup = async () => {
-      if (cancelled) return;
+      if (cancelled || setupInFlight || setupComplete) return;
+      setupInFlight = true;
 
       const root = rootRef.current;
       const sequence = sequenceRef.current;
@@ -137,6 +162,7 @@ export default function CinematicFullscreenVideoScrollSection({
         !hint ||
         !progress
       ) {
+        setupInFlight = false;
         if (setupAttempts < 24 && !cancelled) {
           setupAttempts += 1;
           requestAnimationFrame(() => void setup());
@@ -144,9 +170,25 @@ export default function CinematicFullscreenVideoScrollSection({
         return;
       }
 
-      video.preload = "auto";
-      await waitForVideoReady(video, preferNativeScroll() ? 3500 : 4500);
-      if (cancelled || !videoRef.current || videoRef.current !== video) return;
+      beginVideoPreload(video);
+      const ready = await waitForVideoReady(
+        video,
+        preferNativeScroll() ? 6000 : 5000
+      );
+      if (cancelled || !videoRef.current || videoRef.current !== video) {
+        setupInFlight = false;
+        return;
+      }
+
+      if (
+        !ready ||
+        !Number.isFinite(video.duration) ||
+        video.duration <= 0
+      ) {
+        setupInFlight = false;
+        scheduleSetupRetry(500);
+        return;
+      }
 
       const { gsap, ScrollTrigger } = getGsap();
       const touchScroll = preferNativeScroll();
@@ -164,18 +206,27 @@ export default function CinematicFullscreenVideoScrollSection({
         let targetTime = 0;
         let seeking = false;
         let lastSeekAt = 0;
-        const SEEK_THRESHOLD = touchScroll ? 0.07 : 1 / 30;
-        const SEEK_MIN_INTERVAL_MS = touchScroll ? 36 : 0;
+        let seekUnlockTimer: number | undefined;
+        const SEEK_THRESHOLD = touchScroll ? 0.055 : 1 / 30;
+        const SEEK_MIN_INTERVAL_MS = touchScroll ? 28 : 0;
+
+        const releaseSeekLock = () => {
+          seeking = false;
+          if (seekUnlockTimer !== undefined) {
+            window.clearTimeout(seekUnlockTimer);
+            seekUnlockTimer = undefined;
+          }
+        };
 
         const seekToTarget = () => {
           if (!Number.isFinite(video.duration) || video.duration <= 0) {
-            seeking = false;
+            releaseSeekLock();
             return;
           }
 
           const clamped = gsap.utils.clamp(0, video.duration - 0.04, targetTime);
           if (Math.abs(video.currentTime - clamped) < SEEK_THRESHOLD) {
-            seeking = false;
+            releaseSeekLock();
             return;
           }
 
@@ -184,24 +235,25 @@ export default function CinematicFullscreenVideoScrollSection({
 
           seeking = true;
           lastSeekAt = now;
+          if (seekUnlockTimer !== undefined) window.clearTimeout(seekUnlockTimer);
+          seekUnlockTimer = window.setTimeout(releaseSeekLock, 140);
+
           try {
-            if (
-              touchScroll &&
-              "fastSeek" in video &&
-              typeof video.fastSeek === "function"
-            ) {
-              video.fastSeek(clamped);
-            } else {
-              video.currentTime = clamped;
-            }
+            video.currentTime = clamped;
           } catch {
-            seeking = false;
+            releaseSeekLock();
           }
         };
 
-        const onSeeked = () => seekToTarget();
+        const onSeeked = () => {
+          releaseSeekLock();
+          seekToTarget();
+        };
         video.addEventListener("seeked", onSeeked);
-        detachSeek = () => video.removeEventListener("seeked", onSeeked);
+        detachSeek = () => {
+          video.removeEventListener("seeked", onSeeked);
+          if (seekUnlockTimer !== undefined) window.clearTimeout(seekUnlockTimer);
+        };
 
         const progressSmoother = createScrollProgressSmoother(
           cinematicScrollProgressSmoothingForViewport()
@@ -319,21 +371,19 @@ export default function CinematicFullscreenVideoScrollSection({
         gsap.ticker.add(syncScroll);
         ScrollTrigger.refresh();
         syncScroll();
+        setupComplete = true;
+        setupInFlight = false;
       }, root);
     };
 
     const runSetup = () => {
       if (typeof window !== "undefined" && !window.__lenisInitialized) return;
-      if (setupStarted) return;
-      setupStarted = true;
+      if (setupComplete || setupInFlight) return;
       void setup();
     };
 
     const queueSetup = () => {
-      const shouldDefer =
-        deferUntilVisible && window.innerWidth > MOBILE_MAX_WIDTH;
-
-      if (!shouldDefer) {
+      if (!deferUntilVisible) {
         runSetup();
         return;
       }
@@ -346,12 +396,15 @@ export default function CinematicFullscreenVideoScrollSection({
 
       sectionObserver = new IntersectionObserver(
         (entries) => {
-          if (entries.some((entry) => entry.isIntersecting)) {
-            runSetup();
-            sectionObserver?.disconnect();
-          }
+          const visible = entries.some((entry) => entry.isIntersecting);
+          if (!visible) return;
+
+          const video = videoRef.current;
+          if (video) beginVideoPreload(video);
+
+          runSetup();
         },
-        { rootMargin: "1600px 0px" }
+        { rootMargin: "2200px 0px", threshold: 0 }
       );
       sectionObserver.observe(root);
     };
@@ -373,6 +426,7 @@ export default function CinematicFullscreenVideoScrollSection({
       cancelled = true;
       window.clearTimeout(setupRetry);
       window.clearTimeout(setupRetryLate);
+      window.clearTimeout(setupRetryTimer);
       removeLenisListener();
       sectionObserver?.disconnect();
       const { gsap } = getGsap();
@@ -401,7 +455,7 @@ export default function CinematicFullscreenVideoScrollSection({
               src={src}
               muted
               playsInline
-              preload={isMobile ? "auto" : deferUntilVisible ? "metadata" : "auto"}
+              preload="auto"
               aria-label={videoAriaLabel}
             />
           </div>
