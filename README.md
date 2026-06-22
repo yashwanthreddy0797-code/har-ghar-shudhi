@@ -50,7 +50,7 @@ SHOPIFY_API_VERSION=2025-10
 ```
 
 **What's wired up:**
-- Live products & collections from Shopify Storefront API
+- Live product data from Shopify Storefront API
 - Cart (add / update / remove) with cookie persistence
 - Checkout redirect to Shopify hosted checkout
 - Product variant selection with real availability

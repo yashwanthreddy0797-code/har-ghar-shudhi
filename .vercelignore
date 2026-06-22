@@ -1,0 +1,11 @@
+# Unused alpha webm exports (exceed Vercel 100MB file limit)
+public/hero/moringa/video/moringa-powder-reveal-alpha-4k.webm
+public/hero/moringa/video/moringa-powder-reveal-alpha.webm
+
+# Raw source frames (not used in production)
+public/hero/moringa/source
+public/hero/moringa/sequence
+public/hero/honey/source
+public/hero/honey/sequence
+public/hero/ashwagandha/source
+public/hero/ashwagandha/sequence

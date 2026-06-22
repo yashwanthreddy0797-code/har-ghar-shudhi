@@ -38,6 +38,9 @@ body {
   background: #ffffff;
   color: #1a1a1a;
   overflow-x: hidden;
+  max-width: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -215,6 +218,63 @@ body {
 
 /* ── Hero scroll experience (fixed product + layered scroll) ── */
 
+/* Hide scroll-driven sections until ScrollBootstrap releases the lock.
+   Prevents pinned hero/video sections flashing at a restored scroll offset. */
+html:not(.scroll-ready) {
+  overflow: hidden;
+}
+
+html:not(.scroll-ready) .product-scroll-zone,
+html:not(.scroll-ready) .product-video-scroll-zone {
+  visibility: hidden;
+}
+
+html:not(.scroll-ready) body {
+  overflow: hidden;
+}
+
+/* ── Premium homepage intro (split reveal) ── */
+
+html.site-intro-active header {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+html.site-intro-revealing .product-scroll-zone:first-of-type {
+  visibility: visible;
+}
+
+.site-intro-panel-bg {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.92) 0%, rgba(249, 249, 247, 0) 58%),
+    linear-gradient(180deg, #faf9f6 0%, #f5f4f0 100%);
+}
+
+.site-intro-panel {
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+html.site-intro-active,
+html.site-intro-active body {
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-intro-panel {
+    transition: none !important;
+  }
+}
+
+/* Prevent pre-animation flash: scroll callouts start hidden until GSAP
+   reveals them on scroll. GSAP sets inline opacity/visibility which override
+   these defaults once the timeline initializes. */
+.product-experience [data-callout] {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .product-experience[data-product="moringa"] {
   background-color: transparent;
 }
@@ -267,6 +327,117 @@ body {
 
 .product-experience[data-product="moringa"] .hero-moringa-callout {
   will-change: transform, opacity;
+}
+
+.moringa-video-scroll-stage {
+  position: relative;
+  z-index: 1;
+}
+
+.moringa-video-scroll-video,
+.luxury-video-scroll__video,
+.cinematic-video-scroll__video {
+  object-fit: cover;
+  object-position: center;
+}
+
+.product-video-scroll-video {
+  object-fit: contain;
+  object-position: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.luxury-video-scroll {
+  isolation: isolate;
+}
+
+.cinematic-video-scroll {
+  isolation: isolate;
+}
+
+.shilajit-hero-zoom {
+  isolation: isolate;
+}
+
+.shilajit-hero-zoom__assembly,
+.shilajit-hero-zoom__prop {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.luxury-video-scroll__wrap,
+.cinematic-video-scroll__wrap {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.luxury-sequence-scroll {
+  isolation: isolate;
+}
+
+.luxury-sequence-scroll__wrap {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.luxury-sequence-scroll__canvas {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.luxury-video-scroll__video,
+.cinematic-video-scroll__video {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.product-video-scroll-stage {
+  position: relative;
+  z-index: 1;
+}
+
+/* Seamless dark-video blend: the reveal is shot on near-black, so screen
+   blending drops the black into the page background, leaving only the lit
+   jar, spoon and gold particles. A soft radial mask feathers any faint edge
+   so the rectangle never reads as a placed video. */
+.product-video-blend {
+  object-fit: contain;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(
+    ellipse 74% 76% at 50% 50%,
+    #000 60%,
+    rgba(0, 0, 0, 0) 94%
+  );
+  mask-image: radial-gradient(
+    ellipse 74% 76% at 50% 50%,
+    #000 60%,
+    rgba(0, 0, 0, 0) 94%
+  );
+}
+
+/* Prevent pre-animation flash: side benefit callouts start hidden until GSAP
+   reveals them on scroll. */
+.product-video-scroll [data-vbenefit],
+.product-video-scroll [data-vbenefit-mobile],
+.product-video-scroll .product-video-scroll-mobile__benefits-cta {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.moringa-model-canvas-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.moringa-model-canvas-wrap canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: none;
 }
 
 .product-experience[data-product="ashwagandha"] .hero-ashwagandha-callout {
@@ -535,6 +706,217 @@ body {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* Shop — CALMM-style explore carousel */
+.shop-explore-section {
+  overflow: visible;
+  margin-bottom: 0;
+}
+
+.shop-explore-pin {
+  width: 100%;
+  overflow: visible;
+}
+
+.shop-explore-stage {
+  isolation: isolate;
+  overflow: visible;
+}
+
+.shop-explore-product {
+  transform-origin: center bottom;
+  transition: filter 0.4s ease;
+}
+
+.shop-explore-product img {
+  max-height: 100%;
+  width: auto;
+  max-width: 100%;
+}
+
+.shop-explore-highlights {
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.shop-explore-highlights li {
+  will-change: transform, opacity;
+}
+
+.shop-explore-highlight-row {
+  width: fit-content;
+  max-width: 100%;
+  transition: margin 0.3s ease;
+}
+
+.shop-explore-highlights li:nth-child(even) {
+  margin-left: 2.25rem;
+}
+
+@media (max-width: 767px) {
+  .shop-explore-highlights li:nth-child(even),
+  .shop-explore-highlights li:nth-child(odd) {
+    margin-left: 0;
+  }
+
+  .shop-explore-highlight-row {
+    width: 100%;
+    max-width: 18rem;
+  }
+
+  .product-video-scroll-stage {
+    margin-inline: auto;
+  }
+
+  .cinematic-video-scroll__wrap {
+    transform-origin: center center;
+  }
+
+  .cinematic-video-scroll__sequence {
+    contain: layout style;
+  }
+
+  .cinematic-video-scroll__video {
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+  }
+
+  html.native-scroll .cinematic-video-scroll .pin-spacer {
+    width: 100% !important;
+    max-width: 100vw;
+    transform: translateZ(0);
+  }
+
+  .shilajit-hero-zoom__stage {
+    padding-inline: 0.25rem;
+  }
+
+  .shilajit-hero-zoom__jar {
+    max-height: min(54svh, 440px);
+    margin-inline: auto;
+    filter: drop-shadow(0 18px 36px rgba(0, 0, 0, 0.42));
+  }
+
+  .shilajit-hero-zoom__prop--left {
+    transform-origin: 72% 88%;
+  }
+
+  .shilajit-hero-zoom__prop--right {
+    transform-origin: 28% 88%;
+  }
+
+  html.native-scroll .shilajit-hero-zoom .pin-spacer {
+    width: 100% !important;
+    max-width: 100vw;
+    transform: translateZ(0);
+  }
+
+  .footer-illustration--background {
+    overflow: hidden;
+  }
+
+  .footer-illustration__wash {
+    background:
+      linear-gradient(180deg, #faf6ef 0%, #f7f2ea 38%, rgba(247, 242, 234, 0.92) 100%);
+  }
+
+  .footer-illustration__image-wrap {
+    opacity: 0.72;
+    mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, #000 55%, transparent 100%);
+  }
+
+  .footer-illustration__image {
+    object-fit: cover;
+    object-position: center bottom;
+    transform: scale(1);
+  }
+
+  .product-video-scroll-mobile__top {
+    min-height: 7.25rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .product-video-scroll-mobile__bottom {
+    min-height: 13.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .product-video-scroll-mobile__stage {
+    max-height: 44svh;
+    padding-block: 0.75rem;
+  }
+
+  .product-video-scroll-mobile__benefits-row {
+    margin-top: 0.5rem;
+  }
+
+  .product-video-scroll-mobile__top .product-video-scroll-mobile__benefits-row {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .product-video-scroll-mobile__benefits-stack {
+    padding-top: 0.5rem;
+  }
+
+  .product-video-scroll--portrait .product-video-scroll-mobile__top {
+    min-height: 7rem;
+    padding-bottom: 0.75rem;
+  }
+
+  .product-video-scroll--portrait .product-video-scroll-mobile__bottom {
+    min-height: 14.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .product-video-scroll--portrait .product-video-scroll-mobile__stage {
+    max-height: 36svh;
+    flex: 0 1 auto;
+    padding-block: 0.75rem;
+  }
+
+  .product-video-scroll--portrait .product-video-scroll-mobile__headline {
+    font-size: clamp(1.42rem, 5.8vw, 1.85rem);
+    line-height: 1.08;
+  }
+
+  .product-video-scroll--portrait .product-video-scroll-mobile__subtext {
+    max-width: 16.5rem;
+    font-size: 8px;
+    line-height: 1.65;
+    letter-spacing: 0.14em;
+  }
+
+  .product-video-scroll--dark .product-video-scroll-mobile__benefits-row [data-vbenefit-mobile] {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+  }
+
+  html.native-scroll .pin-spacer {
+    width: 100% !important;
+    max-width: 100vw;
+  }
+}
+
+@media (min-width: 768px) {
+  .shop-explore-highlights li:nth-child(even) {
+    margin-left: 2.75rem;
+  }
+
+  .shop-explore-highlights li:nth-child(odd) {
+    margin-left: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-explore-section {
+    overflow: visible;
+  }
+
+  .shop-explore-product {
+    will-change: auto;
+  }
+}
+
 /* Frosted nav — content shows through at ~50% with blur */
 .nav-glass-hero {
   background: rgba(8, 10, 9, 0.5);
@@ -559,5 +941,276 @@ body {
 
   .hero-scroll-runway {
     height: 0 !important;
+  }
+}
+
+/* VIACAP / DS-01 technology section (Seed-style glass panel) */
+.viacap-section-bg {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 40%, rgba(120, 160, 80, 0.55) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 50% at 20% 70%, rgba(180, 200, 60, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 80% 30%, rgba(60, 100, 50, 0.4) 0%, transparent 50%),
+    linear-gradient(165deg, #3a5c2e 0%, #5a7a3a 35%, #4a6830 65%, #2d4a22 100%);
+}
+
+.viacap-section-bg::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background-image:
+    repeating-linear-gradient(
+      82deg,
+      transparent 0,
+      transparent 18px,
+      rgba(255, 255, 220, 0.08) 18px,
+      rgba(255, 255, 220, 0.08) 22px
+    ),
+    repeating-linear-gradient(
+      -12deg,
+      transparent 0,
+      transparent 28px,
+      rgba(180, 220, 100, 0.06) 28px,
+      rgba(180, 220, 100, 0.06) 34px
+    );
+  filter: blur(2px);
+  opacity: 0.9;
+}
+
+.viacap-section-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 15% 45%, rgba(220, 240, 120, 0.25) 0%, transparent 8%),
+    radial-gradient(circle at 35% 62%, rgba(200, 230, 100, 0.2) 0%, transparent 6%),
+    radial-gradient(circle at 55% 38%, rgba(180, 210, 90, 0.22) 0%, transparent 7%),
+    radial-gradient(circle at 72% 55%, rgba(210, 235, 110, 0.18) 0%, transparent 6%),
+    radial-gradient(circle at 88% 42%, rgba(190, 220, 95, 0.2) 0%, transparent 8%);
+  filter: blur(18px) saturate(140%);
+  transform: scale(1.08);
+}
+
+.viacap-glass-card {
+  background: rgba(72, 96, 58, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  backdrop-filter: blur(24px) saturate(130%);
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.viacap-stat-box {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.viacap-callout-line {
+  position: relative;
+  height: 1px;
+  border-top: 1px dotted rgba(255, 255, 255, 0.55);
+}
+
+.viacap-callout-line--outer {
+  width: calc(100% + min(80px, 12vw));
+  margin-top: 1.25rem;
+  margin-left: auto;
+}
+
+.viacap-callout-line--inner {
+  width: calc(100% + min(72px, 10vw));
+  margin-right: auto;
+}
+
+.viacap-callout--outer {
+  left: 0;
+  padding-right: 0.5rem;
+}
+
+.viacap-callout--inner {
+  right: 0;
+  padding-left: 0.5rem;
+  text-align: left;
+}
+
+.viacap-capsule-stage {
+  padding-inline: clamp(0px, 4vw, 48px);
+}
+
+/* Shop & product typography — classic luxury e-commerce pairing */
+.shop-typography {
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.shop-typography .font-display,
+.shop-typography h1,
+.shop-typography h2 {
+  font-family: var(--font-playfair), Georgia, serif;
+  letter-spacing: 0.02em;
+}
+
+.shop-typography .font-body {
+  font-family: var(--font-lora), Georgia, serif;
+}
+
+.shop-typography .font-shop {
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── About page — Har Ghar Shudhi brand system ── */
+
+.about-brand-hero {
+  background: linear-gradient(165deg, #1a3024 0%, #2d5239 50%, #1a2421 100%);
+}
+
+.about-brand-forest {
+  background:
+    radial-gradient(ellipse 70% 55% at 85% 15%, rgba(201, 169, 98, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #2d5239 0%, #243d2e 100%);
+}
+
+.about-brand-deep {
+  background:
+    radial-gradient(ellipse 80% 60% at 30% 20%, rgba(201, 169, 98, 0.08) 0%, transparent 55%),
+    linear-gradient(165deg, #1a3024 0%, #2d5239 40%, #1a2421 100%);
+}
+
+.about-brand-closing {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(201, 169, 98, 0.12) 0%, transparent 60%),
+    linear-gradient(180deg, #243d2e 0%, #1a2421 100%);
+}
+
+.about-brand-card {
+  border-radius: 0.75rem;
+  border: 1px solid rgba(229, 231, 227, 0.9);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1.75rem;
+  box-shadow: 0 12px 40px rgba(45, 82, 57, 0.06);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.about-brand-card:hover {
+  border-color: rgba(61, 107, 79, 0.25);
+  box-shadow: 0 20px 50px rgba(45, 82, 57, 0.1);
+}
+
+.about-brand-card--accent {
+  border-color: rgba(201, 169, 98, 0.25);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(247, 244, 237, 0.98) 100%);
+}
+
+.about-brand-journey {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.about-brand-journey-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 0.75rem;
+  min-width: 7rem;
+  max-width: 9rem;
+  text-align: center;
+  position: relative;
+}
+
+.about-brand-journey-step:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1.75rem;
+  right: -0.5rem;
+  width: 1rem;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(61, 107, 79, 0.35), rgba(61, 107, 79, 0.08));
+}
+
+@media (min-width: 768px) {
+  .about-brand-journey-step:not(:last-child)::after {
+    width: 1.5rem;
+    right: -0.75rem;
+  }
+}
+
+.about-brand-journey-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(61, 107, 79, 0.25);
+  background: rgba(232, 242, 235, 0.8);
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #3d6b4f;
+}
+
+.about-marquee-wrap {
+  display: flex;
+  overflow: hidden;
+  user-select: none;
+}
+
+.about-marquee-track {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 2.5rem;
+  padding-right: 2.5rem;
+  animation: aboutMarquee 42s linear infinite;
+  white-space: nowrap;
+}
+
+.about-marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 2.5rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.about-marquee-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #c9a962;
+  flex-shrink: 0;
+}
+
+@keyframes aboutMarquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-marquee-track {
+    animation: none;
   }
 }

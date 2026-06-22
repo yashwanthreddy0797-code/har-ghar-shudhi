@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import CategoryHero from "@/components/shop/CategoryHero";
 import ProductGrid from "@/components/shop/ProductGrid";
-import CertificationBanner from "@/components/shop/CertificationBanner";
 import { CONCERNS } from "@/lib/types/product";
 import { getProductsByConcern } from "@/lib/shopify/products";
 
@@ -49,7 +48,6 @@ export default async function ConcernPage({ params }: Props) {
           <ProductGrid products={products} />
         </div>
       </section>
-      <CertificationBanner />
     </PageShell>
   );
 }

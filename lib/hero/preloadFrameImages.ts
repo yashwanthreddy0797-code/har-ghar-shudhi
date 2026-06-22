@@ -72,6 +72,40 @@ export function drawFrameToCanvas(
   ctx.drawImage(img, x, y, w, h);
 }
 
+/** Draw frame with object-cover behavior for fullscreen cinematic sequences. */
+export function drawCoverFrame(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  canvasCssWidth: number,
+  canvasCssHeight: number
+) {
+  if (canvasCssWidth <= 0 || canvasCssHeight <= 0 || img.width <= 0 || img.height <= 0) {
+    return;
+  }
+
+  const imgRatio = img.width / img.height;
+  const canvasRatio = canvasCssWidth / canvasCssHeight;
+  let drawW: number;
+  let drawH: number;
+  let x: number;
+  let y: number;
+
+  if (imgRatio > canvasRatio) {
+    drawH = canvasCssHeight;
+    drawW = canvasCssHeight * imgRatio;
+    x = (canvasCssWidth - drawW) / 2;
+    y = 0;
+  } else {
+    drawW = canvasCssWidth;
+    drawH = canvasCssWidth / imgRatio;
+    x = 0;
+    y = (canvasCssHeight - drawH) / 2;
+  }
+
+  ctx.clearRect(0, 0, canvasCssWidth, canvasCssHeight);
+  ctx.drawImage(img, x, y, drawW, drawH);
+}
+
 export function sizeHeroCanvas(
   canvas: HTMLCanvasElement,
   container: HTMLElement

@@ -1,18 +1,35 @@
-import BrandStandardSection from "@/components/BrandStandardSection";
-import HeroScrollExperience from "@/components/HeroScrollExperience";
-import ProductScrollExperience from "@/components/ProductScrollExperience";
+import SiteIntroReveal from "@/components/intro/SiteIntroReveal";
+import ProductVideoScrollSection from "@/components/ProductVideoScrollSection";
 import SmoothScroll from "@/components/SmoothScroll";
+import CertificatesProofSection from "@/components/CertificatesProofSection";
 import Footer from "@/components/Footer";
-import { ASHWAGANDHA_SCROLL, HONEY_SCROLL } from "@/lib/hero/productScrollConfig";
+import HoneyLuxuryVideoScrollSection from "@/components/honey/HoneyLuxuryVideoScrollSection";
+import BrandCommercialVideoScrollSection from "@/components/brand/BrandCommercialVideoScrollSection";
+import SpirulinaLuxuryVideoScrollSection from "@/components/spirulina/SpirulinaLuxuryVideoScrollSection";
+import ShilajitHeroZoomSection from "@/components/shilajit/ShilajitHeroZoomSection";
+import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
+import { SHILAJIT_VIDEO_SCROLL } from "@/lib/hero/shilajitVideoScrollConfig";
 
 export default function Home() {
   return (
     <SmoothScroll>
+      <SiteIntroReveal />
       <main className="relative min-h-screen bg-brand-white">
-        <HeroScrollExperience />
-        <ProductScrollExperience config={ASHWAGANDHA_SCROLL} />
-        <BrandStandardSection />
-        <ProductScrollExperience config={HONEY_SCROLL} />
+        <ProductVideoScrollSection
+          config={MORINGA_VIDEO_SCROLL}
+          scrollId="moringa-video-scroll"
+          theme="light"
+        />
+        <ShilajitHeroZoomSection />
+        <ProductVideoScrollSection
+          config={SHILAJIT_VIDEO_SCROLL}
+          scrollId="shilajit-video-scroll"
+          theme="dark"
+        />
+        <HoneyLuxuryVideoScrollSection />
+        <BrandCommercialVideoScrollSection />
+        <SpirulinaLuxuryVideoScrollSection />
+        <CertificatesProofSection />
         <Footer variant="minimal" />
       </main>
     </SmoothScroll>

@@ -1,4 +1,6 @@
 import PageShell from "@/components/PageShell";
+import BrandPillarsBar from "@/components/about/BrandPillarsBar";
+import { DELIVERY } from "@/lib/brand/content";
 
 export const metadata = {
   title: "Track Order | Har Ghar Shudhi",
@@ -10,11 +12,14 @@ export default function TrackOrderPage() {
     <PageShell>
       <section className="bg-brand-white px-6 py-16 md:px-12 md:py-24">
         <div className="mx-auto max-w-lg text-center">
-          <h1 className="font-serif text-4xl font-light text-brand-text">
+          <p className="font-shop text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-green">
+            {DELIVERY.headline}
+          </p>
+          <h1 className="mt-3 font-display text-4xl font-medium text-brand-text">
             Track Your Order
           </h1>
-          <p className="mt-4 font-sans text-sm text-brand-muted">
-            Enter your order number and email to check delivery status.
+          <p className="mt-4 font-body text-sm italic text-brand-muted">
+            {DELIVERY.subline} Enter your order number and email to check delivery status.
           </p>
 
           <form className="mt-10 space-y-4 text-left">
@@ -44,8 +49,13 @@ export default function TrackOrderPage() {
               Track Order
             </button>
           </form>
+
+          <p className="mt-8 font-shop text-[11px] font-semibold uppercase tracking-[0.16em] text-brand-green">
+            {DELIVERY.tagline}
+          </p>
         </div>
       </section>
+      <BrandPillarsBar />
     </PageShell>
   );
 }

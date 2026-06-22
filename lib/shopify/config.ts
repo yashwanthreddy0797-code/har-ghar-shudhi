@@ -22,20 +22,30 @@ export function isShopifyConfigured(): boolean {
   );
 }
 
-/** Maps our URL slugs → Shopify collection handles */
-export const COLLECTION_HANDLE_MAP: Record<string, string> = {
-  all: "all",
-  ghee: "ghee",
-  atta: "stoneground-atta",
-  oils: "wood-pressed-oils",
-  immunity: "natural-immunity",
-  jaggery: "natural-sweetners",
-  snacks: "breakfast-spreads-1",
+/**
+ * Maps site URL slugs → Shopify product handles.
+ * Add entries here when a PDP slug differs from the handle in Shopify Admin.
+ */
+export const SHOPIFY_PRODUCT_HANDLE_MAP: Record<string, string> = {
+  "pure-shilajit": "pure-shilajit",
+  "ashwagandha-advance": "ashwagandha-advance",
+  "diabetes-shudhi": "diabetes-shudhi",
+  "gut-shudhi": "gut-shudhi",
+  "master-mineral": "master-mineral",
+  "moringa-powder": "moringa-powder",
+  "spirulina-powder": "spirulina-powder",
+  "wildforest-multiflora-honey": "wildforest-multiflora-honey",
+  "pain-shield": "pain-shield",
 };
 
+export function getShopifyProductHandle(slug: string) {
+  return SHOPIFY_PRODUCT_HANDLE_MAP[slug] ?? slug;
+}
+
 export const CONCERN_SEARCH_QUERIES: Record<string, string> = {
-  diabetes: "low gi khapli atta jaggery",
-  "gut-health": "ghee atta jaggery digestion",
-  immunity: "amlaprash chyawanprash turmeric immunity",
-  "weight-loss": "khapli multigrain protein atta",
+  diabetes: "diabetes shudhi blood sugar",
+  "gut-health": "gut shudhi digestion",
+  immunity: "shilajit ashwagandha immunity",
+  "weight-loss": "moringa spirulina metabolism",
+  energy: "ashwagandha shilajit energy",
 };

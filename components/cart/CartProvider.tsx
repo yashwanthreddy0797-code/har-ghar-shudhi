@@ -23,7 +23,7 @@ interface CartContextValue {
   isLoading: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addItem: (variantId: string, quantity?: number) => Promise<void>;
+  addItem: (variantId: string, quantity?: number) => Promise<Cart>;
   updateLine: (lineId: string, quantity: number) => Promise<void>;
   removeLine: (lineId: string) => Promise<void>;
 }
@@ -43,6 +43,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const updated = await addToCartAction(variantId, quantity);
     setCart(updated);
     setIsOpen(true);
+    return updated;
   }, []);
 
   const updateLine = useCallback(async (lineId: string, quantity: number) => {

@@ -3,15 +3,25 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { Search } from "lucide-react";
+import { prepareInstantNavigation } from "@/lib/navigation/instantNav";
 
-export default function SearchBar({ className = "" }: { className?: string }) {
+export default function SearchBar({
+  className = "",
+  onNavigate,
+}: {
+  className?: string;
+  onNavigate?: () => void;
+}) {
   const router = useRouter();
   const [query, setQuery] = useState("");
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
     const q = query.trim();
-    if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
+    if (!q) return;
+    prepareInstantNavigation();
+    onNavigate?.();
+    router.push(`/search?q=${encodeURIComponent(q)}`);
   }
 
   return (

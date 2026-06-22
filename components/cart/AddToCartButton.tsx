@@ -26,7 +26,7 @@ export default function AddToCartButton({
       <button
         type="button"
         disabled
-        className={`w-full cursor-not-allowed rounded-md bg-brand-border py-2.5 font-sans text-xs font-medium uppercase tracking-wider text-brand-muted ${className}`}
+        className={`w-full cursor-not-allowed rounded-md bg-brand-border py-2.5 font-shop text-xs font-semibold uppercase tracking-[0.18em] text-brand-muted ${className}`}
       >
         Sold Out
       </button>
@@ -48,7 +48,7 @@ export default function AddToCartButton({
             }
           });
         }}
-        className={`inline-flex items-center justify-center gap-2 rounded-md bg-brand-green py-2.5 font-sans text-xs font-medium uppercase tracking-wider text-white transition-colors hover:bg-brand-green-dark disabled:opacity-60 ${className}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-md bg-brand-green py-2.5 font-shop text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-brand-green-dark disabled:opacity-60 ${className}`}
       >
         {isPending ? (
           <>

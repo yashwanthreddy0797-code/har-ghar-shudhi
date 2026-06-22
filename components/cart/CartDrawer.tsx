@@ -13,19 +13,21 @@ export default function CartDrawer() {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60]">
+    <div className="fixed inset-0 z-[210]">
       <div
         className="absolute inset-0 bg-black/40"
         onClick={closeCart}
         aria-hidden
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-brand-white shadow-xl">
+      <aside className="shop-typography absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-brand-white shadow-xl">
         <div className="flex items-center justify-between border-b border-brand-border px-6 py-4">
           <div className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5 text-brand-green" />
-            <h2 className="font-serif text-xl text-brand-text">Your Cart</h2>
+            <h2 className="font-display text-xl font-medium tracking-[0.02em] text-brand-text">
+              Your Cart
+            </h2>
             {cart && cart.totalQuantity > 0 && (
-              <span className="rounded-full bg-brand-green-light px-2 py-0.5 font-sans text-xs text-brand-green">
+              <span className="rounded-full bg-brand-green-light px-2 py-0.5 font-shop text-xs text-brand-green">
                 {cart.totalQuantity}
               </span>
             )}
@@ -44,13 +46,13 @@ export default function CartDrawer() {
           {!cart || cart.lines.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center text-center">
               <ShoppingBag className="mb-4 h-12 w-12 text-brand-border" />
-              <p className="font-sans text-sm text-brand-muted">
+              <p className="font-body text-sm italic text-brand-muted">
                 Your cart is empty
               </p>
               <Link
                 href="/shop"
                 onClick={closeCart}
-                className="mt-6 rounded-md bg-brand-green px-6 py-2.5 font-sans text-xs font-medium uppercase tracking-wider text-white hover:bg-brand-green-dark"
+                className="mt-6 rounded-md bg-brand-green px-6 py-2.5 font-shop text-xs font-semibold uppercase tracking-[0.18em] text-white hover:bg-brand-green-dark"
               >
                 Start Shopping
               </Link>
@@ -77,16 +79,16 @@ export default function CartDrawer() {
                     <Link
                       href={`/products/${line.productHandle}`}
                       onClick={closeCart}
-                      className="font-sans text-sm font-medium text-brand-text hover:text-brand-green"
+                      className="font-display text-sm font-medium tracking-[0.01em] text-brand-text hover:text-brand-green"
                     >
                       {line.productTitle}
                     </Link>
                     {line.title !== "Default Title" && (
-                      <p className="mt-0.5 font-sans text-xs text-brand-muted">
+                      <p className="mt-0.5 font-shop text-xs tracking-wide text-brand-muted">
                         {line.title}
                       </p>
                     )}
-                    <p className="mt-1 font-sans text-sm font-semibold text-brand-text">
+                    <p className="mt-1 font-shop text-sm font-semibold tabular-nums text-brand-text">
                       {formatPrice(line.price)}
                     </p>
                     <div className="mt-auto flex items-center justify-between pt-2">
@@ -104,7 +106,7 @@ export default function CartDrawer() {
                         >
                           <Minus className="h-3.5 w-3.5" />
                         </button>
-                        <span className="min-w-[2rem] text-center font-sans text-sm">
+                        <span className="min-w-[2rem] text-center font-shop text-sm tabular-nums">
                           {line.quantity}
                         </span>
                         <button
@@ -137,22 +139,24 @@ export default function CartDrawer() {
         {cart && cart.lines.length > 0 && (
           <div className="border-t border-brand-border px-6 py-5">
             <div className="mb-4 flex items-center justify-between">
-              <span className="font-sans text-sm text-brand-muted">Subtotal</span>
-              <span className="font-sans text-lg font-semibold text-brand-text">
+              <span className="font-shop text-sm tracking-wide text-brand-muted">
+                Subtotal
+              </span>
+              <span className="font-shop text-lg font-semibold tabular-nums text-brand-text">
                 {formatPrice(cart.subtotal)}
               </span>
             </div>
             <Link
               href="/checkout"
               onClick={closeCart}
-              className="block w-full rounded-md bg-brand-green py-3.5 text-center font-sans text-xs font-medium uppercase tracking-wider text-white transition-colors hover:bg-brand-green-dark"
+              className="block w-full rounded-md bg-brand-green py-3.5 text-center font-shop text-xs font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:bg-brand-green-dark"
             >
               Checkout
             </Link>
             <button
               type="button"
               onClick={closeCart}
-              className="mt-3 w-full py-2 font-sans text-xs text-brand-muted hover:text-brand-green"
+              className="mt-3 w-full py-2 font-shop text-xs tracking-wide text-brand-muted hover:text-brand-green"
             >
               Continue Shopping
             </button>

@@ -74,22 +74,6 @@ export const GET_PRODUCT_BY_HANDLE_QUERY = `
   }
 `;
 
-export const GET_COLLECTION_PRODUCTS_QUERY = `
-  ${PRODUCT_FRAGMENT}
-  query GetCollectionProducts($handle: String!, $first: Int!) {
-    collection(handle: $handle) {
-      title
-      products(first: $first) {
-        edges {
-          node {
-            ...ProductFields
-          }
-        }
-      }
-    }
-  }
-`;
-
 export const SEARCH_PRODUCTS_QUERY = `
   ${PRODUCT_FRAGMENT}
   query SearchProducts($query: String!, $first: Int!) {

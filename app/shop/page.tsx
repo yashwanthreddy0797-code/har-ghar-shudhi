@@ -1,32 +1,38 @@
 import PageShell from "@/components/PageShell";
 import CategoryHero from "@/components/shop/CategoryHero";
+import ShopShowcase from "@/components/shop/ShopShowcase";
+import ShopExploreSection from "@/components/shop/ShopExploreSection";
 import ProductGrid from "@/components/shop/ProductGrid";
-import CertificationBanner from "@/components/shop/CertificationBanner";
-import { getAllProducts } from "@/lib/shopify/products";
+import BrandPillarsBar from "@/components/about/BrandPillarsBar";
+import { getAllCatalogProducts } from "@/lib/catalog";
+import { BRAND_INTRO, BRAND_TAGLINE } from "@/lib/brand/content";
 
 export const revalidate = 3600;
 
 export const metadata = {
   title: "Shop All | Har Ghar Shudhi",
-  description: "Browse organic ghee, atta, oils, immunity blends, and more.",
+  description:
+    "Browse Pure Shilajit, Ashwagandha, superfoods, honey, and Ayurvedic wellness from Har Ghar Shudhi.",
 };
 
-export default async function ShopPage() {
-  const products = await getAllProducts();
+export default function ShopPage() {
+  const products = getAllCatalogProducts();
 
   return (
-    <PageShell>
+    <PageShell proofSectionClassName="-mt-20 !pt-6 md:-mt-28 md:!pt-8">
       <CategoryHero
         title="All Products"
-        description="Raw, organic produce crafted with ancient wisdom — from bilona ghee to stone-ground atta, every product is traceable from farm to your home."
+        description={`${BRAND_TAGLINE} — ${BRAND_INTRO}`}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Shop" }]}
       />
+      <BrandPillarsBar />
+      <ShopShowcase />
       <section className="bg-brand-white px-6 py-10 md:px-12 md:py-14">
         <div className="mx-auto max-w-6xl">
           <ProductGrid products={products} />
         </div>
       </section>
-      <CertificationBanner />
+      <ShopExploreSection />
     </PageShell>
   );
 }

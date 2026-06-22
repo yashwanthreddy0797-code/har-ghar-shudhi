@@ -9,12 +9,11 @@ import {
   preloadFrameImages,
   sizeHeroCanvas,
 } from "@/lib/hero/preloadFrameImages";
-import { onLenisInit } from "@/lib/scroll/lenisReady";
+import { onLenisInit, isScrollExperienceReady } from "@/lib/scroll/lenisReady";
 import type { ProductScrollConfig } from "@/lib/hero/productScrollConfig";
 import AshwagandhaHeroCallouts from "@/components/hero/AshwagandhaHeroCallouts";
 import HoneyHeroCallouts from "@/components/hero/HoneyHeroCallouts";
 import MoringaHeroCallouts from "@/components/hero/MoringaHeroCallouts";
-import MoringaProductInsights from "@/components/hero/MoringaProductInsights";
 import {
   ASHWAGANDHA_HERO_CALLOUTS_ALL,
   ASHWAGANDHA_HERO_CALLOUTS_LEFT,
@@ -420,6 +419,8 @@ export default function ProductScrollExperience({
           });
 
           syncFramesLocal = () => {
+            if (!isScrollExperienceReady()) return;
+
             const st = ScrollTrigger.getById(`${config.id}-hero-frames`);
             if (st) {
               applyHeroProgress(st.progress);
@@ -695,7 +696,7 @@ export default function ProductScrollExperience({
         <>
           {config.id === "moringa" ? (
             <Image
-              src="/hero/moringa-bottle.png"
+              src="/hero/moringa/sequence/frame-001.webp"
               alt=""
               width={720}
               height={1024}
@@ -1100,41 +1101,6 @@ export default function ProductScrollExperience({
         </div>
       ) : null}
 
-      {isMoringa ? <MoringaProductInsights /> : null}
-
-      <section
-        className={`product-closing-section relative min-h-screen ${config.closing.sectionClass}`}
-        style={{ zIndex: config.closingZIndex }}
-      >
-        <div className="grid min-h-screen md:grid-cols-2">
-          <div className="hero-next-image relative min-h-[50vh] md:min-h-full">
-            <div
-              className={`${config.closing.textureClass} absolute inset-0`}
-            />
-          </div>
-          <div className="flex flex-col justify-center px-8 py-16 md:px-16 lg:px-24">
-            <p
-              className={`font-sans text-[10px] uppercase tracking-[0.3em] ${config.closing.eyebrowClass}`}
-            >
-              {config.closing.eyebrow}
-            </p>
-            <h2 className="mt-6 font-serif text-4xl font-light leading-[1.1] tracking-[0.02em] text-brand-text md:text-5xl lg:text-[3.5rem]">
-              {config.closing.title}
-            </h2>
-            <p className="mt-8 max-w-md font-sans text-base font-light leading-[1.8] tracking-[0.02em] text-brand-text/80">
-              {config.closing.description}
-            </p>
-            <div className="mt-10">
-              <Link
-                href={config.closing.link.href}
-                className={`inline-flex items-center gap-2 font-sans text-xs uppercase tracking-[0.2em] transition-colors ${config.closing.linkClass}`}
-              >
-                {config.closing.link.label}
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }

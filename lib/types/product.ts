@@ -28,6 +28,8 @@ export interface Product {
   price: number;
   compareAt?: number;
   badge?: string;
+  productType?: string;
+  benefitPills?: string[];
   rating: number;
   reviewCount: number;
   variants: ProductVariant[];
@@ -35,43 +37,6 @@ export interface Product {
   highlights: string[];
   availableForSale: boolean;
 }
-
-export const CATEGORIES: {
-  slug: Category;
-  label: string;
-  description: string;
-}[] = [
-  {
-    slug: "ghee",
-    label: "Ghee",
-    description: "Bilona-crafted A2 ghee from grass-fed Gir cows.",
-  },
-  {
-    slug: "atta",
-    label: "Atta & Grains",
-    description: "Stone-ground khapli and multigrain flours.",
-  },
-  {
-    slug: "oils",
-    label: "Cold-Pressed Oils",
-    description: "Single-filtered oils for everyday cooking.",
-  },
-  {
-    slug: "immunity",
-    label: "Immunity",
-    description: "Ayurvedic blends for daily wellness.",
-  },
-  {
-    slug: "jaggery",
-    label: "Natural Sweeteners",
-    description: "Sulfur-free jaggery and date palm sap.",
-  },
-  {
-    slug: "snacks",
-    label: "Breakfast & Snacks",
-    description: "Wholesome spreads and healthy snacking.",
-  },
-];
 
 export const CONCERNS: { slug: Concern; label: string; description: string }[] =
   [

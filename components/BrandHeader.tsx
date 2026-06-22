@@ -1,26 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import BrandLogo from "@/components/BrandLogo";
 import {
   SHOP_LINKS,
   CONCERN_LINKS,
+  ABOUT_LINKS,
   PHILOSOPHY_LINKS,
   CUSTOMER_LINKS,
 } from "@/lib/navigation";
+import {
+  prefetchPrimaryNav,
+  prepareInstantNavigation,
+} from "@/lib/navigation/instantNav";
 import { useCart } from "@/components/cart/CartProvider";
 import SearchBar from "@/components/shop/SearchBar";
 import { onLenisInit } from "@/lib/scroll/lenisReady";
 
 const NAV_LINKS = [
-  { href: "/philosophy", label: "Philosophy" },
+  { href: "/about", label: "About" },
   { href: "/shop", label: "Shop" },
   { href: "/shop/concern/immunity", label: "Wellness" },
   { href: "/contact", label: "Contact" },
-];
+] as const;
 
 function getScrollY() {
   if (typeof window === "undefined") return 0;
@@ -29,10 +34,28 @@ function getScrollY() {
 
 export default function BrandHeader() {
   const pathname = usePathname();
+  const router = useRouter();
   const isHome = pathname === "/";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { cart, openCart } = useCart();
+
+  const onNavigate = useCallback(() => {
+    prepareInstantNavigation();
+    setMobileOpen(false);
+  }, []);
+
+  const handleOpenCart = useCallback(() => {
+    openCart();
+  }, [openCart]);
+
+  const handleOpenMenu = useCallback(() => {
+    setMobileOpen(true);
+  }, []);
+
+  useEffect(() => {
+    prefetchPrimaryNav(router);
+  }, [router]);
 
   useEffect(() => {
     const update = () => setScrolled(getScrollY() > 24);
@@ -53,6 +76,15 @@ export default function BrandHeader() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [mobileOpen]);
+
   const showGlass = !isHome || scrolled;
   const cartCount = cart?.totalQuantity ?? 0;
 
@@ -60,41 +92,63 @@ export default function BrandHeader() {
     <>
       <header
         className={[
-          "fixed inset-x-0 top-0 z-50 overflow-visible border-b",
-          "transition-[background-color,border-color,box-shadow,backdrop-filter] duration-500 ease-out",
+          "pointer-events-auto fixed inset-x-0 top-0 z-[200] overflow-hidden border-b",
+          "pt-[env(safe-area-inset-top,0px)]",
+          "transition-[background-color,border-color,box-shadow,backdrop-filter] duration-200 ease-out",
           showGlass
             ? "nav-glass-hero bg-black/50 backdrop-blur-md backdrop-saturate-150"
             : "border-transparent bg-transparent",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5 md:h-[4.5rem] md:gap-4 md:px-12">
-          <div className="relative flex h-full min-w-[200px] shrink-0 items-center md:min-w-[220px]">
-            <BrandLogo
-              size="md"
-              priority
-              className="absolute left-0 top-1/2 -translate-y-1/2 brightness-0 invert"
-            />
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5 md:h-[4.5rem] md:px-12 lg:grid lg:grid-cols-3 lg:gap-4">
+          <div className="flex h-full min-w-0 items-center lg:justify-self-start">
+            <Link
+              href="/"
+              prefetch
+              scroll={false}
+              onPointerDown={onNavigate}
+              onClick={onNavigate}
+              aria-label="Har Ghar Shudhi home"
+              className="flex h-full items-center"
+            >
+              <BrandLogo
+                size="nav"
+                priority
+                href={null}
+                className="brightness-0 invert"
+              />
+            </Link>
           </div>
 
-          <nav className="hidden items-center gap-7 lg:flex">
+          <nav
+            aria-label="Main navigation"
+            className="hidden items-center justify-center gap-7 justify-self-center lg:flex"
+          >
             {NAV_LINKS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className="font-sans text-xs font-medium uppercase tracking-wider text-white/75 transition-colors hover:text-white"
+                prefetch
+                scroll={false}
+                onPointerDown={onNavigate}
+                onClick={onNavigate}
+                className="whitespace-nowrap font-sans text-xs font-medium uppercase tracking-wider text-white/75 transition-colors duration-150 hover:text-white"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
 
-          <div className="flex items-center gap-3 md:gap-4">
-            <SearchBar className="hidden md:block [&_input]:border-white/20 [&_input]:bg-white/10 [&_input]:text-white [&_input]:placeholder:text-white/40" />
+          <div className="flex items-center gap-3 md:gap-4 lg:justify-self-end">
+            <SearchBar
+              className="hidden md:block [&_input]:border-white/20 [&_input]:bg-white/10 [&_input]:text-white [&_input]:placeholder:text-white/40"
+              onNavigate={onNavigate}
+            />
             <button
               type="button"
               aria-label="Open cart"
-              onClick={openCart}
-              className="relative text-white/75 transition-colors hover:text-white"
+              onClick={handleOpenCart}
+              className="relative text-white/75 transition-colors duration-150 hover:text-white"
             >
               <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
               {cartCount > 0 && (
@@ -106,8 +160,8 @@ export default function BrandHeader() {
             <button
               type="button"
               aria-label="Menu"
-              className="text-white/75 transition-colors hover:text-white lg:hidden"
-              onClick={() => setMobileOpen(true)}
+              className="text-white/75 transition-colors duration-150 hover:text-white lg:hidden"
+              onClick={handleOpenMenu}
             >
               <Menu className="h-5 w-5" strokeWidth={1.5} />
             </button>
@@ -116,13 +170,13 @@ export default function BrandHeader() {
       </header>
 
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-[205] lg:hidden">
           <div
             className="absolute inset-0 bg-black/40"
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          <div className="absolute right-0 top-0 flex h-full w-[min(100%,320px)] flex-col border-l border-brand-border bg-brand-white">
+          <div className="absolute right-0 top-0 flex h-full w-[min(100%,320px)] flex-col border-l border-brand-border bg-brand-white pt-[env(safe-area-inset-top,0px)]">
             <div className="flex items-center justify-between border-b border-brand-border px-6 py-4">
               <span className="font-sans text-xs font-medium uppercase tracking-wider text-brand-green">
                 Menu
@@ -137,13 +191,35 @@ export default function BrandHeader() {
               </button>
             </div>
             <div className="border-b border-brand-border px-6 py-4">
-              <SearchBar />
+              <SearchBar onNavigate={onNavigate} />
             </div>
             <nav className="flex-1 overflow-y-auto px-6 py-6">
-              <MobileSection title="Shop" links={SHOP_LINKS} onNavigate={() => setMobileOpen(false)} />
-              <MobileSection title="Shop by Concern" links={CONCERN_LINKS} onNavigate={() => setMobileOpen(false)} />
-              <MobileSection title="Philosophy" links={PHILOSOPHY_LINKS} onNavigate={() => setMobileOpen(false)} />
-              <MobileSection title="Customer" links={CUSTOMER_LINKS} onNavigate={() => setMobileOpen(false)} />
+              <div className="mb-8 border-b border-brand-border pb-6">
+                <p className="mb-3 font-sans text-[10px] font-medium uppercase tracking-wider text-brand-green">
+                  Navigate
+                </p>
+                <ul className="space-y-3">
+                  {NAV_LINKS.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        prefetch
+                        scroll={false}
+                        onPointerDown={onNavigate}
+                        onClick={onNavigate}
+                        className="font-sans text-sm font-medium text-brand-text transition-colors duration-150 hover:text-brand-green"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <MobileSection title="About" links={ABOUT_LINKS} onNavigate={onNavigate} />
+              <MobileSection title="Shop" links={SHOP_LINKS} onNavigate={onNavigate} />
+              <MobileSection title="Shop by Concern" links={CONCERN_LINKS} onNavigate={onNavigate} />
+              <MobileSection title="Philosophy" links={PHILOSOPHY_LINKS} onNavigate={onNavigate} />
+              <MobileSection title="Customer" links={CUSTOMER_LINKS} onNavigate={onNavigate} />
             </nav>
           </div>
         </div>
@@ -171,8 +247,11 @@ function MobileSection({
           <li key={link.href}>
             <Link
               href={link.href}
+              prefetch
+              scroll={false}
+              onPointerDown={onNavigate}
               onClick={onNavigate}
-              className="font-sans text-sm text-brand-text transition-colors hover:text-brand-green"
+              className="font-sans text-sm text-brand-text transition-colors duration-150 hover:text-brand-green"
             >
               {link.label}
             </Link>

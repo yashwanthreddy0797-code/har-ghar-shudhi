@@ -1,11 +1,7 @@
 import { shopifyFetch } from "./client";
-import {
-  COLLECTION_HANDLE_MAP,
-  CONCERN_SEARCH_QUERIES,
-} from "./config";
+import { CONCERN_SEARCH_QUERIES } from "./config";
 import { mapShopifyProduct, type ShopifyProductNode } from "./mappers";
 import {
-  GET_COLLECTION_PRODUCTS_QUERY,
   GET_PRODUCT_BY_HANDLE_QUERY,
   GET_PRODUCTS_QUERY,
   SEARCH_PRODUCTS_QUERY,
@@ -35,20 +31,6 @@ export async function getProductByHandle(handle: string): Promise<Product | null
   }>(GET_PRODUCT_BY_HANDLE_QUERY, { handle });
 
   return data.product ? mapShopifyProduct(data.product) : null;
-}
-
-export async function getProductsByCollection(
-  collectionSlug: string
-): Promise<Product[]> {
-  const handle = COLLECTION_HANDLE_MAP[collectionSlug] ?? collectionSlug;
-
-  const data = await shopifyFetch<{
-    collection: {
-      products: { edges: { node: ShopifyProductNode }[] };
-    } | null;
-  }>(GET_COLLECTION_PRODUCTS_QUERY, { handle, first: PRODUCT_LIMIT });
-
-  return extractProducts(data.collection?.products.edges);
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
