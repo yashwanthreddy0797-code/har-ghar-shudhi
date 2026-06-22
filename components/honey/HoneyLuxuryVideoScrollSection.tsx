@@ -3,6 +3,9 @@ import { HONEY_LUXURY_VIDEO_SCROLL } from "@/lib/hero/honeyLuxuryVideoScrollConf
 
 export default function HoneyLuxuryVideoScrollSection() {
   return (
-    <CinematicFullscreenVideoScrollSection config={HONEY_LUXURY_VIDEO_SCROLL} />
+    <CinematicFullscreenVideoScrollSection
+      config={HONEY_LUXURY_VIDEO_SCROLL}
+      priority
+    />
   );
 }

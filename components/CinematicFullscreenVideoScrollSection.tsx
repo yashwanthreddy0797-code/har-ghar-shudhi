@@ -21,6 +21,7 @@ import {
   easeOutCubic,
   tickerDeltaSeconds,
 } from "@/lib/scroll/smoothProgress";
+import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 
 function waitForVideoReady(video: HTMLVideoElement, timeoutMs = 4500): Promise<boolean> {
   return Promise.race([
@@ -74,11 +75,14 @@ interface CinematicFullscreenVideoScrollSectionProps {
   config: CinematicVideoScrollConfig;
   /** Defer video decode + ScrollTrigger until the section is near the viewport. */
   deferUntilVisible?: boolean;
+  /** Hero / above-the-fold — preload immediately and wire scroll faster. */
+  priority?: boolean;
 }
 
 export default function CinematicFullscreenVideoScrollSection({
   config,
   deferUntilVisible = false,
+  priority = false,
 }: CinematicFullscreenVideoScrollSectionProps) {
   const rootRef = useRef<HTMLElement>(null);
   const sequenceRef = useRef<HTMLDivElement>(null);
@@ -112,10 +116,10 @@ export default function CinematicFullscreenVideoScrollSection({
   );
 
   useEffect(() => {
+    preloadVideoAsset(src);
     const video = videoRef.current;
-    if (!video) return;
-    beginVideoPreload(video);
-  }, [src]);
+    if (video) beginVideoPreload(video);
+  }, [src, priority]);
 
   useLayoutEffect(() => {
     let ctx: { revert: () => void } | undefined;
@@ -383,7 +387,7 @@ export default function CinematicFullscreenVideoScrollSection({
     };
 
     const queueSetup = () => {
-      if (!deferUntilVisible) {
+      if (priority || !deferUntilVisible) {
         runSetup();
         return;
       }
@@ -419,8 +423,8 @@ export default function CinematicFullscreenVideoScrollSection({
       queueSetup();
     }
 
-    const setupRetry = window.setTimeout(queueSetup, 600);
-    const setupRetryLate = window.setTimeout(queueSetup, 1500);
+    const setupRetry = window.setTimeout(queueSetup, priority ? 80 : 600);
+    const setupRetryLate = window.setTimeout(queueSetup, priority ? 300 : 1500);
 
     return () => {
       cancelled = true;
@@ -434,7 +438,7 @@ export default function CinematicFullscreenVideoScrollSection({
       detachSeek?.();
       ctx?.revert();
     };
-  }, [deferUntilVisible, scrollId, responsiveScrollVh]);
+  }, [deferUntilVisible, priority, scrollId, responsiveScrollVh]);
 
   return (
     <section

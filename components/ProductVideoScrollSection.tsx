@@ -16,6 +16,7 @@ import {
   preferNativeScroll,
   scrollProgressSmoothingForViewport,
 } from "@/lib/scroll/responsiveScroll";
+import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 
 type Theme = {
   section: string;
@@ -107,12 +108,15 @@ interface ProductVideoScrollSectionProps {
   config: ProductVideoScrollConfig;
   scrollId: string;
   theme?: "light" | "dark";
+  /** Preload video + wire scroll sooner — for above-the-fold sections. */
+  priority?: boolean;
 }
 
 export default function ProductVideoScrollSection({
   config,
   scrollId,
   theme = "light",
+  priority = false,
 }: ProductVideoScrollSectionProps) {
   const pickVideoSource = () => {
     if (typeof window === "undefined") return config.sources.hd;
@@ -150,6 +154,11 @@ export default function ProductVideoScrollSection({
   }, []);
 
   useLayoutEffect(() => {
+    if (!priority || !videoSrc) return;
+    preloadVideoAsset(videoSrc);
+  }, [priority, videoSrc]);
+
+  useLayoutEffect(() => {
     let ctx: { revert: () => void } | undefined;
     let cancelled = false;
     let setupAttempts = 0;
@@ -183,36 +192,61 @@ export default function ProductVideoScrollSection({
         const reducedMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)"
         ).matches;
+        const touchScroll = preferNativeScroll();
 
         video.pause();
         video.currentTime = 0;
 
-        // Keep only one seek in flight at a time. Continuously assigning
-        // currentTime every frame floods the decoder and freezes playback;
-        // instead we remember the latest target and seek again once the
-        // previous seek resolves.
         let targetTime = 0;
         let seeking = false;
-        const SEEK_THRESHOLD = 1 / 30;
+        let lastSeekAt = 0;
+        let seekUnlockTimer: number | undefined;
+        const SEEK_THRESHOLD = touchScroll ? 0.055 : 1 / 30;
+        const SEEK_MIN_INTERVAL_MS = touchScroll ? 28 : 0;
+
+        const releaseSeekLock = () => {
+          seeking = false;
+          if (seekUnlockTimer !== undefined) {
+            window.clearTimeout(seekUnlockTimer);
+            seekUnlockTimer = undefined;
+          }
+        };
 
         const seekToTarget = () => {
-          if (Math.abs(video.currentTime - targetTime) < SEEK_THRESHOLD) {
-            seeking = false;
+          if (!Number.isFinite(video.duration) || video.duration <= 0) {
+            releaseSeekLock();
             return;
           }
+
+          if (Math.abs(video.currentTime - targetTime) < SEEK_THRESHOLD) {
+            releaseSeekLock();
+            return;
+          }
+
+          const now = performance.now();
+          if (seeking && now - lastSeekAt < SEEK_MIN_INTERVAL_MS) return;
+
           seeking = true;
+          lastSeekAt = now;
+          if (seekUnlockTimer !== undefined) window.clearTimeout(seekUnlockTimer);
+          seekUnlockTimer = window.setTimeout(releaseSeekLock, 140);
+
           try {
             video.currentTime = targetTime;
           } catch {
-            seeking = false;
+            releaseSeekLock();
           }
         };
 
         const onSeeked = () => {
+          releaseSeekLock();
           seekToTarget();
         };
         video.addEventListener("seeked", onSeeked);
-        detachSeek = () => video.removeEventListener("seeked", onSeeked);
+        detachSeek = () => {
+          video.removeEventListener("seeked", onSeeked);
+          if (seekUnlockTimer !== undefined) window.clearTimeout(seekUnlockTimer);
+        };
 
         const progressSmoother = createScrollProgressSmoother(
           scrollProgressSmoothingForViewport()
@@ -359,8 +393,9 @@ export default function ProductVideoScrollSection({
           end: "bottom bottom",
           pin,
           pinSpacing: true,
-          pinType: preferNativeScroll() ? "transform" : "fixed",
-          anticipatePin: 1,
+          pinType: touchScroll ? "transform" : "fixed",
+          anticipatePin: touchScroll ? 0 : 1,
+          fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
         });
@@ -410,8 +445,8 @@ export default function ProductVideoScrollSection({
       runSetup();
     }
 
-    const setupRetry = window.setTimeout(runSetup, 600);
-    const setupRetryLate = window.setTimeout(runSetup, 1500);
+    const setupRetry = window.setTimeout(runSetup, priority ? 120 : 600);
+    const setupRetryLate = window.setTimeout(runSetup, priority ? 400 : 1500);
 
     return () => {
       cancelled = true;
@@ -423,7 +458,7 @@ export default function ProductVideoScrollSection({
       detachSeek?.();
       ctx?.revert();
     };
-  }, [videoSrc, scrollId, responsiveScrollVh]);
+  }, [videoSrc, scrollId, responsiveScrollVh, priority]);
 
   const {
     hero,
@@ -517,7 +552,7 @@ export default function ProductVideoScrollSection({
                 height={height}
                 muted
                 playsInline
-                preload={isMobile ? "metadata" : "auto"}
+                preload={priority || !isMobile ? "auto" : "metadata"}
                 aria-label={`${hero.eyebrow} reveal animation`}
               />
             </div>

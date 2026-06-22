@@ -5,8 +5,11 @@ import Image from "next/image";
 import { getGsap } from "@/lib/gsap/client";
 import { BRAND_LOGO_SRC } from "@/components/BrandLogo";
 import { INTRO_NAV_EVENT } from "@/lib/navigation/instantNav";
+import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 
 const HERO_POSTER_SRC = "/hero/moringa/sequence/frame-001.webp";
+const HONEY_VIDEO_SRC = "/hero/honey/video/luxury-honey-product-film.mp4";
+const MORINGA_VIDEO_SRC = "/hero/moringa/video/moringa-powder-reveal-1080p.mp4";
 const MIN_DISPLAY_MS = 1200;
 const MAX_INTRO_MS = 3800;
 const INTRO_COMPLETE_EVENT = "site-intro-complete";
@@ -56,6 +59,9 @@ export default function SiteIntroReveal() {
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const { gsap } = getGsap();
+
+    preloadVideoAsset(HONEY_VIDEO_SRC);
+    preloadVideoAsset(MORINGA_VIDEO_SRC);
 
     const finishIntroImmediately = () => {
       if (aborted || window.__siteIntroComplete) return;

@@ -1,4 +1,5 @@
 import SiteIntroReveal from "@/components/intro/SiteIntroReveal";
+import HomeTopSectionsWarmup from "@/components/home/HomeTopSectionsWarmup";
 import ProductVideoScrollSection from "@/components/ProductVideoScrollSection";
 import SmoothScroll from "@/components/SmoothScroll";
 import CertificatesProofSection from "@/components/CertificatesProofSection";
@@ -13,6 +14,7 @@ import { SHILAJIT_VIDEO_SCROLL } from "@/lib/hero/shilajitVideoScrollConfig";
 export default function Home() {
   return (
     <SmoothScroll>
+      <HomeTopSectionsWarmup />
       <SiteIntroReveal />
       <main className="relative min-h-screen bg-brand-white">
         <HoneyLuxuryVideoScrollSection />
@@ -20,6 +22,7 @@ export default function Home() {
           config={MORINGA_VIDEO_SCROLL}
           scrollId="moringa-video-scroll"
           theme="light"
+          priority
         />
         <ShilajitHeroZoomSection />
         <ProductVideoScrollSection

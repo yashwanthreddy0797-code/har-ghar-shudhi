@@ -81,7 +81,7 @@ export default function ScrollBootstrap() {
     if (isHomeRoute()) {
       introListener = onIntroComplete;
       window.addEventListener(INTRO_COMPLETE_EVENT, introListener, { once: true });
-      hardFallback = window.setTimeout(releaseScrollLock, 9000);
+      hardFallback = window.setTimeout(releaseScrollLock, 5000);
     } else {
       // Pages without SmoothScroll — release on the next frame.
       shopFallback = window.setTimeout(releaseScrollLock, 0);
