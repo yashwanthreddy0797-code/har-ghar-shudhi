@@ -8,7 +8,6 @@ export const PRIMARY_NAV_LINKS = [
   { href: "/about", label: "About" },
   { href: "/shop", label: "Shop" },
   { href: "/science-trust", label: "Science" },
-  { href: "/shop/concern/immunity", label: "Wellness" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -16,7 +15,6 @@ export const CONCERN_LINKS = [
   { href: "/products/diabetes-shudhi", label: "Diabetes Shudhi" },
   { href: "/shop/concern/diabetes", label: "Diabetes Care" },
   { href: "/shop/concern/gut-health", label: "Gut Health" },
-  { href: "/shop/concern/immunity", label: "Immunity" },
   { href: "/shop/concern/weight-loss", label: "Weight Loss" },
 ];
 

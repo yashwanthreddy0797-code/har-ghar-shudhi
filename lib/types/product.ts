@@ -51,11 +51,6 @@ export const CONCERNS: { slug: Concern; label: string; description: string }[] =
       description: "Fermented and fiber-rich foods for digestion.",
     },
     {
-      slug: "immunity",
-      label: "Immunity",
-      description: "Herbal blends to strengthen natural defences.",
-    },
-    {
       slug: "weight-loss",
       label: "Weight Loss",
       description: "Nutrient-dense, clean ingredients for mindful eating.",

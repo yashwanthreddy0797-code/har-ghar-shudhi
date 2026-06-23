@@ -43,7 +43,6 @@ export const PRIMARY_NAV_HREFS = [
   "/about",
   "/shop",
   "/science-trust",
-  "/shop/concern/immunity",
   "/contact",
 ] as const;
 
