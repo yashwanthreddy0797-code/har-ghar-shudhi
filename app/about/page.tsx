@@ -1,4 +1,3 @@
-import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import AboutHero from "@/components/about/AboutHero";
 import AboutSubNav from "@/components/about/AboutSubNav";
@@ -11,9 +10,9 @@ import AboutMarquee from "@/components/about/AboutMarquee";
 import BrandPillarsBar from "@/components/about/BrandPillarsBar";
 import PhilosophySection from "@/components/about/PhilosophySection";
 import VisionMissionSection from "@/components/about/VisionMissionSection";
+import WhoWeAreSection from "@/components/about/WhoWeAreSection";
 import {
   AFFORDABLE_WELLNESS,
-  BRAND_CLOSING,
   BRAND_PROMISE,
   DELIVERY,
   NATURE_TO_YOU,
@@ -21,7 +20,6 @@ import {
   TRANSPARENCY,
 } from "@/lib/brand/content";
 import {
-  ArrowRight,
   Clock,
   Headphones,
   Package,
@@ -235,40 +233,7 @@ export default function AboutPage() {
 
       <AboutMarquee />
 
-      {/* Closing */}
-      <section className="about-brand-closing px-6 py-20 md:px-12 md:py-28">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="font-shop text-[10px] font-semibold uppercase tracking-[0.28em] text-luxury-gold/80">
-            Who We Are
-          </p>
-          <h2 className="mt-5 font-display text-[clamp(2rem,4.5vw,3rem)] font-medium leading-tight text-white">
-            {BRAND_CLOSING.headline}
-          </h2>
-          <p className="mt-8 font-body text-base leading-[1.95] text-white/72 md:text-lg">
-            {BRAND_CLOSING.body}
-          </p>
-          <p className="mt-8 font-display text-xl italic text-luxury-gold md:text-2xl">
-            {BRAND_CLOSING.closing}
-          </p>
-          <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              href="/shop"
-              className="inline-flex items-center justify-center gap-2 bg-luxury-gold px-10 py-3.5 font-shop text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-green-dark transition-colors hover:bg-[#d4b872]"
-            >
-              Shop Wellness
-              <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
-            </Link>
-            <Link
-              href="/contact"
-              className="inline-flex items-center justify-center border border-white/30 px-10 py-3.5 font-shop text-[10px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:border-white/55"
-            >
-              Contact Us
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <BrandPillarsBar />
+      <WhoWeAreSection />
     </PageShell>
   );
 }

@@ -170,6 +170,13 @@ export const DELIVERY = {
   tagline: "Your health. Our responsibility.",
 } as const;
 
+export const WHO_WE_ARE_TRUST = [
+  { id: "natural", label: "100% Natural" },
+  { id: "ethical", label: "Clinically Ethical" },
+  { id: "trusted", label: "Trusted by Thousands" },
+  { id: "tradition", label: "Rooted in Tradition" },
+] as const;
+
 export const BRAND_CLOSING = {
   headline: "Your Trust. Our Greatest Strength.",
   body: "We are not just a brand, we are a promise of purity, transparency and care. Thank you for choosing natural. Thank you for choosing Har Ghar Shudhi.",
