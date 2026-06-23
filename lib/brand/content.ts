@@ -14,23 +14,32 @@ export const WHY_WE_EXIST = [
     id: "nature",
     title: "Reconnect with Nature",
     description: "To reconnect people with the healing power of nature.",
+    image: "/about/philosophy/nature.png",
   },
   {
     id: "pure",
     title: "Pure & Effective",
     description: "To create products that are pure, safe and effective.",
+    image: "/about/philosophy/pure-effective.png",
   },
   {
     id: "trust",
     title: "A Brand You Can Trust",
     description: "To build a brand you can trust, always.",
+    image: "/about/philosophy/trust.png",
   },
   {
     id: "planet",
     title: "Greener Planet",
     description: "To contribute to a greener and healthier planet.",
+    image: "/about/philosophy/greener-planet.png",
   },
 ] as const;
+
+export const PHILOSOPHY_INTRO =
+  "At Har Ghar Shudhi, our every step is guided by purpose — for you, for nature and for a better tomorrow.";
+
+export const PHILOSOPHY_FOOTER_TAGLINE = "Natural by Choice, Pure by Promise";
 
 export const BRAND_PROMISE = [
   {
@@ -166,6 +175,13 @@ export const BRAND_CLOSING = {
   body: "We are not just a brand, we are a promise of purity, transparency and care. Thank you for choosing natural. Thank you for choosing Har Ghar Shudhi.",
   closing: "Let's build a healthier tomorrow, together.",
 } as const;
+
+export const VISION_MISSION_VALUES = [
+  { id: "nature", label: "Rooted in Nature" },
+  { id: "quality", label: "Committed to Quality" },
+  { id: "care", label: "Cares for You & the Planet" },
+  { id: "families", label: "Trusted by Families" },
+] as const;
 
 export const BRAND_PILLARS = [
   { id: "natural", label: "Natural & Herbal" },

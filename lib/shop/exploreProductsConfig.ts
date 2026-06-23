@@ -33,6 +33,10 @@ const EXPLORE_IMAGE: Record<string, string> = {
   "pain-shield": "/shop/explore/pain-shield.png",
 };
 
+export function getShopProductImage(slug: string, fallback: string) {
+  return EXPLORE_IMAGE[slug] ?? fallback;
+}
+
 const EXPLORE_ORDER = [
   "ashwagandha-advance",
   "moringa-powder",
@@ -96,13 +100,16 @@ export const SHOP_EXPLORE_PRODUCTS: ShopExploreProduct[] = EXPLORE_ORDER.map(
   (slug) => {
     const product = HGS_CATALOG_PRODUCTS.find((p) => p.slug === slug)!;
     const src = EXPLORE_IMAGE[slug] ?? product.image;
+    const dimensions =
+      slug === "wildforest-multiflora-honey"
+        ? { width: 453, height: 707 }
+        : { width: 520, height: 780 };
     return {
       slug,
       name: product.name,
       src,
       alt: `Har Ghar Shudhi ${product.name}`,
-      width: 520,
-      height: 780,
+      ...dimensions,
       highlights: buildHighlights(slug, product.name),
     };
   }

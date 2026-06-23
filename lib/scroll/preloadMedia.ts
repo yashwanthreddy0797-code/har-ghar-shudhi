@@ -13,6 +13,7 @@ export function preloadVideoAsset(src: string) {
     link.rel = "preload";
     link.as = "video";
     link.href = src;
+    link.setAttribute("fetchpriority", "high");
     document.head.appendChild(link);
   }
 

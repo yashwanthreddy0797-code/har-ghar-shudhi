@@ -1,71 +1,219 @@
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import type { Product } from "@/lib/types/product";
-import ProductImageFromProduct from "./ProductImage";
+"use client";
 
-function getBenefitPills(product: Product): string[] {
-  return product.benefitPills?.length
-    ? product.benefitPills
-    : product.highlights.slice(0, 3);
+import { useMemo, useState, useTransition } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ChevronDown, Heart, Loader2, Star } from "lucide-react";
+import { useCart } from "@/components/cart/CartProvider";
+import { isPlaceholderImage } from "@/components/shop/ProductImage";
+import { getShopProductImage } from "@/lib/shop/exploreProductsConfig";
+import {
+  formatPrice,
+  type Product,
+  type ProductVariant,
+} from "@/lib/types/product";
+
+function getBenefitLine(product: Product): string {
+  if (product.benefitPills?.length) {
+    return product.benefitPills.join(" | ");
+  }
+  return product.tagline;
 }
 
-function getProductType(product: Product): string | undefined {
-  return product.productType;
+function badgeTone(badge?: string) {
+  if (!badge) return "green" as const;
+  const lower = badge.toLowerCase();
+  if (lower.includes("superfood") || lower.includes("trending")) {
+    return "orange" as const;
+  }
+  return "green" as const;
+}
+
+function StarRating() {
+  return (
+    <div className="flex items-center gap-0.5" aria-hidden>
+      {Array.from({ length: 5 }).map((_, i) => (
+        <Star
+          key={i}
+          className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
+          strokeWidth={0}
+        />
+      ))}
+    </div>
+  );
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const benefitPills = getBenefitPills(product);
-  const productType = getProductType(product);
+  const { addItem } = useCart();
+  const variants = product.variants.length
+    ? product.variants
+    : [
+        {
+          id: product.id,
+          label: "Default",
+          price: product.price,
+          availableForSale: product.availableForSale,
+        } satisfies ProductVariant,
+      ];
+
+  const [selectedVariantId, setSelectedVariantId] = useState(variants[0].id);
+  const [wishlisted, setWishlisted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
+  const selectedVariant = useMemo(
+    () => variants.find((v) => v.id === selectedVariantId) ?? variants[0],
+    [variants, selectedVariantId]
+  );
+
+  const imageSrc = getShopProductImage(product.slug, product.image);
+  const benefitLine = getBenefitLine(product);
+  const tone = badgeTone(product.badge);
+  const canPurchase = selectedVariant.availableForSale;
+
+  const handleAddToCart = () => {
+    if (!canPurchase) return;
+    setError(null);
+    startTransition(async () => {
+      try {
+        await addItem(selectedVariant.id, 1);
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Could not add to cart");
+      }
+    });
+  };
 
   return (
-    <article className="group flex flex-col">
-      <Link href={`/products/${product.slug}`} className="block">
-        <div className="relative overflow-hidden rounded-lg border border-brand-border bg-brand-white transition-[transform,box-shadow,border-color,background-color] duration-500 ease-out group-hover:-translate-y-1 group-hover:border-luxury-gold/35 group-hover:bg-[#fdfcf8] group-hover:shadow-[0_18px_40px_rgba(201,169,98,0.14),0_8px_24px_rgba(45,82,57,0.08)]">
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_80%_60%_at_50%_0%,rgba(201,169,98,0.14)_0%,transparent_72%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-          />
-          <div className="relative z-[2]">
-            <ProductImageFromProduct product={product} />
+    <article className="group flex h-full flex-col overflow-hidden rounded-lg border border-brand-border bg-brand-white shadow-[0_2px_12px_rgba(45,82,57,0.04)] transition-shadow duration-300 hover:shadow-[0_8px_28px_rgba(45,82,57,0.1)]">
+      <Link
+        href={`/products/${product.slug}`}
+        className="relative block overflow-hidden bg-gradient-to-br from-brand-cream via-brand-white to-brand-sand"
+      >
+        <div className="relative aspect-square">
+          {isPlaceholderImage(imageSrc) ? (
+            <div className="flex h-full items-center justify-center font-shop text-[10px] uppercase tracking-[0.2em] text-brand-muted/50">
+              Image soon
+            </div>
+          ) : (
+            <Image
+              src={imageSrc}
+              alt={product.name}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-contain p-4 transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          )}
+
+          <div className="absolute right-2 top-2 z-10 flex max-w-[calc(100%-1rem)] items-stretch overflow-hidden rounded-sm shadow-sm">
             {product.badge && (
-              <span className="absolute left-3 top-3 rounded bg-brand-green px-2.5 py-1 font-shop text-[10px] font-semibold uppercase tracking-[0.18em] text-white">
+              <span
+                className={[
+                  "flex max-w-[7.5rem] items-center truncate px-1.5 py-0.5 font-shop text-[7px] font-semibold uppercase tracking-[0.1em] text-white sm:max-w-[8.5rem] md:text-[8px]",
+                  tone === "orange" ? "bg-[#c45c26]" : "bg-brand-green-dark",
+                ].join(" ")}
+              >
                 {product.badge}
               </span>
             )}
+            <button
+              type="button"
+              aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              aria-pressed={wishlisted}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setWishlisted((v) => !v);
+              }}
+              className={[
+                "flex shrink-0 items-center justify-center border-l border-white/20 px-1.5 py-0.5 transition-colors",
+                tone === "orange" ? "bg-[#c45c26]" : "bg-brand-green-dark",
+                wishlisted ? "text-red-200" : "text-white/90 hover:text-white",
+              ].join(" ")}
+            >
+              <Heart
+                className={`h-2.5 w-2.5 ${wishlisted ? "fill-current" : ""}`}
+                strokeWidth={1.75}
+              />
+            </button>
           </div>
         </div>
       </Link>
 
-      <div className="mt-4 flex flex-1 flex-col">
-        <Link href={`/products/${product.slug}`}>
-          <h3 className="font-display text-[15px] font-medium uppercase leading-snug tracking-[0.04em] text-brand-text transition-colors duration-300 group-hover:text-brand-green md:text-base">
+      <div className="flex flex-1 flex-col p-3.5 md:p-4">
+        <div className="flex items-start justify-between gap-3">
+          <Link
+            href={`/products/${product.slug}`}
+            className="min-w-0 flex-1 font-display text-[13px] font-semibold uppercase leading-snug tracking-[0.03em] text-brand-text transition-colors hover:text-brand-green md:text-sm"
+          >
             {product.name}
-          </h3>
-        </Link>
+          </Link>
+          <p className="shrink-0 font-shop text-sm font-bold tabular-nums text-brand-text md:text-base">
+            {formatPrice(selectedVariant.price)}
+          </p>
+        </div>
 
-        <p className="mt-1.5 font-body text-xs italic leading-relaxed text-brand-muted md:text-[13px]">
-          {product.tagline}
-        </p>
-
-        {benefitPills.length > 0 && (
-          <p className="mt-2.5 font-shop text-[11px] tracking-[0.06em] text-brand-green/90 md:text-xs">
-            {benefitPills.join(" • ")}
+        {benefitLine && (
+          <p className="mt-1.5 line-clamp-2 font-shop text-[11px] leading-snug text-brand-muted md:text-xs">
+            {benefitLine}
           </p>
         )}
 
-        {productType && (
-          <p className="mt-2 font-shop text-[10px] uppercase tracking-[0.18em] text-brand-muted/80">
-            {productType}
-          </p>
-        )}
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-2 gap-y-1">
+          <StarRating />
+          <span className="font-shop text-[11px] font-semibold text-brand-text md:text-xs">
+            {product.rating.toFixed(2)}
+          </span>
+          <span className="font-shop text-[11px] text-brand-muted md:text-xs">
+            | {product.reviewCount} Review{product.reviewCount === 1 ? "" : "s"}
+          </span>
+        </div>
 
-        <Link
-          href={`/products/${product.slug}`}
-          className="mt-4 inline-flex translate-y-0 items-center gap-2 self-start font-shop text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-green opacity-100 transition-[opacity,transform,color] duration-500 hover:text-brand-green-dark md:translate-y-1 md:opacity-0 md:group-hover:translate-y-0 md:group-hover:opacity-100"
+        <div className="mt-3">
+          <div className="relative">
+            <select
+              value={selectedVariantId}
+              onChange={(e) => setSelectedVariantId(e.target.value)}
+              aria-label={`Select size for ${product.name}`}
+              className="w-full appearance-none rounded-md border border-brand-border bg-brand-white py-2.5 pl-3 pr-9 font-shop text-xs text-brand-text transition-colors focus:border-brand-green focus:outline-none focus:ring-1 focus:ring-brand-green/30 md:text-[13px]"
+            >
+              {variants.map((variant) => (
+                <option key={variant.id} value={variant.id}>
+                  {variant.label}
+                  {!variant.availableForSale ? " — Sold out" : ""}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-muted"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+          </div>
+        </div>
+
+        <div className="mt-3 flex-1" />
+
+        <button
+          type="button"
+          disabled={isPending || !canPurchase}
+          onClick={handleAddToCart}
+          className="mt-1 inline-flex w-full items-center justify-center gap-2 rounded-md bg-brand-green-dark py-2.5 font-shop text-[11px] font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-brand-green disabled:cursor-not-allowed disabled:bg-brand-border disabled:text-brand-muted md:py-3 md:text-xs"
         >
-          Explore Product
-          <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
-        </Link>
+          {isPending ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Adding…
+            </>
+          ) : canPurchase ? (
+            "Add to Cart"
+          ) : (
+            "Sold Out"
+          )}
+        </button>
+
+        {error && (
+          <p className="mt-2 text-center font-shop text-[10px] text-red-500">{error}</p>
+        )}
       </div>
     </article>
   );

@@ -19,8 +19,10 @@ export const SPIRULINA_LUXURY_VIDEO_SCROLL: CinematicVideoScrollConfig = {
     link: { label: "Shop Spirulina Powder →", href: "/products/spirulina-powder" },
   },
   videoLogoOverlay: {
-    className: "bottom-10 right-12 md:bottom-12 md:right-[3.75rem]",
+    className: "bottom-6 right-12 md:bottom-8 md:right-[3.75rem]",
     logoClassName:
       "!h-11 !w-auto !min-w-0 !max-w-[118px] md:!h-12 md:!max-w-[128px]",
+    backdropClassName:
+      "rounded-sm bg-[#041210]/92 px-6 py-2 backdrop-blur-md md:px-8",
   },
 };

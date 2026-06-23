@@ -4,7 +4,7 @@ import ShopShowcase from "@/components/shop/ShopShowcase";
 import ShopExploreSection from "@/components/shop/ShopExploreSection";
 import ProductGrid from "@/components/shop/ProductGrid";
 import BrandPillarsBar from "@/components/about/BrandPillarsBar";
-import { getAllCatalogProducts } from "@/lib/catalog";
+import { getStoreProducts } from "@/lib/commerce/products";
 import { BRAND_INTRO, BRAND_TAGLINE } from "@/lib/brand/content";
 
 export const revalidate = 3600;
@@ -15,11 +15,11 @@ export const metadata = {
     "Browse Pure Shilajit, Ashwagandha, superfoods, honey, and Ayurvedic wellness from Har Ghar Shudhi.",
 };
 
-export default function ShopPage() {
-  const products = getAllCatalogProducts();
+export default async function ShopPage() {
+  const products = await getStoreProducts();
 
   return (
-    <PageShell proofSectionClassName="-mt-20 !pt-6 md:-mt-28 md:!pt-8">
+    <PageShell proofSectionClassName="relative z-20 !overflow-visible border-t border-brand-border/60 !pt-14 md:!pt-16">
       <CategoryHero
         title="All Products"
         description={`${BRAND_TAGLINE} — ${BRAND_INTRO}`}

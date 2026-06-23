@@ -5,11 +5,6 @@ import {
 } from "@/lib/catalog";
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { getShopifyProductHandle, isShopifyConfigured } from "@/lib/shopify/config";
-import {
-  getAllProducts,
-  getProductByHandle,
-  getProductHandles,
-} from "@/lib/shopify/products";
 import type { Product } from "@/lib/types/product";
 
 function catalogAsProduct(catalog: CatalogProduct): Product {
@@ -36,8 +31,41 @@ export function mergeShopifyIntoCatalog(
   };
 }
 
+async function loadShopifyProducts() {
+  const { getAllProducts } = await import("@/lib/shopify/products");
+  return getAllProducts();
+}
+
+async function loadShopifyProductByHandle(handle: string) {
+  const { getProductByHandle } = await import("@/lib/shopify/products");
+  return getProductByHandle(handle);
+}
+
 export async function getStoreProducts(): Promise<Product[]> {
-  return getAllCatalogProducts().map(catalogAsProduct);
+  const catalogs = getAllCatalogProducts();
+
+  if (!isShopifyConfigured()) {
+    return catalogs.map(catalogAsProduct);
+  }
+
+  try {
+    const shopifyProducts = await loadShopifyProducts();
+    const byHandle = new Map(
+      shopifyProducts.map((product) => [product.slug, product])
+    );
+
+    return catalogs.map((catalog) => {
+      const handle = getShopifyProductHandle(catalog.slug);
+      const shopify = byHandle.get(handle);
+      if (shopify) {
+        return catalogAsProduct(mergeShopifyIntoCatalog(catalog, shopify));
+      }
+      return catalogAsProduct(catalog);
+    });
+  } catch (error) {
+    console.error("[commerce] Failed to merge Shopify catalog:", error);
+    return catalogs.map(catalogAsProduct);
+  }
 }
 
 export async function getStoreProductBySlug(
@@ -45,6 +73,21 @@ export async function getStoreProductBySlug(
 ): Promise<{ product: Product | CatalogProduct; isRichCatalog: boolean } | null> {
   const catalog = getCatalogProductBySlug(slug);
   if (catalog) {
+    if (isShopifyConfigured()) {
+      try {
+        const shopify = await loadShopifyProductByHandle(
+          getShopifyProductHandle(slug)
+        );
+        if (shopify) {
+          return {
+            product: mergeShopifyIntoCatalog(catalog, shopify),
+            isRichCatalog: true,
+          };
+        }
+      } catch (error) {
+        console.error(`[commerce] Shopify product fetch failed for ${slug}:`, error);
+      }
+    }
     return { product: catalog, isRichCatalog: true };
   }
 
@@ -53,7 +96,7 @@ export async function getStoreProductBySlug(
   }
 
   try {
-    const shopify = await getProductByHandle(getShopifyProductHandle(slug));
+    const shopify = await loadShopifyProductByHandle(getShopifyProductHandle(slug));
     if (shopify) {
       return { product: shopify, isRichCatalog: false };
     }

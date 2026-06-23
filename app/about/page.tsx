@@ -1,32 +1,31 @@
 import Link from "next/link";
 import PageShell from "@/components/PageShell";
 import AboutHero from "@/components/about/AboutHero";
+import AboutSubNav from "@/components/about/AboutSubNav";
+import AboutQuote from "@/components/about/AboutQuote";
 import AboutSection from "@/components/about/AboutSection";
-import AboutSectionNav from "@/components/about/AboutSectionNav";
+import AboutEditorialSplit from "@/components/about/AboutEditorialSplit";
+import AboutCertifications from "@/components/about/AboutCertifications";
+import AboutBrandCreative from "@/components/about/AboutBrandCreative";
 import AboutMarquee from "@/components/about/AboutMarquee";
 import BrandPillarsBar from "@/components/about/BrandPillarsBar";
+import PhilosophySection from "@/components/about/PhilosophySection";
+import VisionMissionSection from "@/components/about/VisionMissionSection";
 import {
   AFFORDABLE_WELLNESS,
   BRAND_CLOSING,
-  BRAND_MISSION,
   BRAND_PROMISE,
-  BRAND_VISION,
   DELIVERY,
   NATURE_TO_YOU,
   QUALITY,
   TRANSPARENCY,
-  WHY_WE_EXIST,
 } from "@/lib/brand/content";
 import {
   ArrowRight,
   Clock,
-  Globe,
   Headphones,
-  Leaf,
   Package,
   QrCode,
-  Shield,
-  Users,
 } from "lucide-react";
 
 export const metadata = {
@@ -35,7 +34,6 @@ export const metadata = {
     "Rooted in nature, driven by purpose. Discover our vision, mission, and promise of pure Ayurvedic wellness for every home.",
 };
 
-const WHY_ICONS = [Leaf, Shield, Users, Globe];
 const DELIVERY_ICONS = [Package, Clock, Headphones];
 
 export default function AboutPage() {
@@ -43,65 +41,16 @@ export default function AboutPage() {
     <PageShell showPromo={false} proofSectionClassName="!pt-10">
       <AboutHero />
       <BrandPillarsBar variant="dark" />
-      <AboutSectionNav />
+      <AboutSubNav />
+
+      {/* Kama-style editorial quote + story */}
+      <AboutQuote />
 
       {/* Vision & Mission */}
-      <AboutSection
-        id="vision-mission"
-        eyebrow="Purpose"
-        title="Vision & Mission"
-        variant="white"
-      >
-        <div className="grid gap-6 md:grid-cols-2 md:gap-8">
-          <article className="about-brand-card group">
-            <p className="font-shop text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-green">
-              Our Vision
-            </p>
-            <p className="mt-5 font-display text-2xl font-medium leading-snug text-brand-text md:text-[1.75rem]">
-              {BRAND_VISION}
-            </p>
-          </article>
-          <article className="about-brand-card about-brand-card--accent group">
-            <p className="font-shop text-[10px] font-semibold uppercase tracking-[0.22em] text-luxury-gold-dim">
-              Our Mission
-            </p>
-            <p className="mt-5 font-body text-base leading-[1.85] text-brand-muted md:text-lg">
-              {BRAND_MISSION}
-            </p>
-          </article>
-        </div>
-      </AboutSection>
+      <VisionMissionSection />
 
-      {/* Why We Exist */}
-      <AboutSection
-        id="why-we-exist"
-        eyebrow="Why We Exist"
-        title="Purpose in every choice we make"
-        variant="cream"
-        align="center"
-      >
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {WHY_WE_EXIST.map((item, index) => {
-            const Icon = WHY_ICONS[index];
-            return (
-              <li
-                key={item.id}
-                className="about-brand-card flex flex-col items-center text-center"
-              >
-                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-luxury-gold/25 bg-white shadow-[0_8px_24px_rgba(45,82,57,0.06)]">
-                  <Icon className="h-5 w-5 text-brand-green" strokeWidth={1.5} />
-                </span>
-                <h3 className="mt-5 font-display text-lg font-medium text-brand-text">
-                  {item.title}
-                </h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-brand-muted">
-                  {item.description}
-                </p>
-              </li>
-            );
-          })}
-        </ul>
-      </AboutSection>
+      {/* Philosophy — Why We Exist */}
+      <PhilosophySection />
 
       {/* Promise */}
       <AboutSection
@@ -111,16 +60,16 @@ export default function AboutPage() {
         variant="forest"
         align="center"
       >
-        <ul className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <ul className="grid gap-px overflow-hidden rounded-sm border border-white/10 bg-white/10 md:grid-cols-2 lg:grid-cols-3">
           {BRAND_PROMISE.map((item) => (
             <li
               key={item.title}
-              className="rounded-xl border border-white/10 bg-white/[0.04] p-7 backdrop-blur-sm transition-colors hover:border-luxury-gold/30 hover:bg-white/[0.07]"
+              className="bg-brand-green-dark/40 px-8 py-10 text-center backdrop-blur-[2px] transition-colors hover:bg-white/[0.06] md:px-10 md:py-12"
             >
               <h3 className="font-display text-lg font-medium text-luxury-gold">
                 {item.title}
               </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-white/70">
+              <p className="mx-auto mt-3 max-w-xs font-body text-sm leading-relaxed text-white/68">
                 {item.description}
               </p>
             </li>
@@ -128,28 +77,33 @@ export default function AboutPage() {
         </ul>
       </AboutSection>
 
-      {/* Journey */}
-      <AboutSection
+      {/* Journey — editorial split like FE Origin */}
+      <AboutEditorialSplit
         id="journey"
         eyebrow="Our Process"
         title={NATURE_TO_YOU.headline}
         description={NATURE_TO_YOU.subline}
-        variant="white"
-        align="center"
+        imageSrc="/hero/moringa/sequence/frame-001.webp"
+        imageAlt="Natural herbs and botanical ingredients"
+        imagePosition="left"
+        variant="light"
       >
-        <ol className="about-brand-journey">
+        <ol className="space-y-5">
           {NATURE_TO_YOU.steps.map((step, index) => (
-            <li key={step} className="about-brand-journey-step">
-              <span className="about-brand-journey-num">
+            <li
+              key={step}
+              className="flex items-start gap-4 border-b border-brand-border/60 pb-5 last:border-0 last:pb-0"
+            >
+              <span className="mt-0.5 font-shop text-[11px] font-semibold tabular-nums tracking-[0.12em] text-luxury-gold-dim">
                 {String(index + 1).padStart(2, "0")}
               </span>
-              <span className="font-display text-sm font-medium leading-snug text-brand-text md:text-base">
+              <span className="font-display text-base font-medium leading-snug text-brand-text">
                 {step}
               </span>
             </li>
           ))}
         </ol>
-      </AboutSection>
+      </AboutEditorialSplit>
 
       {/* Transparency */}
       <AboutSection
@@ -159,26 +113,23 @@ export default function AboutPage() {
         description={TRANSPARENCY.subline}
         variant="deep"
       >
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-start">
-          <div className="rounded-xl border border-luxury-gold/25 bg-luxury-gold/[0.08] p-7 md:p-8">
-            <QrCode
-              className="h-6 w-6 text-luxury-gold"
-              strokeWidth={1.5}
-            />
-            <p className="mt-5 font-body text-base leading-relaxed text-white/85">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-start">
+          <div className="about-luxury-glass rounded-sm border border-luxury-gold/20 p-8 md:p-10">
+            <QrCode className="h-7 w-7 text-luxury-gold" strokeWidth={1.25} />
+            <p className="mt-6 font-body text-base leading-[1.9] text-white/85">
               {TRANSPARENCY.cta}
             </p>
           </div>
-          <ul className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid gap-px overflow-hidden rounded-sm border border-white/10 bg-white/10 sm:grid-cols-2">
             {TRANSPARENCY.points.map((point) => (
               <li
                 key={point.title}
-                className="rounded-xl border border-white/10 bg-white/[0.04] p-6"
+                className="bg-white/[0.04] p-7 md:p-8"
               >
                 <h3 className="font-display text-base font-medium text-luxury-gold">
                   {point.title}
                 </h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-white/68">
+                <p className="mt-3 font-body text-sm leading-relaxed text-white/65">
                   {point.description}
                 </p>
               </li>
@@ -195,29 +146,24 @@ export default function AboutPage() {
         description={QUALITY.subline}
         variant="cream"
       >
-        <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {QUALITY.pillars.map((pillar) => (
-            <li key={pillar.title} className="about-brand-card">
+            <li
+              key={pillar.title}
+              className="about-luxury-card border-t-2 border-brand-green/30 bg-brand-white"
+            >
               <h3 className="font-display text-base font-medium text-brand-text">
                 {pillar.title}
               </h3>
-              <p className="mt-2 font-body text-sm leading-relaxed text-brand-muted">
+              <p className="mt-3 font-body text-sm leading-relaxed text-brand-muted">
                 {pillar.description}
               </p>
             </li>
           ))}
         </ul>
-        <ul className="mt-10 flex flex-wrap justify-center gap-2.5">
-          {QUALITY.exclusions.map((label) => (
-            <li
-              key={label}
-              className="rounded-full border border-brand-green/20 bg-brand-green-light px-4 py-2 font-shop text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-green"
-            >
-              {label}
-            </li>
-          ))}
-        </ul>
       </AboutSection>
+
+      <AboutCertifications />
 
       {/* Fair Value */}
       <AboutSection
@@ -225,87 +171,96 @@ export default function AboutPage() {
         eyebrow="Fair Value"
         title={AFFORDABLE_WELLNESS.headline}
         description={AFFORDABLE_WELLNESS.subline}
-        variant="forest"
+        variant="white"
         align="center"
       >
-        <ul className="grid gap-5 md:grid-cols-3">
+        <ul className="grid gap-6 md:grid-cols-3">
           {AFFORDABLE_WELLNESS.points.map((point) => (
             <li
               key={point.title}
-              className="rounded-xl border border-white/10 bg-white/[0.04] p-7 text-center"
+              className="about-luxury-card bg-brand-cream/50 text-center"
             >
-              <h3 className="font-display text-lg font-medium text-luxury-gold">
+              <h3 className="font-display text-lg font-medium text-brand-text">
                 {point.title}
               </h3>
-              <p className="mt-3 font-body text-sm leading-relaxed text-white/68">
+              <p className="mt-4 font-body text-sm leading-relaxed text-brand-muted">
                 {point.description}
               </p>
             </li>
           ))}
         </ul>
-        <p className="mx-auto mt-12 max-w-2xl text-center font-display text-xl italic text-white/90 md:text-2xl">
+        <p className="mx-auto mt-14 max-w-2xl text-center font-display text-xl italic leading-snug text-brand-green md:text-2xl">
           {AFFORDABLE_WELLNESS.closing}
         </p>
       </AboutSection>
 
-      {/* Delivery */}
-      <AboutSection
+      <AboutBrandCreative />
+
+      {/* Delivery — editorial split */}
+      <AboutEditorialSplit
         id="delivery"
         eyebrow="Fulfillment"
         title={DELIVERY.headline}
         description={DELIVERY.subline}
-        variant="white"
-        align="center"
+        imageSrc="/footer/landscape-illustration.jpg"
+        imageAlt="Natural landscape"
+        imagePosition="right"
+        variant="dark"
       >
-        <ul className="grid gap-6 md:grid-cols-3">
+        <ul className="space-y-8">
           {DELIVERY.services.map((service, index) => {
             const Icon = DELIVERY_ICONS[index];
             return (
-              <li
-                key={service.title}
-                className="about-brand-card flex flex-col items-center text-center"
-              >
-                <Icon className="h-5 w-5 text-brand-green" strokeWidth={1.5} />
-                <h3 className="mt-4 font-display text-base font-medium text-brand-text">
-                  {service.title}
-                </h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-brand-muted">
-                  {service.description}
-                </p>
+              <li key={service.title} className="flex gap-4">
+                <Icon
+                  className="mt-0.5 h-5 w-5 shrink-0 text-luxury-gold"
+                  strokeWidth={1.25}
+                />
+                <div>
+                  <h3 className="font-display text-base font-medium text-white">
+                    {service.title}
+                  </h3>
+                  <p className="mt-2 font-body text-sm leading-relaxed text-white/65">
+                    {service.description}
+                  </p>
+                </div>
               </li>
             );
           })}
         </ul>
-        <p className="mt-10 font-shop text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-green">
+        <p className="mt-10 font-shop text-[10px] font-semibold uppercase tracking-[0.22em] text-luxury-gold">
           {DELIVERY.tagline}
         </p>
-      </AboutSection>
+      </AboutEditorialSplit>
 
       <AboutMarquee />
 
       {/* Closing */}
       <section className="about-brand-closing px-6 py-20 md:px-12 md:py-28">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="font-display text-[clamp(2rem,4.5vw,3rem)] font-medium leading-tight text-white">
+          <p className="font-shop text-[10px] font-semibold uppercase tracking-[0.28em] text-luxury-gold/80">
+            Who We Are
+          </p>
+          <h2 className="mt-5 font-display text-[clamp(2rem,4.5vw,3rem)] font-medium leading-tight text-white">
             {BRAND_CLOSING.headline}
           </h2>
-          <p className="mt-6 font-body text-base leading-[1.9] text-white/72 md:text-lg">
+          <p className="mt-8 font-body text-base leading-[1.95] text-white/72 md:text-lg">
             {BRAND_CLOSING.body}
           </p>
           <p className="mt-8 font-display text-xl italic text-luxury-gold md:text-2xl">
             {BRAND_CLOSING.closing}
           </p>
-          <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <div className="mt-14 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               href="/shop"
-              className="inline-flex items-center justify-center gap-2 rounded-md bg-luxury-gold px-8 py-3.5 font-shop text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-green-dark transition-colors hover:bg-[#d4b872]"
+              className="inline-flex items-center justify-center gap-2 bg-luxury-gold px-10 py-3.5 font-shop text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-green-dark transition-colors hover:bg-[#d4b872]"
             >
               Shop Wellness
               <ArrowRight className="h-3.5 w-3.5" strokeWidth={1.5} />
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center rounded-md border border-white/25 px-8 py-3.5 font-shop text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:border-white/50"
+              className="inline-flex items-center justify-center border border-white/30 px-10 py-3.5 font-shop text-[10px] font-semibold uppercase tracking-[0.2em] text-white transition-colors hover:border-white/55"
             >
               Contact Us
             </Link>

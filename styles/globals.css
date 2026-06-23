@@ -1316,3 +1316,457 @@ html.site-intro-active body {
     animation: none;
   }
 }
+
+/* Vision & Mission — premium purpose section */
+.vision-mission-section {
+  background-color: #f9f8f6;
+  background-image:
+    radial-gradient(
+      ellipse 120% 80% at 50% -20%,
+      rgba(232, 242, 235, 0.45),
+      transparent 55%
+    ),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+.vision-mission-card {
+  position: relative;
+  display: flex;
+  min-height: 17.5rem;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(229, 231, 227, 0.9);
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.03),
+    0 12px 40px rgba(26, 26, 26, 0.05);
+  transition:
+    box-shadow 0.35s ease,
+    transform 0.35s ease;
+}
+
+.vision-mission-card:hover {
+  box-shadow:
+    0 2px 4px rgba(26, 26, 26, 0.04),
+    0 18px 48px rgba(26, 26, 26, 0.07);
+  transform: translateY(-2px);
+}
+
+.vision-mission-card--vision {
+  background: #ffffff;
+}
+
+.vision-mission-card--mission {
+  background: #f0ebe3;
+}
+
+.vision-mission-card__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  max-width: 62%;
+}
+
+@media (min-width: 768px) {
+  .vision-mission-card {
+    min-height: 19.5rem;
+  }
+
+  .vision-mission-card__content {
+    padding: 2.5rem 2rem 2.5rem 2.25rem;
+    max-width: 58%;
+  }
+}
+
+.vision-mission-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+}
+
+.vision-mission-card__icon--vision {
+  background: #e8f0e4;
+  color: #4a5c42;
+}
+
+.vision-mission-card__icon--mission {
+  background: #e8dfd2;
+  color: #8a6f4f;
+}
+
+.vision-mission-card__label {
+  margin-top: 1.25rem;
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.vision-mission-card__label--vision {
+  color: #6b705c;
+}
+
+.vision-mission-card__label--mission {
+  color: #a98467;
+}
+
+.vision-mission-card__headline {
+  margin-top: 1rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1.35rem, 2.4vw, 1.85rem);
+  font-weight: 500;
+  line-height: 1.28;
+  color: #1a1a1a;
+}
+
+.vision-mission-card__body {
+  margin-top: 1rem;
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.75;
+  color: #4a4a4a;
+}
+
+.vision-mission-card__media {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 46%;
+  z-index: 1;
+}
+
+.vision-mission-card__media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.vision-mission-card--vision .vision-mission-card__media::before {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0.92) 18%,
+    rgba(255, 255, 255, 0.35) 55%,
+    transparent 100%
+  );
+}
+
+.vision-mission-card--mission .vision-mission-card__media::before {
+  background: linear-gradient(
+    90deg,
+    #f0ebe3 0%,
+    rgba(240, 235, 227, 0.92) 18%,
+    rgba(240, 235, 227, 0.35) 55%,
+    transparent 100%
+  );
+}
+
+.vision-mission-values {
+  border-radius: 1rem;
+  border: 1px solid rgba(229, 231, 227, 0.85);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+}
+
+.vision-mission-values__list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+@media (min-width: 640px) {
+  .vision-mission-values__list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .vision-mission-values__list {
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+}
+
+.vision-mission-values__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.1rem 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .vision-mission-values__item {
+    flex: 1;
+    justify-content: center;
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.vision-mission-values__divider {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 1px;
+  height: 2.25rem;
+  transform: translateY(-50%);
+  background: rgba(107, 112, 92, 0.22);
+}
+
+.vision-mission-values__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: #e8f0e4;
+  color: #5a6b52;
+}
+
+.vision-mission-values__label {
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  line-height: 1.45;
+  text-transform: uppercase;
+  color: #3d4038;
+}
+
+@media (min-width: 768px) {
+  .vision-mission-values__label {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+}
+
+@media (max-width: 639px) {
+  .vision-mission-card {
+    min-height: 15.5rem;
+  }
+
+  .vision-mission-card__content {
+    max-width: 58%;
+    padding: 1.5rem 1rem;
+  }
+
+  .vision-mission-card__headline {
+    font-size: 1.15rem;
+    line-height: 1.32;
+  }
+
+  .vision-mission-card__body {
+    font-size: 0.82rem;
+    line-height: 1.65;
+  }
+
+  .vision-mission-values__item {
+    border-bottom: 1px solid rgba(229, 231, 227, 0.85);
+  }
+
+  .vision-mission-values__item:last-child {
+    border-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vision-mission-card {
+    transition: none;
+  }
+
+  .vision-mission-card:hover {
+    transform: none;
+  }
+}
+
+/* Our Philosophy — premium card grid */
+.philosophy-section {
+  position: relative;
+  overflow: hidden;
+  background-color: #f9f8f3;
+  background-image:
+    radial-gradient(
+      ellipse 90% 60% at 50% 0%,
+      rgba(232, 242, 235, 0.35),
+      transparent 60%
+    ),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+.philosophy-section__leaf {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.philosophy-section__leaf--tl {
+  top: 1.5rem;
+  left: -0.5rem;
+  width: 7rem;
+  height: 7rem;
+}
+
+.philosophy-section__leaf--bl {
+  bottom: 2rem;
+  left: 0.5rem;
+  width: 8.5rem;
+  height: 8.5rem;
+}
+
+.philosophy-section__seal {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 4.5rem;
+  height: 4.5rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media (min-width: 768px) {
+  .philosophy-section__seal {
+    top: 2rem;
+    right: 2.5rem;
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+
+.philosophy-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .philosophy-cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.25rem 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .philosophy-cards {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.philosophy-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.philosophy-card__media-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 0.75rem;
+}
+
+.philosophy-card__icon {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  border: 1px solid rgba(229, 231, 227, 0.95);
+  background: #ffffff;
+  color: #3d5c44;
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.04),
+    0 6px 16px rgba(26, 26, 26, 0.06);
+}
+
+.philosophy-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(229, 231, 227, 0.9);
+  background: #ffffff;
+  box-shadow:
+    0 1px 2px rgba(26, 26, 26, 0.03),
+    0 10px 28px rgba(26, 26, 26, 0.05);
+}
+
+.philosophy-card__media img {
+  transform: scale(1.02);
+}
+
+.philosophy-card__title {
+  margin-top: 1.25rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1rem, 1.8vw, 1.15rem);
+  font-weight: 500;
+  line-height: 1.3;
+  color: #1a1a1a;
+}
+
+.philosophy-card__description {
+  margin-top: 0.65rem;
+  max-width: 16rem;
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: #6b7280;
+}
+
+@media (min-width: 768px) {
+  .philosophy-card__description {
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+}
+
+.philosophy-section__footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 3rem;
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .philosophy-section__footer {
+    margin-top: 3.5rem;
+  }
+}
+
+.philosophy-section__tagline {
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #5a7a62;
+}
+
+@media (min-width: 768px) {
+  .philosophy-section__tagline {
+    font-size: 10px;
+    letter-spacing: 0.24em;
+  }
+}

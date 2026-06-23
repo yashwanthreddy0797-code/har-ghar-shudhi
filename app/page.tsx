@@ -23,6 +23,7 @@ export default function Home() {
           scrollId="moringa-video-scroll"
           theme="light"
           priority
+          poster="/hero/moringa/sequence/frame-001.webp"
         />
         <ShilajitHeroZoomSection />
         <ProductVideoScrollSection

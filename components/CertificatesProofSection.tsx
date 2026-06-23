@@ -169,21 +169,21 @@ export default function CertificatesProofSection({
   return (
     <section
       aria-labelledby="proof-heading"
-      className={`bg-white px-6 py-16 md:px-10 md:py-20 lg:px-12 lg:py-20 ${className}`}
+      className={`certificates-proof-section relative z-20 overflow-visible bg-white px-6 py-16 md:px-10 md:py-20 lg:px-12 lg:py-20 ${className}`}
     >
       <div className="mx-auto max-w-5xl">
-        <div className="text-center">
+        <div className="overflow-visible pt-2 text-center">
           <LotusEmblem />
 
-          <h2 id="proof-heading" className="mt-5">
+          <h2 id="proof-heading" className="mt-5 overflow-visible">
             <span
-              className="block font-display text-[2rem] font-medium leading-tight tracking-[0.02em] sm:text-[2.35rem] md:text-[2.65rem]"
+              className="block overflow-visible pb-0.5 font-display text-[2rem] font-medium leading-[1.15] tracking-[0.02em] sm:text-[2.35rem] md:text-[2.65rem]"
               style={{ color: FOREST }}
             >
               GOOD FOOD
             </span>
             <span
-              className="mt-1 block font-display text-[2rem] font-medium leading-tight tracking-[0.02em] sm:text-[2.35rem] md:text-[2.65rem]"
+              className="mt-1 block overflow-visible font-display text-[2rem] font-medium leading-[1.15] tracking-[0.02em] sm:text-[2.35rem] md:text-[2.65rem]"
               style={{ color: GOLD }}
             >
               BACKED BY PROOF

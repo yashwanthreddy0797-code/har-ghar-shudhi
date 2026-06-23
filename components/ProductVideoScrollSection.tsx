@@ -11,12 +11,15 @@ import {
 } from "@/lib/scroll/smoothProgress";
 import type { ProductVideoScrollConfig } from "@/lib/hero/productVideoScroll";
 import {
-  useIsMobileViewport,
   useResponsiveScrollHeight,
   preferNativeScroll,
   scrollProgressSmoothingForViewport,
 } from "@/lib/scroll/responsiveScroll";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
+import {
+  isVideoFrameReady,
+  waitForVideoFirstFrame,
+} from "@/lib/scroll/videoReadiness";
 
 type Theme = {
   section: string;
@@ -78,30 +81,7 @@ const THEMES: Record<"light" | "dark", Theme> = {
 };
 
 function waitForVideoReady(video: HTMLVideoElement) {
-  return new Promise<void>((resolve) => {
-    const finish = () => {
-      video.removeEventListener("loadedmetadata", finish);
-      video.removeEventListener("loadeddata", finish);
-      video.removeEventListener("canplay", finish);
-      video.removeEventListener("error", finish);
-      resolve();
-    };
-
-    if (
-      video.readyState >= HTMLMediaElement.HAVE_METADATA &&
-      Number.isFinite(video.duration) &&
-      video.duration > 0
-    ) {
-      resolve();
-      return;
-    }
-
-    video.addEventListener("loadedmetadata", finish, { once: true });
-    video.addEventListener("loadeddata", finish, { once: true });
-    video.addEventListener("canplay", finish, { once: true });
-    video.addEventListener("error", finish, { once: true });
-    video.load();
-  });
+  return waitForVideoFirstFrame(video, 8000).then(() => undefined);
 }
 
 interface ProductVideoScrollSectionProps {
@@ -110,6 +90,8 @@ interface ProductVideoScrollSectionProps {
   theme?: "light" | "dark";
   /** Preload video + wire scroll sooner — for above-the-fold sections. */
   priority?: boolean;
+  /** Poster shown until the first video frame is decoded. */
+  poster?: string;
 }
 
 export default function ProductVideoScrollSection({
@@ -117,19 +99,10 @@ export default function ProductVideoScrollSection({
   scrollId,
   theme = "light",
   priority = false,
+  poster,
 }: ProductVideoScrollSectionProps) {
-  const pickVideoSource = () => {
-    if (typeof window === "undefined") return config.sources.hd;
-    const { sources } = config;
-    if (sources.hd === sources.uhd) return sources.hd;
-
-    const width = window.innerWidth;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    if (width >= 1600 || width * dpr >= 2600) return sources.uhd;
-    return sources.hd;
-  };
-
-  const [videoSrc, setVideoSrc] = useState<string>(config.sources.hd);
+  const videoSrc = config.sources.hd;
+  const [videoReady, setVideoReady] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
   const sequenceRef = useRef<HTMLDivElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
@@ -145,18 +118,45 @@ export default function ProductVideoScrollSection({
   const benefitsMobileCtaRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLParagraphElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const isMobile = useIsMobileViewport();
   const responsiveScrollVh = useResponsiveScrollHeight(config.scrollHeightVh);
 
   useLayoutEffect(() => {
-    setVideoSrc(pickVideoSource());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const { gsap } = getGsap();
+    const introTargets = [
+      introLeftRef.current,
+      introRightRef.current,
+      introLeftDesktopRef.current,
+      introRightDesktopRef.current,
+      scrollHintRef.current,
+    ].filter(Boolean) as HTMLElement[];
+
+    if (introTargets.length) gsap.set(introTargets, { autoAlpha: 0 });
   }, []);
 
   useLayoutEffect(() => {
     if (!priority || !videoSrc) return;
     preloadVideoAsset(videoSrc);
   }, [priority, videoSrc]);
+
+  useLayoutEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const markReady = () => {
+      if (isVideoFrameReady(video)) setVideoReady(true);
+    };
+
+    markReady();
+    video.addEventListener("loadeddata", markReady);
+    video.addEventListener("canplay", markReady);
+    video.addEventListener("error", markReady, { once: true });
+
+    return () => {
+      video.removeEventListener("loadeddata", markReady);
+      video.removeEventListener("canplay", markReady);
+      video.removeEventListener("error", markReady);
+    };
+  }, [videoSrc]);
 
   useLayoutEffect(() => {
     let ctx: { revert: () => void } | undefined;
@@ -481,6 +481,7 @@ export default function ProductVideoScrollSection({
   return (
     <section
       ref={rootRef}
+      data-video-ready={videoReady ? "" : undefined}
       className={`product-video-scroll relative ${t.section} ${
         isPortraitVideo ? "product-video-scroll--portrait" : ""
       } ${theme === "dark" ? "product-video-scroll--dark" : ""}`}
@@ -497,7 +498,7 @@ export default function ProductVideoScrollSection({
         >
           {/* Mobile top — intro + benefit row above video */}
           <div className="product-video-scroll-mobile__top relative z-[2] shrink-0 px-5 pb-3 pt-[4.25rem] md:hidden">
-            <div ref={introLeftRef} className="text-center">
+            <div ref={introLeftRef} data-video-intro className="text-center">
               <p
                 className={`font-sans text-[9px] font-medium uppercase tracking-[0.28em] ${t.eyebrow}`}
               >
@@ -548,11 +549,12 @@ export default function ProductVideoScrollSection({
                 ref={videoRef}
                 className={`product-video-scroll-video block h-full w-full ${t.videoClass}`}
                 src={videoSrc}
+                poster={poster}
                 width={width}
                 height={height}
                 muted
                 playsInline
-                preload={priority || !isMobile ? "auto" : "metadata"}
+                preload="auto"
                 aria-label={`${hero.eyebrow} reveal animation`}
               />
             </div>
@@ -560,7 +562,7 @@ export default function ProductVideoScrollSection({
 
           {/* Mobile bottom — intro + benefit row below video */}
           <div className="product-video-scroll-mobile__bottom relative z-[2] shrink-0 px-5 pb-14 pt-3 md:hidden">
-            <div ref={introRightRef} className="text-center">
+            <div ref={introRightRef} data-video-intro className="text-center">
               <h3
                 className={`product-video-scroll-mobile__headline font-serif text-[clamp(1.65rem,6.8vw,2.15rem)] font-light leading-[1.06] tracking-[0.02em] ${t.headline}`}
               >
@@ -633,7 +635,7 @@ export default function ProductVideoScrollSection({
           <div className="relative z-[2] hidden h-full flex-col justify-center pb-16 pt-20 md:flex">
             <div className="mx-auto grid w-full max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-8 px-12 lg:gap-12 lg:px-16">
               <div className="relative col-start-1 row-start-1 max-w-[18rem] justify-self-start">
-                <div ref={introLeftDesktopRef}>
+                <div ref={introLeftDesktopRef} data-video-intro>
                   <p
                     className={`font-sans text-[10px] font-medium uppercase tracking-[0.32em] ${t.eyebrow}`}
                   >
@@ -679,7 +681,7 @@ export default function ProductVideoScrollSection({
               />
 
               <div className="relative col-start-3 row-start-1 max-w-[18rem] justify-self-end text-right">
-                <div ref={introRightDesktopRef}>
+                <div ref={introRightDesktopRef} data-video-intro>
                   <h3
                     className={`font-serif text-[2.75rem] font-light leading-[1.05] tracking-[0.02em] lg:text-[3rem] ${t.headline}`}
                   >
@@ -733,6 +735,7 @@ export default function ProductVideoScrollSection({
 
           <p
             ref={scrollHintRef}
+            data-video-intro
             className={`pointer-events-none absolute bottom-6 left-1/2 z-[3] -translate-x-1/2 font-sans text-[8px] uppercase tracking-[0.36em] max-md:bottom-5 md:text-[9px] md:tracking-[0.4em] ${t.hint}`}
           >
             {sequenceLabel}

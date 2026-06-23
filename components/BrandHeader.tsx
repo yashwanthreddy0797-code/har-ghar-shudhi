@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import BrandLogo from "@/components/BrandLogo";
 import {
+  PRIMARY_NAV_LINKS,
   SHOP_LINKS,
   CONCERN_LINKS,
   ABOUT_LINKS,
@@ -20,12 +21,7 @@ import { useCart } from "@/components/cart/CartProvider";
 import SearchBar from "@/components/shop/SearchBar";
 import { onLenisInit } from "@/lib/scroll/lenisReady";
 
-const NAV_LINKS = [
-  { href: "/about", label: "About" },
-  { href: "/shop", label: "Shop" },
-  { href: "/shop/concern/immunity", label: "Wellness" },
-  { href: "/contact", label: "Contact" },
-] as const;
+const NAV_LINKS = PRIMARY_NAV_LINKS;
 
 function getScrollY() {
   if (typeof window === "undefined") return 0;

@@ -309,7 +309,7 @@ export default function ShopExploreSection() {
     <section
       ref={rootRef}
       aria-labelledby="shop-explore-heading"
-      className="shop-explore-section relative bg-brand-white pb-0"
+      className="shop-explore-section relative bg-brand-white pb-10 md:pb-14"
     >
       <div
         ref={pinRef}
