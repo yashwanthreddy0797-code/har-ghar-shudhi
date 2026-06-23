@@ -51,3 +51,42 @@ export function prefetchPrimaryNav(router: { prefetch: (href: string) => void })
     router.prefetch(href);
   }
 }
+
+function scrollToHash(id: string) {
+  const el = document.getElementById(id);
+  if (!el) return false;
+  el.scrollIntoView({ behavior: "smooth", block: "start" });
+  return true;
+}
+
+/** Reliable client navigation for mobile menus and hash deep links. */
+export function navigateToRoute(
+  router: { push: (href: string) => void },
+  href: string,
+) {
+  prepareInstantNavigation();
+
+  if (/^(https?:|mailto:|tel:)/.test(href)) {
+    window.location.assign(href);
+    return;
+  }
+
+  const hashIndex = href.indexOf("#");
+  const hashId =
+    hashIndex === -1 ? null : decodeURIComponent(href.slice(hashIndex + 1));
+
+  router.push(href);
+
+  if (!hashId) return;
+
+  const attemptScroll = () => scrollToHash(hashId);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      if (!attemptScroll()) {
+        window.setTimeout(attemptScroll, 120);
+        window.setTimeout(attemptScroll, 320);
+      }
+    });
+  });
+}

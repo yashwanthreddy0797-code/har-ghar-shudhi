@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu, ShoppingBag, X } from "lucide-react";
@@ -16,6 +17,7 @@ import {
 import {
   prefetchPrimaryNav,
   prepareInstantNavigation,
+  navigateToRoute,
 } from "@/lib/navigation/instantNav";
 import { useCart } from "@/components/cart/CartProvider";
 import SearchBar from "@/components/shop/SearchBar";
@@ -34,12 +36,25 @@ export default function BrandHeader() {
   const isHome = pathname === "/";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { cart, openCart } = useCart();
+
+  const closeMobileMenu = useCallback(() => {
+    setMobileOpen(false);
+  }, []);
 
   const onNavigate = useCallback(() => {
     prepareInstantNavigation();
     setMobileOpen(false);
   }, []);
+
+  const handleMobileNavigate = useCallback(
+    (href: string) => {
+      setMobileOpen(false);
+      navigateToRoute(router, href);
+    },
+    [router],
+  );
 
   const handleOpenCart = useCallback(() => {
     openCart();
@@ -47,6 +62,10 @@ export default function BrandHeader() {
 
   const handleOpenMenu = useCallback(() => {
     setMobileOpen(true);
+  }, []);
+
+  useEffect(() => {
+    setMounted(true);
   }, []);
 
   useEffect(() => {
@@ -73,16 +92,105 @@ export default function BrandHeader() {
   }, []);
 
   useEffect(() => {
+    closeMobileMenu();
+  }, [pathname, closeMobileMenu]);
+
+  useEffect(() => {
     if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setMobileOpen(false);
+      if (e.key === "Escape") closeMobileMenu();
     };
+
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [mobileOpen]);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [mobileOpen, closeMobileMenu]);
 
   const showGlass = !isHome || scrolled;
   const cartCount = cart?.totalQuantity ?? 0;
+
+  const mobileMenu =
+    mobileOpen && mounted
+      ? createPortal(
+          <div className="brand-mobile-menu fixed inset-0 z-[9999] lg:hidden">
+            <button
+              type="button"
+              className="absolute inset-0 bg-black/40"
+              onClick={closeMobileMenu}
+              aria-label="Close menu"
+            />
+            <div className="brand-mobile-menu__panel absolute right-0 top-0 flex h-full w-[min(100%,320px)] flex-col border-l border-brand-border bg-brand-white pt-[env(safe-area-inset-top,0px)]">
+              <div className="flex items-center justify-between border-b border-brand-border px-6 py-4">
+                <span className="font-sans text-xs font-medium uppercase tracking-wider text-brand-green">
+                  Menu
+                </span>
+                <button
+                  type="button"
+                  aria-label="Close menu"
+                  onClick={closeMobileMenu}
+                  className="text-brand-muted"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <div className="border-b border-brand-border px-6 py-4">
+                <SearchBar onNavigate={onNavigate} />
+              </div>
+              <nav className="flex-1 overflow-y-auto overscroll-contain px-6 py-6">
+                <div className="mb-8 border-b border-brand-border pb-6">
+                  <p className="mb-3 font-sans text-[10px] font-medium uppercase tracking-wider text-brand-green">
+                    Navigate
+                  </p>
+                  <ul className="space-y-3">
+                    {NAV_LINKS.map((link) => (
+                      <li key={link.href}>
+                        <MobileNavLink
+                          href={link.href}
+                          label={link.label}
+                          onNavigate={handleMobileNavigate}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <MobileSection
+                  title="About"
+                  links={ABOUT_LINKS}
+                  onNavigate={handleMobileNavigate}
+                />
+                <MobileSection
+                  title="Shop"
+                  links={SHOP_LINKS}
+                  onNavigate={handleMobileNavigate}
+                />
+                <MobileSection
+                  title="Shop by Concern"
+                  links={CONCERN_LINKS}
+                  onNavigate={handleMobileNavigate}
+                />
+                <MobileSection
+                  title="Philosophy"
+                  links={PHILOSOPHY_LINKS}
+                  onNavigate={handleMobileNavigate}
+                />
+                <MobileSection
+                  title="Customer"
+                  links={CUSTOMER_LINKS}
+                  onNavigate={handleMobileNavigate}
+                />
+              </nav>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
 
   return (
     <>
@@ -165,62 +273,28 @@ export default function BrandHeader() {
         </div>
       </header>
 
-      {mobileOpen && (
-        <div className="fixed inset-0 z-[205] lg:hidden">
-          <div
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <div className="absolute right-0 top-0 flex h-full w-[min(100%,320px)] flex-col border-l border-brand-border bg-brand-white pt-[env(safe-area-inset-top,0px)]">
-            <div className="flex items-center justify-between border-b border-brand-border px-6 py-4">
-              <span className="font-sans text-xs font-medium uppercase tracking-wider text-brand-green">
-                Menu
-              </span>
-              <button
-                type="button"
-                aria-label="Close menu"
-                onClick={() => setMobileOpen(false)}
-                className="text-brand-muted"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <div className="border-b border-brand-border px-6 py-4">
-              <SearchBar onNavigate={onNavigate} />
-            </div>
-            <nav className="flex-1 overflow-y-auto px-6 py-6">
-              <div className="mb-8 border-b border-brand-border pb-6">
-                <p className="mb-3 font-sans text-[10px] font-medium uppercase tracking-wider text-brand-green">
-                  Navigate
-                </p>
-                <ul className="space-y-3">
-                  {NAV_LINKS.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        prefetch
-                        scroll={false}
-                        onPointerDown={onNavigate}
-                        onClick={onNavigate}
-                        className="font-sans text-sm font-medium text-brand-text transition-colors duration-150 hover:text-brand-green"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <MobileSection title="About" links={ABOUT_LINKS} onNavigate={onNavigate} />
-              <MobileSection title="Shop" links={SHOP_LINKS} onNavigate={onNavigate} />
-              <MobileSection title="Shop by Concern" links={CONCERN_LINKS} onNavigate={onNavigate} />
-              <MobileSection title="Philosophy" links={PHILOSOPHY_LINKS} onNavigate={onNavigate} />
-              <MobileSection title="Customer" links={CUSTOMER_LINKS} onNavigate={onNavigate} />
-            </nav>
-          </div>
-        </div>
-      )}
+      {mobileMenu}
     </>
+  );
+}
+
+function MobileNavLink({
+  href,
+  label,
+  onNavigate,
+}: {
+  href: string;
+  label: string;
+  onNavigate: (href: string) => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => onNavigate(href)}
+      className="brand-mobile-menu__link w-full text-left font-sans text-sm font-medium text-brand-text transition-colors duration-150 hover:text-brand-green"
+    >
+      {label}
+    </button>
   );
 }
 
@@ -231,7 +305,7 @@ function MobileSection({
 }: {
   title: string;
   links: { href: string; label: string }[];
-  onNavigate: () => void;
+  onNavigate: (href: string) => void;
 }) {
   return (
     <div className="mb-8">
@@ -240,17 +314,12 @@ function MobileSection({
       </p>
       <ul className="space-y-3">
         {links.map((link) => (
-          <li key={link.href}>
-            <Link
+          <li key={`${title}-${link.href}`}>
+            <MobileNavLink
               href={link.href}
-              prefetch
-              scroll={false}
-              onPointerDown={onNavigate}
-              onClick={onNavigate}
-              className="font-sans text-sm text-brand-text transition-colors duration-150 hover:text-brand-green"
-            >
-              {link.label}
-            </Link>
+              label={link.label}
+              onNavigate={onNavigate}
+            />
           </li>
         ))}
       </ul>

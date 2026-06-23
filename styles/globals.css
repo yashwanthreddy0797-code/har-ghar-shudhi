@@ -240,6 +240,15 @@ html.site-intro-active header {
   pointer-events: auto;
 }
 
+.brand-mobile-menu__link {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.brand-mobile-menu__panel {
+  touch-action: pan-y;
+}
+
 html.site-intro-revealing .product-scroll-zone:first-of-type {
   visibility: visible;
 }
