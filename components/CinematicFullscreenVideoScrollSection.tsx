@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import BrandLogo from "@/components/BrandLogo";
 import { getGsap } from "@/lib/gsap/client";
@@ -22,46 +22,13 @@ import {
   tickerDeltaSeconds,
 } from "@/lib/scroll/smoothProgress";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
+import {
+  isVideoFrameReady,
+  waitForVideoFirstFrame,
+} from "@/lib/scroll/videoReadiness";
 
 function waitForVideoReady(video: HTMLVideoElement, timeoutMs = 4500): Promise<boolean> {
-  return Promise.race([
-    new Promise<boolean>((resolve) => {
-      const finish = (ok: boolean) => {
-        video.removeEventListener("loadedmetadata", onMeta);
-        video.removeEventListener("loadeddata", onMeta);
-        video.removeEventListener("canplay", onMeta);
-        video.removeEventListener("error", onError);
-        resolve(ok);
-      };
-
-      const hasDuration = () =>
-        Number.isFinite(video.duration) && video.duration > 0;
-
-      const onMeta = () => {
-        if (hasDuration()) finish(true);
-      };
-
-      const onError = () => finish(false);
-
-      if (hasDuration()) {
-        resolve(true);
-        return;
-      }
-
-      video.addEventListener("loadedmetadata", onMeta);
-      video.addEventListener("loadeddata", onMeta);
-      video.addEventListener("canplay", onMeta);
-      video.addEventListener("error", onError, { once: true });
-      video.load();
-    }),
-    new Promise<boolean>((resolve) =>
-      window.setTimeout(() => {
-        resolve(
-          Number.isFinite(video.duration) && video.duration > 0
-        );
-      }, timeoutMs)
-    ),
-  ]);
+  return waitForVideoFirstFrame(video, timeoutMs);
 }
 
 function beginVideoPreload(video: HTMLVideoElement) {
@@ -93,10 +60,12 @@ export default function CinematicFullscreenVideoScrollSection({
   const copyRef = useRef<HTMLDivElement>(null);
   const hintRef = useRef<HTMLParagraphElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   const {
     scrollId,
     src,
+    poster,
     scrollHeightVh,
     theme,
     variantLabel,
@@ -118,8 +87,39 @@ export default function CinematicFullscreenVideoScrollSection({
   useEffect(() => {
     preloadVideoAsset(src);
     const video = videoRef.current;
-    if (video) beginVideoPreload(video);
+    if (!video) return;
+
+    beginVideoPreload(video);
+
+    const markReady = () => {
+      if (
+        isVideoFrameReady(video) ||
+        (priority && video.readyState >= HTMLMediaElement.HAVE_METADATA)
+      ) {
+        setVideoReady(true);
+      }
+    };
+
+    markReady();
+    video.addEventListener("loadedmetadata", markReady);
+    video.addEventListener("loadeddata", markReady);
+    video.addEventListener("canplay", markReady);
+    video.addEventListener("error", markReady, { once: true });
+
+    return () => {
+      video.removeEventListener("loadedmetadata", markReady);
+      video.removeEventListener("loadeddata", markReady);
+      video.removeEventListener("canplay", markReady);
+      video.removeEventListener("error", markReady);
+    };
   }, [src, priority]);
+
+  useLayoutEffect(() => {
+    if (priority) return;
+    const { gsap } = getGsap();
+    if (copyRef.current) gsap.set(copyRef.current, { autoAlpha: 0 });
+    if (hintRef.current) gsap.set(hintRef.current, { autoAlpha: 0 });
+  }, [priority]);
 
   useLayoutEffect(() => {
     let ctx: { revert: () => void } | undefined;
@@ -185,14 +185,20 @@ export default function CinematicFullscreenVideoScrollSection({
       }
 
       if (
-        !ready ||
-        !Number.isFinite(video.duration) ||
-        video.duration <= 0
+        !ready &&
+        !(
+          priority &&
+          video.readyState >= HTMLMediaElement.HAVE_METADATA &&
+          Number.isFinite(video.duration) &&
+          video.duration > 0
+        )
       ) {
         setupInFlight = false;
         scheduleSetupRetry(500);
         return;
       }
+
+      if (priority) setVideoReady(true);
 
       const { gsap, ScrollTrigger } = getGsap();
       const touchScroll = preferNativeScroll();
@@ -273,10 +279,14 @@ export default function CinematicFullscreenVideoScrollSection({
             if (!seeking) seekToTarget();
           }
 
-          const copyIn = easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.03) / 0.22));
+          const copyIn = priority
+            ? 1 - easeOutCubic(gsap.utils.clamp(0, 1, scrollProgress / 0.28))
+            : easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.03) / 0.22));
           const copyOut = easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.58) / 0.16));
           const copyAlpha = copyIn * (1 - copyOut);
-          const hintFade = gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.08);
+          const hintFade = priority
+            ? gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.12)
+            : gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.08);
 
           gsap.set(videoWrap, {
             scale: touchScroll
@@ -317,8 +327,13 @@ export default function CinematicFullscreenVideoScrollSection({
 
         gsap.set(videoWrap, { scale: touchScroll ? 1 : 1.06, force3D: true });
         gsap.set(overlay, { opacity: 0.48 });
-        gsap.set(copy, { autoAlpha: 0, y: 28, force3D: true });
-        gsap.set(hint, { autoAlpha: 1, y: 0, force3D: true });
+        if (priority) {
+          gsap.set(copy, { autoAlpha: 1, y: 0, force3D: true });
+          gsap.set(hint, { autoAlpha: 1, y: 0, force3D: true });
+        } else {
+          gsap.set(copy, { autoAlpha: 0, y: 28, force3D: true });
+          gsap.set(hint, { autoAlpha: 1, y: 0, force3D: true });
+        }
         gsap.set(progress, {
           scaleX: 0,
           transformOrigin: "left center",
@@ -349,7 +364,7 @@ export default function CinematicFullscreenVideoScrollSection({
         });
 
         syncScroll = () => {
-          if (!isScrollExperienceReady()) return;
+          if (!priority && !isScrollExperienceReady()) return;
 
           const resolveTarget = () => {
             const st = ScrollTrigger.getById(scrollId);
@@ -443,6 +458,8 @@ export default function CinematicFullscreenVideoScrollSection({
   return (
     <section
       ref={rootRef}
+      data-video-ready={videoReady ? "" : undefined}
+      data-priority={priority ? "" : undefined}
       className={`cinematic-video-scroll product-video-scroll product-video-scroll-zone relative ${t.section}`}
       aria-label={ariaLabel}
     >
@@ -457,6 +474,7 @@ export default function CinematicFullscreenVideoScrollSection({
               ref={videoRef}
               className="cinematic-video-scroll__video h-full w-full object-cover"
               src={src}
+              poster={poster}
               muted
               playsInline
               preload="auto"
@@ -482,7 +500,12 @@ export default function CinematicFullscreenVideoScrollSection({
               className={`pointer-events-none absolute z-[5] ${videoLogoOverlay.className ?? "bottom-10 right-12 md:bottom-12 md:right-[3.75rem]"}`}
               aria-hidden
             >
-              <div className="rounded-md bg-[#120c06]/45 px-2 py-1.5 backdrop-blur-[3px] ring-1 ring-white/10">
+              <div
+                className={
+                  videoLogoOverlay.backdropClassName ??
+                  "rounded-md bg-[#120c06]/45 px-2 py-1.5 backdrop-blur-[3px] ring-1 ring-white/10"
+                }
+              >
                 <BrandLogo
                   size="nav"
                   variant="white"
@@ -494,7 +517,7 @@ export default function CinematicFullscreenVideoScrollSection({
           ) : null}
 
           <div className="relative z-[2] flex h-full items-center justify-center px-5 pb-16 pt-20 max-md:px-4 max-md:pb-20 max-md:pt-24 md:px-12">
-            <div ref={copyRef} className="max-w-3xl text-center">
+            <div ref={copyRef} data-cinematic-overlay className="max-w-3xl text-center">
               <p
                 className={`font-sans text-[9px] font-medium uppercase tracking-[0.3em] max-md:tracking-[0.28em] md:text-[10px] md:tracking-[0.34em] ${t.eyebrow}`}
               >
@@ -517,6 +540,7 @@ export default function CinematicFullscreenVideoScrollSection({
 
           <p
             ref={hintRef}
+            data-cinematic-hint
             className={`pointer-events-none absolute bottom-8 left-1/2 z-[3] max-md:bottom-6 -translate-x-1/2 font-sans text-[8px] uppercase tracking-[0.36em] md:bottom-10 md:text-[9px] md:tracking-[0.42em] ${t.hint}`}
           >
             {sequenceLabel}

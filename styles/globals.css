@@ -244,6 +244,22 @@ html.site-intro-revealing .product-scroll-zone:first-of-type {
   visibility: visible;
 }
 
+/* Keep the honey hero hidden until the intro finishes loading the film. */
+html.site-intro-active .product-video-scroll-zone,
+html.site-intro-revealing .product-video-scroll-zone {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+html.scroll-ready:not(.site-intro-active):not(.site-intro-revealing)
+  .product-video-scroll-zone {
+  visibility: visible;
+}
+
+.site-intro-progress-bar {
+  background: linear-gradient(90deg, #2d5239 0%, #3d6b4f 55%, #4a7d5c 100%);
+}
+
 .site-intro-panel-bg {
   background:
     radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.92) 0%, rgba(249, 249, 247, 0) 58%),
@@ -425,6 +441,48 @@ html.site-intro-active body {
 .product-video-scroll .product-video-scroll-mobile__benefits-cta {
   opacity: 0;
   visibility: hidden;
+}
+
+/* Hide hero video overlays until the first frame can paint (avoids text-before-video flash). */
+.cinematic-video-scroll:not([data-video-ready]) [data-cinematic-overlay],
+.cinematic-video-scroll:not([data-video-ready]) [data-cinematic-hint] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.cinematic-video-scroll:not([data-video-ready]) .cinematic-video-scroll__video {
+  opacity: 0;
+}
+
+.cinematic-video-scroll[data-priority] [data-cinematic-overlay],
+.cinematic-video-scroll[data-priority] [data-cinematic-hint] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cinematic-video-scroll[data-priority] .cinematic-video-scroll__video {
+  opacity: 1;
+}
+
+.product-video-scroll:not([data-video-ready]) [data-video-intro] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.product-video-scroll:not([data-video-ready]) .product-video-scroll-video {
+  opacity: 0;
+}
+
+.cinematic-video-scroll__video,
+.product-video-scroll-video {
+  transition: opacity 0.45s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-video-scroll__video,
+  .product-video-scroll-video {
+    transition: none;
+  }
 }
 
 .moringa-model-canvas-wrap {
@@ -710,6 +768,15 @@ html.site-intro-active body {
 .shop-explore-section {
   overflow: visible;
   margin-bottom: 0;
+}
+
+.certificates-proof-section {
+  overflow: visible;
+  isolation: isolate;
+}
+
+.certificates-proof-section #proof-heading span {
+  line-height: 1.15;
 }
 
 .shop-explore-pin {
@@ -1068,6 +1135,41 @@ html.site-intro-active body {
 }
 
 /* ── About page — Har Ghar Shudhi brand system ── */
+
+.about-luxury-hero {
+  background: #1a2421;
+}
+
+.about-luxury-card {
+  padding: 1.75rem 1.5rem;
+  border: 1px solid rgba(229, 231, 227, 0.95);
+  border-radius: 2px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.about-luxury-card:hover {
+  border-color: rgba(61, 107, 79, 0.22);
+  box-shadow: 0 16px 40px rgba(45, 82, 57, 0.07);
+}
+
+.about-luxury-pillar {
+  padding: 0.5rem;
+}
+
+.about-luxury-cert {
+  border-radius: 2px;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.about-luxury-cert:hover {
+  border-color: rgba(61, 107, 79, 0.35);
+  transform: translateY(-2px);
+}
+
+.about-luxury-glass {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+}
 
 .about-brand-hero {
   background: linear-gradient(165deg, #1a3024 0%, #2d5239 50%, #1a2421 100%);

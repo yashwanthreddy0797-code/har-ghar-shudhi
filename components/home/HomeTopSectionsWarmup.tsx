@@ -17,6 +17,9 @@ export default function HomeTopSectionsWarmup() {
 
     preloadVideoAsset(HONEY_LUXURY_VIDEO_SCROLL.src);
     preloadVideoAsset(MORINGA_VIDEO_SCROLL.sources.hd);
+    if (HONEY_LUXURY_VIDEO_SCROLL.poster) {
+      preloadImageAsset(HONEY_LUXURY_VIDEO_SCROLL.poster);
+    }
     preloadImageAsset(SHILAJIT_HERO_ZOOM.image.src);
     preloadImageAsset(SHILAJIT_HERO_ZOOM.props.left.src);
     preloadImageAsset(SHILAJIT_HERO_ZOOM.props.right.src);

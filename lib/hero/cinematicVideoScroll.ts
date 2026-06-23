@@ -3,6 +3,8 @@ export type CinematicVideoScrollTheme = "darkLuxury" | "warmHoney" | "spirulinaL
 export interface CinematicVideoScrollConfig {
   scrollId: string;
   src: string;
+  /** Fallback image while the first video frame decodes. */
+  poster?: string;
   scrollHeightVh: number;
   theme: CinematicVideoScrollTheme;
   variantLabel?: string;
@@ -21,6 +23,7 @@ export interface CinematicVideoScrollConfig {
   videoLogoOverlay?: {
     className?: string;
     logoClassName?: string;
+    backdropClassName?: string;
   };
 }
 
