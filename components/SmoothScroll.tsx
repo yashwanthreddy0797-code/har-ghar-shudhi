@@ -41,7 +41,10 @@ function bootNativeScroll(ScrollTrigger: ReturnType<typeof getGsap>["ScrollTrigg
   window.__nativeScroll = true;
   window.__lenisInitialized = true;
 
-  ScrollTrigger.config({ limitCallbacks: true, ignoreMobileResize: true });
+  ScrollTrigger.config({
+    limitCallbacks: true,
+    ignoreMobileResize: true,
+  });
 
   if (ScrollTrigger.isTouch) {
     ScrollTrigger.normalizeScroll({

@@ -13,9 +13,10 @@ import type { ProductVideoScrollConfig } from "@/lib/hero/productVideoScroll";
 import {
   useResponsiveScrollHeight,
   preferNativeScroll,
-  scrollProgressSmoothingForViewport,
+  productVideoScrollProgressSmoothingForViewport,
 } from "@/lib/scroll/responsiveScroll";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
+import { createVideoScrubSeeker } from "@/lib/scroll/videoScrub";
 import {
   isVideoFrameReady,
   waitForVideoFirstFrame,
@@ -163,7 +164,7 @@ export default function ProductVideoScrollSection({
     let cancelled = false;
     let setupAttempts = 0;
     let syncScroll: (() => void) | undefined;
-    let detachSeek: (() => void) | undefined;
+    let detachVideoScrub: (() => void) | undefined;
 
     const setup = async () => {
       if (cancelled) return;
@@ -185,7 +186,7 @@ export default function ProductVideoScrollSection({
       if (cancelled || !videoRef.current || videoRef.current !== video) return;
 
       const { gsap, ScrollTrigger } = getGsap();
-      detachSeek?.();
+      detachVideoScrub?.();
       ctx?.revert();
 
       ctx = gsap.context(() => {
@@ -194,62 +195,21 @@ export default function ProductVideoScrollSection({
         ).matches;
         const touchScroll = preferNativeScroll();
 
+        if (touchScroll) {
+          gsap.ticker.lagSmoothing(500, 33);
+        }
+
         video.pause();
         video.currentTime = 0;
 
-        let targetTime = 0;
-        let seeking = false;
-        let lastSeekAt = 0;
-        let seekUnlockTimer: number | undefined;
-        const SEEK_THRESHOLD = touchScroll ? 0.055 : 1 / 30;
-        const SEEK_MIN_INTERVAL_MS = touchScroll ? 28 : 0;
+        const videoScrub = createVideoScrubSeeker(video, { touchScroll });
+        detachVideoScrub = () => videoScrub.detach();
 
-        const releaseSeekLock = () => {
-          seeking = false;
-          if (seekUnlockTimer !== undefined) {
-            window.clearTimeout(seekUnlockTimer);
-            seekUnlockTimer = undefined;
-          }
-        };
-
-        const seekToTarget = () => {
-          if (!Number.isFinite(video.duration) || video.duration <= 0) {
-            releaseSeekLock();
-            return;
-          }
-
-          if (Math.abs(video.currentTime - targetTime) < SEEK_THRESHOLD) {
-            releaseSeekLock();
-            return;
-          }
-
-          const now = performance.now();
-          if (seeking && now - lastSeekAt < SEEK_MIN_INTERVAL_MS) return;
-
-          seeking = true;
-          lastSeekAt = now;
-          if (seekUnlockTimer !== undefined) window.clearTimeout(seekUnlockTimer);
-          seekUnlockTimer = window.setTimeout(releaseSeekLock, 140);
-
-          try {
-            video.currentTime = targetTime;
-          } catch {
-            releaseSeekLock();
-          }
-        };
-
-        const onSeeked = () => {
-          releaseSeekLock();
-          seekToTarget();
-        };
-        video.addEventListener("seeked", onSeeked);
-        detachSeek = () => {
-          video.removeEventListener("seeked", onSeeked);
-          if (seekUnlockTimer !== undefined) window.clearTimeout(seekUnlockTimer);
-        };
+        let scrollTarget = 0;
+        let sectionActive = priority;
 
         const progressSmoother = createScrollProgressSmoother(
-          scrollProgressSmoothingForViewport()
+          productVideoScrollProgressSmoothingForViewport()
         );
 
         const applyProgress = (visualProgress: number, mediaProgress: number) => {
@@ -258,10 +218,7 @@ export default function ProductVideoScrollSection({
           const duration = video.duration;
 
           if (Number.isFinite(duration) && duration > 0) {
-            targetTime = media * duration;
-            if (!seeking) {
-              seekToTarget();
-            }
+            videoScrub.setTargetTime(media * duration);
           }
 
           const textPhase = easeOutCubic(Math.min(1, progress / 0.18));
@@ -398,27 +355,29 @@ export default function ProductVideoScrollSection({
           fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
+          onUpdate: (self) => {
+            scrollTarget = self.progress;
+          },
+          onEnter: () => {
+            sectionActive = true;
+          },
+          onEnterBack: () => {
+            sectionActive = true;
+          },
+          onLeave: () => {
+            sectionActive = false;
+          },
+          onLeaveBack: () => {
+            sectionActive = false;
+          },
         });
 
         syncScroll = () => {
           if (!isScrollExperienceReady()) return;
-
-          const resolveTarget = () => {
-            const st = ScrollTrigger.getById(scrollId);
-            if (st) return st.progress;
-
-            const total = sequence.offsetHeight - window.innerHeight;
-            if (total <= 0) return 0;
-            const scrolled = gsap.utils.clamp(
-              0,
-              total,
-              -sequence.getBoundingClientRect().top
-            );
-            return scrolled / total;
-          };
+          if (!sectionActive) return;
 
           const { visual, media } = progressSmoother.step(
-            resolveTarget(),
+            scrollTarget,
             tickerDeltaSeconds(gsap)
           );
           applyProgress(visual, media);
@@ -455,7 +414,7 @@ export default function ProductVideoScrollSection({
       removeLenisListener();
       const { gsap } = getGsap();
       if (syncScroll) gsap.ticker.remove(syncScroll);
-      detachSeek?.();
+      detachVideoScrub?.();
       ctx?.revert();
     };
   }, [videoSrc, scrollId, responsiveScrollVh, priority]);

@@ -92,9 +92,19 @@ export function scrollProgressSmoothingForViewport(
   width = typeof window !== "undefined" ? window.innerWidth : 1024
 ) {
   if (width <= MOBILE_MAX_WIDTH) {
-    return { visualSmoothness: 0.34, mediaSmoothness: 0.46 };
+    return { visualSmoothness: 0.48, mediaSmoothness: 1.25 };
   }
   return { visualSmoothness: 0.14, mediaSmoothness: 0.22 };
+}
+
+/** Product scroll films — match cinematic touch responsiveness on phones. */
+export function productVideoScrollProgressSmoothingForViewport(
+  width = typeof window !== "undefined" ? window.innerWidth : 1024
+) {
+  if (width <= MOBILE_MAX_WIDTH) {
+    return { visualSmoothness: 0.5, mediaSmoothness: 1.3 };
+  }
+  return scrollProgressSmoothingForViewport(width);
 }
 
 /** Cinematic fullscreen films — video tracks the finger more tightly on touch. */
@@ -102,7 +112,7 @@ export function cinematicScrollProgressSmoothingForViewport(
   width = typeof window !== "undefined" ? window.innerWidth : 1024
 ) {
   if (width <= MOBILE_MAX_WIDTH) {
-    return { visualSmoothness: 0.5, mediaSmoothness: 0.88 };
+    return { visualSmoothness: 0.58, mediaSmoothness: 1.4 };
   }
   return scrollProgressSmoothingForViewport(width);
 }
