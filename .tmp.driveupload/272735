@@ -1,0 +1,21 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/icon.png/route": "app/icon.png/route.js",
+  "/diabetes-shudhi/page": "app/diabetes-shudhi/page.js",
+  "/page": "app/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/philosophy/page": "app/philosophy/page.js",
+  "/policies/refunds/page": "app/policies/refunds/page.js",
+  "/about/page": "app/about/page.js",
+  "/science-trust/page": "app/science-trust/page.js",
+  "/policies/terms/page": "app/policies/terms/page.js",
+  "/search/page": "app/search/page.js",
+  "/products/[slug]/page": "app/products/[slug]/page.js",
+  "/policies/shipping/page": "app/policies/shipping/page.js",
+  "/shop/page": "app/shop/page.js",
+  "/shop/concern/[concern]/page": "app/shop/concern/[concern]/page.js",
+  "/policies/privacy/page": "app/policies/privacy/page.js",
+  "/track-order/page": "app/track-order/page.js",
+  "/checkout/complete/page": "app/checkout/complete/page.js",
+  "/checkout/page": "app/checkout/page.js"
+}

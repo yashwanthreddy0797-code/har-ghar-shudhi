@@ -93,10 +93,15 @@ export default function CinematicFullscreenVideoScrollSection({
     beginVideoPreload(video);
 
     const markReady = () => {
-      if (
-        isVideoFrameReady(video) ||
-        (priority && video.readyState >= HTMLMediaElement.HAVE_METADATA)
-      ) {
+      if (priority && video.currentTime > 0.02) {
+        try {
+          video.currentTime = 0;
+        } catch {
+          /* ignore seek errors during decode */
+        }
+      }
+
+      if (isVideoFrameReady(video)) {
         setVideoReady(true);
       }
     };
@@ -185,21 +190,20 @@ export default function CinematicFullscreenVideoScrollSection({
         return;
       }
 
-      if (
-        !ready &&
-        !(
-          priority &&
-          video.readyState >= HTMLMediaElement.HAVE_METADATA &&
-          Number.isFinite(video.duration) &&
-          video.duration > 0
-        )
-      ) {
+      if (!ready) {
         setupInFlight = false;
         scheduleSetupRetry(500);
         return;
       }
 
-      if (priority) setVideoReady(true);
+      if (priority) {
+        try {
+          video.currentTime = 0;
+        } catch {
+          /* ignore */
+        }
+        setVideoReady(true);
+      }
 
       const { gsap, ScrollTrigger } = getGsap();
       const touchScroll = preferNativeScroll();
@@ -429,7 +433,19 @@ export default function CinematicFullscreenVideoScrollSection({
         style={{ height: `${responsiveScrollVh}vh` }}
       >
         <div ref={pinRef} className="relative h-[100svh] w-full overflow-hidden">
-          <div ref={videoWrapRef} className="cinematic-video-scroll__wrap absolute inset-0">
+          <div
+            ref={videoWrapRef}
+            className="cinematic-video-scroll__wrap absolute inset-0"
+            style={
+              poster
+                ? {
+                    backgroundImage: `url(${poster})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }
+                : undefined
+            }
+          >
             <video
               ref={videoRef}
               className="cinematic-video-scroll__video h-full w-full object-cover"

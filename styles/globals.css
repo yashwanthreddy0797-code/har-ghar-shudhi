@@ -478,7 +478,11 @@ html.site-intro-active body {
   visibility: visible;
 }
 
-.cinematic-video-scroll[data-priority] .cinematic-video-scroll__video {
+.cinematic-video-scroll[data-priority]:not([data-video-ready]) .cinematic-video-scroll__video {
+  opacity: 0;
+}
+
+.cinematic-video-scroll[data-priority][data-video-ready] .cinematic-video-scroll__video {
   opacity: 1;
 }
 

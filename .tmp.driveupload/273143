@@ -1,0 +1,160 @@
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/products/[slug]",
+      "regex": "^/products/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/products/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/shop/concern/[concern]",
+      "regex": "^/shop/concern/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPconcern": "nxtPconcern"
+      },
+      "namedRegex": "^/shop/concern/(?<nxtPconcern>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/about",
+      "regex": "^/about(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/about(?:/)?$"
+    },
+    {
+      "page": "/checkout",
+      "regex": "^/checkout(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/checkout(?:/)?$"
+    },
+    {
+      "page": "/checkout/complete",
+      "regex": "^/checkout/complete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/checkout/complete(?:/)?$"
+    },
+    {
+      "page": "/contact",
+      "regex": "^/contact(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/contact(?:/)?$"
+    },
+    {
+      "page": "/diabetes-shudhi",
+      "regex": "^/diabetes\\-shudhi(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/diabetes\\-shudhi(?:/)?$"
+    },
+    {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
+    },
+    {
+      "page": "/philosophy",
+      "regex": "^/philosophy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/philosophy(?:/)?$"
+    },
+    {
+      "page": "/policies/privacy",
+      "regex": "^/policies/privacy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/policies/privacy(?:/)?$"
+    },
+    {
+      "page": "/policies/refunds",
+      "regex": "^/policies/refunds(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/policies/refunds(?:/)?$"
+    },
+    {
+      "page": "/policies/shipping",
+      "regex": "^/policies/shipping(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/policies/shipping(?:/)?$"
+    },
+    {
+      "page": "/policies/terms",
+      "regex": "^/policies/terms(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/policies/terms(?:/)?$"
+    },
+    {
+      "page": "/science-trust",
+      "regex": "^/science\\-trust(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/science\\-trust(?:/)?$"
+    },
+    {
+      "page": "/search",
+      "regex": "^/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/search(?:/)?$"
+    },
+    {
+      "page": "/shop",
+      "regex": "^/shop(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shop(?:/)?$"
+    },
+    {
+      "page": "/track-order",
+      "regex": "^/track\\-order(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/track\\-order(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

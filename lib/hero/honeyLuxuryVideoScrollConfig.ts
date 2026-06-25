@@ -3,7 +3,7 @@ import type { CinematicVideoScrollConfig } from "@/lib/hero/cinematicVideoScroll
 export const HONEY_LUXURY_VIDEO_SCROLL: CinematicVideoScrollConfig = {
   scrollId: "honey-luxury-video-scroll",
   src: "/hero/honey/video/luxury-honey-product-film.mp4",
-  poster: "/cinematic/products/wildforest-honey.png",
+  poster: "/hero/honey/video/luxury-honey-forest-poster.jpg",
   scrollHeightVh: 240,
   theme: "warmHoney",
   variantLabel: "Honey film",
