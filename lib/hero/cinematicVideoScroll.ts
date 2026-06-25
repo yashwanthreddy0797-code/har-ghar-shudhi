@@ -61,9 +61,9 @@ export const CINEMATIC_VIDEO_THEMES: Record<
     hint: "text-white/45",
     progressTrack: "bg-white/10",
     progressBar: "bg-[#c9a962]/75",
-    closingWrap: "border-t border-white/10 bg-[#0b0908]",
+    closingWrap: "border-t border-brand-border/50 bg-white",
     closingEyebrow: "text-[#c9a962]",
-    closingTitle: "text-[#f5efe4]",
+    closingTitle: "text-brand-text",
     closingLink: "text-[#d8c08a] hover:text-[#c9a962]",
   },
   warmHoney: {
@@ -98,9 +98,9 @@ export const CINEMATIC_VIDEO_THEMES: Record<
     hint: "text-[#8fd4b8]/50",
     progressTrack: "bg-[#5cb894]/15",
     progressBar: "bg-[#5cb894]/80",
-    closingWrap: "border-t border-[#5cb894]/15 bg-[#f0faf6]",
+    closingWrap: "border-t border-brand-border/50 bg-white",
     closingEyebrow: "text-[#1a6b52]",
-    closingTitle: "text-[#102820]",
+    closingTitle: "text-brand-text",
     closingLink: "text-[#1a6b52] hover:text-[#145a44]",
   },
 };

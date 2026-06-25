@@ -73,10 +73,10 @@ const THEMES: Record<"light" | "dark", Theme> = {
     hint: "text-[#b8ac98]/60",
     progressTrack: "bg-white/10",
     progressBar: "bg-[#c9a962]/70",
-    closingWrap: "border-t border-white/10 bg-[#15110e]",
+    closingWrap: "border-t border-brand-border/50 bg-white",
     closingEyebrow: "text-[#c9a962]",
-    closingTitle: "text-[#f5efe4]",
-    closingDesc: "text-[#d8cdbb]/85",
+    closingTitle: "text-brand-text",
+    closingDesc: "text-brand-text",
     closingLink: "text-[#d8c08a] hover:text-[#c9a962]",
   },
 };
