@@ -249,6 +249,11 @@ html.site-intro-active header {
   pointer-events: auto;
 }
 
+html.site-intro-active header .brand-header-search,
+html.site-intro-revealing header .brand-header-search {
+  display: none !important;
+}
+
 .brand-mobile-menu__link {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
@@ -491,8 +496,21 @@ html.site-intro-active body {
   visibility: hidden;
 }
 
+.product-video-scroll[data-priority]:not([data-video-ready]) [data-video-intro] {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .product-video-scroll:not([data-video-ready]) .product-video-scroll-video {
   opacity: 0;
+}
+
+.product-video-scroll[data-priority]:not([data-video-ready]) .product-video-scroll-video {
+  opacity: 0;
+}
+
+.product-video-scroll[data-priority][data-video-ready] .product-video-scroll-video {
+  opacity: 1;
 }
 
 .cinematic-video-scroll__video,

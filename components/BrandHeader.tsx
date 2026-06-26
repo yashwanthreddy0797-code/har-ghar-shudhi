@@ -245,7 +245,7 @@ export default function BrandHeader() {
 
           <div className="flex items-center gap-3 md:gap-4 lg:justify-self-end">
             <SearchBar
-              className="hidden md:block [&_input]:border-white/20 [&_input]:bg-white/10 [&_input]:text-white [&_input]:placeholder:text-white/40"
+              className="brand-header-search hidden md:block [&_input]:border-white/20 [&_input]:bg-white/10 [&_input]:text-white [&_input]:placeholder:text-white/40"
               onNavigate={onNavigate}
             />
             <button
