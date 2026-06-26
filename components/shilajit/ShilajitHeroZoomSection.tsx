@@ -10,6 +10,10 @@ import {
   shilajitHeroScrollHeightForViewport,
 } from "@/lib/scroll/responsiveScroll";
 import { SHILAJIT_HERO_ZOOM } from "@/lib/hero/shilajitHeroZoomConfig";
+import {
+  bindScrollProgressLock,
+  createScrollProgressLock,
+} from "@/lib/scroll/scrollProgressLock";
 
 const SCROLL_ID = "shilajit-hero-zoom";
 const DESKTOP_START_SCALE = 0.52;
@@ -245,6 +249,8 @@ export default function ShilajitHeroZoomSection() {
           return;
         }
 
+        const progressLock = createScrollProgressLock();
+
         ScrollTrigger.create({
           id: SCROLL_ID,
           trigger: sequence,
@@ -258,8 +264,15 @@ export default function ShilajitHeroZoomSection() {
           fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
-          onRefresh: () =>
-            applyProgress(ScrollTrigger.getById(SCROLL_ID)?.progress ?? 0),
+          ...bindScrollProgressLock(progressLock, {
+            onLeaveBack: () => applyProgress(0),
+            onLockedEnd: () => applyProgress(1),
+          }),
+          onRefresh: () => {
+            const st = ScrollTrigger.getById(SCROLL_ID);
+            if (!st) return;
+            applyProgress(progressLock.resolve(st.progress, st.direction));
+          },
         });
 
         syncScroll = () => {
@@ -267,7 +280,7 @@ export default function ShilajitHeroZoomSection() {
 
           const st = ScrollTrigger.getById(SCROLL_ID);
           if (st) {
-            applyProgress(st.progress);
+            applyProgress(progressLock.resolve(st.progress, st.direction));
             return;
           }
 

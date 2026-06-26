@@ -10,6 +10,7 @@ import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 
 const HERO_POSTER_SRC = "/hero/moringa/sequence/frame-001.webp";
+const HONEY_POSTER_SRC = HONEY_LUXURY_VIDEO_SCROLL.poster;
 const HONEY_VIDEO_SRC = HONEY_LUXURY_VIDEO_SCROLL.src;
 const MORINGA_VIDEO_SRC = MORINGA_VIDEO_SCROLL.sources.hd;
 const MIN_DISPLAY_MS = 1400;
@@ -245,23 +246,34 @@ export default function SiteIntroReveal() {
       void (async () => {
         await preloadImage(BRAND_LOGO_SRC);
         setBarProgress(12);
+        if (HONEY_POSTER_SRC) {
+          await preloadImage(HONEY_POSTER_SRC);
+        }
         await preloadImage(HERO_POSTER_SRC);
         setBarProgress(22);
 
-        const honeyReady = await warmVideoToFirstFrame(
-          HONEY_VIDEO_SRC,
-          MAX_INTRO_MS - 500,
-          (ratio) => {
-            honeyRatio = ratio;
-            setBarProgress(Math.min(96, 22 + ratio * 68));
-          }
-        );
+        const honeyWarm =
+          window.__heroWarmPromises?.honey ??
+          warmVideoToFirstFrame(
+            HONEY_VIDEO_SRC,
+            MAX_INTRO_MS - 500,
+            (ratio) => {
+              honeyRatio = ratio;
+              setBarProgress(Math.min(96, 22 + ratio * 68));
+            }
+          );
+        const moringaWarm =
+          window.__heroWarmPromises?.moringa ??
+          warmVideoToFirstFrame(MORINGA_VIDEO_SRC, 6000);
+        window.__heroWarmPromises = { honey: honeyWarm, moringa: moringaWarm };
+
+        const honeyReady = await honeyWarm;
 
         if (!honeyReady) {
           setBarProgress(94);
         }
 
-        await warmVideoToFirstFrame(MORINGA_VIDEO_SRC, 4000);
+        await moringaWarm;
         setBarProgress(100);
 
         const elapsed = Date.now() - startTime;

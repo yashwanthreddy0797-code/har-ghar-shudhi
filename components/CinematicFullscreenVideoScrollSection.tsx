@@ -27,6 +27,11 @@ import {
   isVideoFrameReady,
   waitForVideoFirstFrame,
 } from "@/lib/scroll/videoReadiness";
+import { markHomeHeroScrollReady } from "@/lib/scroll/heroMediaGate";
+import {
+  bindScrollProgressLock,
+  createScrollProgressLock,
+} from "@/lib/scroll/scrollProgressLock";
 
 function waitForVideoReady(video: HTMLVideoElement, timeoutMs = 4500): Promise<boolean> {
   return waitForVideoFirstFrame(video, timeoutMs);
@@ -181,29 +186,15 @@ export default function CinematicFullscreenVideoScrollSection({
       }
 
       beginVideoPreload(video);
-      const ready = await waitForVideoReady(
-        video,
-        preferNativeScroll() ? 6000 : 5000
-      );
+
       if (cancelled || !videoRef.current || videoRef.current !== video) {
         setupInFlight = false;
         return;
       }
 
-      if (!ready) {
-        setupInFlight = false;
-        scheduleSetupRetry(500);
-        return;
-      }
-
-      if (priority) {
-        try {
-          video.currentTime = 0;
-        } catch {
-          /* ignore */
-        }
-        setVideoReady(true);
-      }
+      const warmPromise = priority
+        ? window.__heroWarmPromises?.honey
+        : undefined;
 
       const { gsap, ScrollTrigger } = getGsap();
       const touchScroll = preferNativeScroll();
@@ -214,16 +205,60 @@ export default function CinematicFullscreenVideoScrollSection({
         gsap.ticker.lagSmoothing(500, 33);
       }
 
+      let videoScrubReady = isVideoFrameReady(video);
+      let videoScrub: ReturnType<typeof createVideoScrubSeeker> | undefined;
+
+      const ensureVideoScrub = () => {
+        if (videoScrub || !isVideoFrameReady(video)) return;
+        video.pause();
+        try {
+          video.currentTime = 0;
+        } catch {
+          /* ignore */
+        }
+        videoScrub = createVideoScrubSeeker(video, { touchScroll });
+        detachVideoScrub = () => videoScrub?.detach();
+        videoScrubReady = true;
+        if (priority) setVideoReady(true);
+      };
+
+      ensureVideoScrub();
+
+      void warmPromise?.then(() => {
+        if (cancelled || !videoRef.current || videoRef.current !== video) return;
+        ensureVideoScrub();
+        syncScroll?.();
+      });
+
+      void waitForVideoReady(
+        video,
+        preferNativeScroll() ? 6000 : 5000
+      ).then((ready) => {
+        if (cancelled || !videoRef.current || videoRef.current !== video) return;
+        if (!ready) return;
+        ensureVideoScrub();
+        if (priority) {
+          try {
+            video.currentTime = 0;
+          } catch {
+            /* ignore */
+          }
+          setVideoReady(true);
+        }
+        syncScroll?.();
+      });
+
       ctx = gsap.context(() => {
         const reducedMotion = window.matchMedia(
           "(prefers-reduced-motion: reduce)"
         ).matches;
 
         video.pause();
-        video.currentTime = 0;
-
-        const videoScrub = createVideoScrubSeeker(video, { touchScroll });
-        detachVideoScrub = () => videoScrub.detach();
+        try {
+          video.currentTime = 0;
+        } catch {
+          /* ignore */
+        }
 
         let scrollTarget = 0;
         let sectionActive = priority;
@@ -237,7 +272,7 @@ export default function CinematicFullscreenVideoScrollSection({
           const media = gsap.utils.clamp(0, 1, mediaProgress);
           const duration = video.duration;
 
-          if (Number.isFinite(duration) && duration > 0) {
+          if (videoScrubReady && videoScrub && Number.isFinite(duration) && duration > 0) {
             videoScrub.setTargetTime(media * duration);
           }
 
@@ -310,6 +345,18 @@ export default function CinematicFullscreenVideoScrollSection({
 
         progressSmoother.reset(0);
 
+        const progressLock = createScrollProgressLock();
+        const snapLockedEnd = () => {
+          scrollTarget = 1;
+          progressSmoother.reset(1);
+          applyProgress(1, 1);
+        };
+        const snapUnlockedStart = () => {
+          scrollTarget = 0;
+          progressSmoother.reset(0);
+          applyProgress(0, 0);
+        };
+
         ScrollTrigger.create({
           id: scrollId,
           trigger: sequence,
@@ -323,21 +370,25 @@ export default function CinematicFullscreenVideoScrollSection({
           fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
-          onUpdate: (self) => {
-            scrollTarget = self.progress;
-          },
-          onEnter: () => {
-            sectionActive = true;
-          },
-          onEnterBack: () => {
-            sectionActive = true;
-          },
-          onLeave: () => {
-            sectionActive = false;
-          },
-          onLeaveBack: () => {
-            sectionActive = false;
-          },
+          ...bindScrollProgressLock(progressLock, {
+            onEnter: () => {
+              sectionActive = true;
+            },
+            onEnterBack: () => {
+              sectionActive = true;
+            },
+            onLeave: () => {
+              sectionActive = false;
+            },
+            onLeaveBack: () => {
+              sectionActive = false;
+              snapUnlockedStart();
+            },
+            onUpdate: (progress) => {
+              scrollTarget = progress;
+            },
+            onLockedEnd: snapLockedEnd,
+          }),
         });
 
         syncScroll = () => {
@@ -356,6 +407,7 @@ export default function CinematicFullscreenVideoScrollSection({
         syncScroll();
         setupComplete = true;
         setupInFlight = false;
+        if (priority) markHomeHeroScrollReady();
       }, root);
     };
 

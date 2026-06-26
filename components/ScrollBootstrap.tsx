@@ -2,6 +2,7 @@
 
 import { useLayoutEffect } from "react";
 import { getGsap } from "@/lib/gsap/client";
+import { onHomeHeroScrollReady } from "@/lib/scroll/heroMediaGate";
 
 declare global {
   interface Window {
@@ -37,6 +38,7 @@ function releaseScrollLock() {
 export default function ScrollBootstrap() {
   useLayoutEffect(() => {
     window.__scrollBootstrapDone = false;
+    delete window.__homeHeroScrollReady;
 
     const html = document.documentElement;
     html.classList.remove("scroll-ready");
@@ -48,7 +50,6 @@ export default function ScrollBootstrap() {
     window.scrollTo(0, 0);
 
     const releaseAfterBootstrap = () => {
-      // Two frames after Lenis so ScrollTrigger pins settle before reveal.
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           window.scrollTo(0, 0);
@@ -57,40 +58,57 @@ export default function ScrollBootstrap() {
       });
     };
 
-    const onLenisInit = () => {
-      if (isHomeRoute() && !window.__siteIntroComplete) {
-        window.addEventListener(INTRO_COMPLETE_EVENT, releaseAfterBootstrap, {
-          once: true,
-        });
-        window.setTimeout(releaseAfterBootstrap, 5000);
-        return;
-      }
+    let lenisReady = false;
+    let introDone = !isHomeRoute() || window.__siteIntroComplete === true;
+    let heroReady = false;
+    let releaseQueued = false;
+
+    const tryRelease = () => {
+      if (releaseQueued) return;
+      if (!lenisReady) return;
+      if (isHomeRoute() && (!introDone || !heroReady)) return;
+      releaseQueued = true;
       releaseAfterBootstrap();
     };
 
+    const onLenisInit = () => {
+      lenisReady = true;
+      tryRelease();
+    };
+
     const onIntroComplete = () => {
-      releaseAfterBootstrap();
+      introDone = true;
+      tryRelease();
+    };
+
+    const onHeroReady = () => {
+      heroReady = true;
+      tryRelease();
     };
 
     window.addEventListener("lenis-init", onLenisInit, { once: true });
 
     let introListener: (() => void) | undefined;
+    let removeHeroListener: (() => void) | undefined;
     let shopFallback: number | undefined;
     let hardFallback: number;
 
     if (isHomeRoute()) {
-      introListener = onIntroComplete;
-      window.addEventListener(INTRO_COMPLETE_EVENT, introListener, { once: true });
-      hardFallback = window.setTimeout(releaseScrollLock, 5000);
+      if (!introDone) {
+        introListener = onIntroComplete;
+        window.addEventListener(INTRO_COMPLETE_EVENT, introListener, { once: true });
+      }
+      removeHeroListener = onHomeHeroScrollReady(onHeroReady);
+      hardFallback = window.setTimeout(releaseAfterBootstrap, 8000);
     } else {
-      // Pages without SmoothScroll — release on the next frame.
-      shopFallback = window.setTimeout(releaseScrollLock, 0);
-      hardFallback = window.setTimeout(releaseScrollLock, 800);
+      shopFallback = window.setTimeout(releaseAfterBootstrap, 0);
+      hardFallback = window.setTimeout(releaseAfterBootstrap, 800);
     }
 
     const onPageShow = (e: PageTransitionEvent) => {
       if (!e.persisted) return;
       window.__scrollBootstrapDone = false;
+      releaseQueued = false;
       html.classList.remove("scroll-ready");
       window.scrollTo(0, 0);
       window.setTimeout(releaseScrollLock, 150);
@@ -105,6 +123,7 @@ export default function ScrollBootstrap() {
       if (introListener) {
         window.removeEventListener(INTRO_COMPLETE_EVENT, introListener);
       }
+      removeHeroListener?.();
     };
   }, []);
 

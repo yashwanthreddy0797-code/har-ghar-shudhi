@@ -9,6 +9,10 @@ import {
   easeOutCubic,
   tickerDeltaSeconds,
 } from "@/lib/scroll/smoothProgress";
+import {
+  bindScrollProgressLock,
+  createScrollProgressLock,
+} from "@/lib/scroll/scrollProgressLock";
 import type { ProductVideoScrollConfig } from "@/lib/hero/productVideoScroll";
 import {
   useResponsiveScrollHeight,
@@ -182,12 +186,57 @@ export default function ProductVideoScrollSection({
         return;
       }
 
-      await waitForVideoReady(video);
       if (cancelled || !videoRef.current || videoRef.current !== video) return;
+
+      const warmPromise = priority
+        ? window.__heroWarmPromises?.moringa
+        : undefined;
 
       const { gsap, ScrollTrigger } = getGsap();
       detachVideoScrub?.();
       ctx?.revert();
+
+      let videoScrubReady = isVideoFrameReady(video);
+      let videoScrub: ReturnType<typeof createVideoScrubSeeker> | undefined;
+
+      const revealIntroCopy = () => {
+        gsap.set(introLeftRef.current, { y: 0, autoAlpha: 1 });
+        gsap.set(introRightRef.current, { y: 0, autoAlpha: 1 });
+        gsap.set(introLeftDesktopRef.current, { y: 0, autoAlpha: 1 });
+        gsap.set(introRightDesktopRef.current, { y: 0, autoAlpha: 1 });
+      };
+
+      const ensureVideoScrub = () => {
+        if (videoScrub || !isVideoFrameReady(video)) return;
+        video.pause();
+        try {
+          video.currentTime = 0;
+        } catch {
+          /* ignore */
+        }
+        const touchScroll = preferNativeScroll();
+        videoScrub = createVideoScrubSeeker(video, { touchScroll });
+        detachVideoScrub = () => videoScrub?.detach();
+        videoScrubReady = true;
+        setVideoReady(true);
+        revealIntroCopy();
+      };
+
+      ensureVideoScrub();
+
+      void warmPromise?.then(() => {
+        if (cancelled || !videoRef.current || videoRef.current !== video) return;
+        ensureVideoScrub();
+        syncScroll?.();
+      });
+
+      void waitForVideoReady(video).then((ready) => {
+        if (cancelled || !videoRef.current || videoRef.current !== video) return;
+        if (ready) {
+          ensureVideoScrub();
+          syncScroll?.();
+        }
+      });
 
       ctx = gsap.context(() => {
         const reducedMotion = window.matchMedia(
@@ -200,10 +249,11 @@ export default function ProductVideoScrollSection({
         }
 
         video.pause();
-        video.currentTime = 0;
-
-        const videoScrub = createVideoScrubSeeker(video, { touchScroll });
-        detachVideoScrub = () => videoScrub.detach();
+        try {
+          video.currentTime = 0;
+        } catch {
+          /* ignore */
+        }
 
         let scrollTarget = 0;
         let sectionActive = priority;
@@ -217,7 +267,7 @@ export default function ProductVideoScrollSection({
           const media = gsap.utils.clamp(0, 1, mediaProgress);
           const duration = video.duration;
 
-          if (Number.isFinite(duration) && duration > 0) {
+          if (videoScrubReady && videoScrub && Number.isFinite(duration) && duration > 0) {
             videoScrub.setTargetTime(media * duration);
           }
 
@@ -303,10 +353,11 @@ export default function ProductVideoScrollSection({
           }
         };
 
-        gsap.set(introLeftRef.current, { y: 0, autoAlpha: 1 });
-        gsap.set(introRightRef.current, { y: 0, autoAlpha: 1 });
-        gsap.set(introLeftDesktopRef.current, { y: 0, autoAlpha: 1 });
-        gsap.set(introRightDesktopRef.current, { y: 0, autoAlpha: 1 });
+        gsap.set(introLeftRef.current, { y: 0, autoAlpha: 0 });
+        gsap.set(introRightRef.current, { y: 0, autoAlpha: 0 });
+        gsap.set(introLeftDesktopRef.current, { y: 0, autoAlpha: 0 });
+        gsap.set(introRightDesktopRef.current, { y: 0, autoAlpha: 0 });
+        if (videoScrubReady) revealIntroCopy();
         [benefitsLeftRef.current, benefitsRightRef.current]
           .filter(Boolean)
           .forEach((side) => {
@@ -342,6 +393,18 @@ export default function ProductVideoScrollSection({
 
         progressSmoother.reset(0);
 
+        const progressLock = createScrollProgressLock();
+        const snapLockedEnd = () => {
+          scrollTarget = 1;
+          progressSmoother.reset(1);
+          applyProgress(1, 1);
+        };
+        const snapUnlockedStart = () => {
+          scrollTarget = 0;
+          progressSmoother.reset(0);
+          applyProgress(0, 0);
+        };
+
         ScrollTrigger.create({
           id: scrollId,
           trigger: sequence,
@@ -355,25 +418,29 @@ export default function ProductVideoScrollSection({
           fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
-          onUpdate: (self) => {
-            scrollTarget = self.progress;
-          },
-          onEnter: () => {
-            sectionActive = true;
-          },
-          onEnterBack: () => {
-            sectionActive = true;
-          },
-          onLeave: () => {
-            sectionActive = false;
-          },
-          onLeaveBack: () => {
-            sectionActive = false;
-          },
+          ...bindScrollProgressLock(progressLock, {
+            onEnter: () => {
+              sectionActive = true;
+            },
+            onEnterBack: () => {
+              sectionActive = true;
+            },
+            onLeave: () => {
+              sectionActive = false;
+            },
+            onLeaveBack: () => {
+              sectionActive = false;
+              snapUnlockedStart();
+            },
+            onUpdate: (progress) => {
+              scrollTarget = progress;
+            },
+            onLockedEnd: snapLockedEnd,
+          }),
         });
 
         syncScroll = () => {
-          if (!isScrollExperienceReady()) return;
+          if (!priority && !isScrollExperienceReady()) return;
           if (!sectionActive) return;
 
           const { visual, media } = progressSmoother.step(
@@ -441,6 +508,7 @@ export default function ProductVideoScrollSection({
     <section
       ref={rootRef}
       data-video-ready={videoReady ? "" : undefined}
+      data-priority={priority ? "" : undefined}
       className={`product-video-scroll relative ${t.section} ${
         isPortraitVideo ? "product-video-scroll--portrait" : ""
       } ${theme === "dark" ? "product-video-scroll--dark" : ""}`}
@@ -503,7 +571,18 @@ export default function ProductVideoScrollSection({
 
           {/* Video — in-flow on mobile, fullscreen on desktop */}
           <div className="product-video-scroll-mobile__stage relative z-[1] flex min-h-0 flex-[1_1_auto] items-center justify-center px-4 py-3 md:absolute md:inset-0 md:z-0 md:flex-none md:py-16">
-            <div className={`${stageClass} ${t.panel} w-full max-w-[min(92vw,380px)] md:max-h-[min(62vh,540px)] md:max-w-[min(960px,52vw)]`}>
+            <div
+              className={`${stageClass} ${t.panel} w-full max-w-[min(92vw,380px)] md:max-h-[min(62vh,540px)] md:max-w-[min(960px,52vw)]`}
+              style={
+                poster
+                  ? {
+                      backgroundImage: `url(${poster})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }
+                  : undefined
+              }
+            >
               <video
                 ref={videoRef}
                 className={`product-video-scroll-video block h-full w-full ${t.videoClass}`}
