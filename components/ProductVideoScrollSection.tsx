@@ -153,11 +153,13 @@ export default function ProductVideoScrollSection({
 
     markReady();
     video.addEventListener("loadeddata", markReady);
+    video.addEventListener("loadedmetadata", markReady);
     video.addEventListener("canplay", markReady);
     video.addEventListener("error", markReady, { once: true });
 
     return () => {
       video.removeEventListener("loadeddata", markReady);
+      video.removeEventListener("loadedmetadata", markReady);
       video.removeEventListener("canplay", markReady);
       video.removeEventListener("error", markReady);
     };
@@ -170,9 +172,22 @@ export default function ProductVideoScrollSection({
     let syncScroll: (() => void) | undefined;
     let detachVideoScrub: (() => void) | undefined;
     let stopScrubWaiting: (() => void) | undefined;
+    let setupComplete = false;
+    let setupInFlight = false;
+    let setupRetryTimer: number | undefined;
+
+    const scheduleSetupRetry = (delayMs = 450) => {
+      if (cancelled || setupComplete) return;
+      window.clearTimeout(setupRetryTimer);
+      setupRetryTimer = window.setTimeout(() => {
+        setupInFlight = false;
+        void setup();
+      }, delayMs);
+    };
 
     const setup = async () => {
-      if (cancelled) return;
+      if (cancelled || setupInFlight || setupComplete) return;
+      setupInFlight = true;
 
       const root = rootRef.current;
       const sequence = sequenceRef.current;
@@ -180,6 +195,7 @@ export default function ProductVideoScrollSection({
       const video = videoRef.current;
 
       if (!root || !sequence || !pin || !video) {
+        setupInFlight = false;
         if (setupAttempts < 24 && !cancelled) {
           setupAttempts += 1;
           requestAnimationFrame(() => void setup());
@@ -187,7 +203,12 @@ export default function ProductVideoScrollSection({
         return;
       }
 
-      if (cancelled || !videoRef.current || videoRef.current !== video) return;
+      if (cancelled || !videoRef.current || videoRef.current !== video) {
+        setupInFlight = false;
+        return;
+      }
+
+      beginVideoPreload(video);
 
       const warmPromise = priority
         ? window.__heroWarmPromises?.moringa
@@ -422,6 +443,8 @@ export default function ProductVideoScrollSection({
         if (reducedMotion) {
           progressSmoother.reset(1);
           applyProgress(1, 1);
+          setupComplete = true;
+          setupInFlight = false;
           return;
         }
 
@@ -452,6 +475,9 @@ export default function ProductVideoScrollSection({
           fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
+          onToggle: (self) => {
+            sectionActive = self.isActive;
+          },
           ...bindScrollProgressLock(progressLock, {
             onEnter: () => {
               sectionActive = true;
@@ -464,7 +490,9 @@ export default function ProductVideoScrollSection({
             },
             onLeaveBack: () => {
               sectionActive = false;
-              snapUnlockedStart();
+              if (scrollTarget < 0.12) {
+                snapUnlockedStart();
+              }
             },
             onUpdate: (progress) => {
               scrollTarget = progress;
@@ -481,17 +509,23 @@ export default function ProductVideoScrollSection({
             scrollTarget,
             tickerDeltaSeconds(gsap)
           );
-          applyProgress(visual, media);
+          const videoMedia = touchScroll ? scrollTarget : media;
+          applyProgress(visual, videoMedia);
         };
 
         gsap.ticker.add(syncScroll);
         ScrollTrigger.refresh();
         syncScroll();
+        setupComplete = true;
+        setupInFlight = false;
+        window.setTimeout(() => ScrollTrigger.refresh(), 300);
+        window.setTimeout(() => ScrollTrigger.refresh(), 1200);
       }, root);
     };
 
     const runSetup = () => {
       if (typeof window !== "undefined" && !window.__lenisInitialized) return;
+      if (setupComplete || setupInFlight) return;
       void setup();
     };
 
@@ -505,13 +539,20 @@ export default function ProductVideoScrollSection({
       runSetup();
     }
 
-    const setupRetry = window.setTimeout(runSetup, priority ? 120 : 600);
-    const setupRetryLate = window.setTimeout(runSetup, priority ? 400 : 1500);
+    const setupRetry = window.setTimeout(runSetup, priority ? 80 : 600);
+    const setupRetryLate = window.setTimeout(runSetup, priority ? 300 : 1500);
+    const onWindowLoad = () => {
+      runSetup();
+      getGsap().ScrollTrigger.refresh();
+    };
+    window.addEventListener("load", onWindowLoad);
 
     return () => {
       cancelled = true;
       window.clearTimeout(setupRetry);
       window.clearTimeout(setupRetryLate);
+      window.clearTimeout(setupRetryTimer);
+      window.removeEventListener("load", onWindowLoad);
       removeLenisListener();
       const { gsap } = getGsap();
       if (syncScroll) gsap.ticker.remove(syncScroll);
@@ -544,7 +585,7 @@ export default function ProductVideoScrollSection({
       ref={rootRef}
       data-video-ready={videoReady ? "" : undefined}
       data-priority={priority ? "" : undefined}
-      className={`product-video-scroll relative ${t.section} ${
+      className={`product-video-scroll product-video-scroll-zone relative ${t.section} ${
         isPortraitVideo ? "product-video-scroll--portrait" : ""
       } ${theme === "dark" ? "product-video-scroll--dark" : ""}`}
       aria-label={`${hero.eyebrow} reveal`}

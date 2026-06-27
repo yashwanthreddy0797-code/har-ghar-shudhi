@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect } from "react";
 import HoneyLuxuryVideoScrollSection from "@/components/honey/HoneyLuxuryVideoScrollSection";
 import ProductVideoScrollSection from "@/components/ProductVideoScrollSection";
 import ShilajitHeroZoomSection from "@/components/shilajit/ShilajitHeroZoomSection";
@@ -8,9 +9,24 @@ import AshwagandhaScrollSection from "@/components/ashwagandha/AshwagandhaScroll
 import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import { SHILAJIT_VIDEO_SCROLL } from "@/lib/hero/shilajitVideoScrollConfig";
 import { SPIRULINA_LUXURY_VIDEO_SCROLL } from "@/lib/hero/spirulinaLuxuryVideoScrollConfig";
+import { preloadImageAsset, preloadVideoAsset } from "@/lib/scroll/preloadMedia";
+import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 import type { CatalogScrollSlug } from "@/lib/catalog/scrollProducts";
 
+const MORINGA_POSTER = "/hero/moringa/video/moringa-reveal-poster.webp";
+
 export default function CatalogProductScrollHero({ slug }: { slug: CatalogScrollSlug }) {
+  useLayoutEffect(() => {
+    if (slug === "moringa-powder") {
+      preloadVideoAsset(MORINGA_VIDEO_SCROLL.sources.hd);
+      preloadImageAsset(MORINGA_POSTER);
+      window.__heroWarmPromises = {
+        ...window.__heroWarmPromises,
+        moringa: warmVideoToFirstFrame(MORINGA_VIDEO_SCROLL.sources.hd, 10000),
+      };
+    }
+  }, [slug]);
+
   switch (slug) {
     case "wildforest-multiflora-honey":
       return <HoneyLuxuryVideoScrollSection />;

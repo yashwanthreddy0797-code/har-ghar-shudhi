@@ -55,7 +55,17 @@ export function createVideoScrubSeeker(
     seekUnlockTimer = window.setTimeout(releaseSeekLock, SEEK_UNLOCK_MS);
 
     try {
-      video.currentTime = clamped;
+      if (
+        "fastSeek" in video &&
+        typeof (video as HTMLVideoElement & { fastSeek?: (time: number) => void })
+          .fastSeek === "function"
+      ) {
+        (video as HTMLVideoElement & { fastSeek: (time: number) => void }).fastSeek(
+          clamped
+        );
+      } else {
+        video.currentTime = clamped;
+      }
     } catch {
       releaseSeekLock();
     }

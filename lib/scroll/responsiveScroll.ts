@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 
 export const MOBILE_MAX_WIDTH = 767;
 
@@ -50,9 +50,12 @@ export function useResponsiveScrollHeight(
     width?: number
   ) => number = scrollHeightForViewport
 ): number {
-  const [vh, setVh] = useState(desktopVh);
+  const [vh, setVh] = useState(() => {
+    if (typeof window === "undefined") return desktopVh;
+    return scaler(desktopVh);
+  });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const update = () => setVh(scaler(desktopVh));
     update();
     window.addEventListener("resize", update, { passive: true });
