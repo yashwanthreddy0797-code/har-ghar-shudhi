@@ -1,12 +1,9 @@
 import { notFound } from "next/navigation";
 import PageShell from "@/components/PageShell";
 import CatalogProductPage from "@/components/shop/catalog/CatalogProductPage";
-import CatalogProductScrollHero from "@/components/shop/catalog/CatalogProductScrollHero";
+import CatalogScrollProductPage from "@/components/shop/catalog/CatalogScrollProductPage";
 import { hasCatalogScrollHero } from "@/lib/catalog/scrollProducts";
 import ProductDetail from "@/components/shop/ProductDetail";
-import SmoothScroll from "@/components/SmoothScroll";
-import CertificatesProofSection from "@/components/CertificatesProofSection";
-import Footer from "@/components/Footer";
 import {
   getCatalogProductBySlug,
   getCatalogSlugs,
@@ -55,21 +52,8 @@ export default async function ProductPage({ params }: Props) {
     const product = getCatalogProductBySlug(slug);
     if (!product) notFound();
 
-    const scrollHero = hasCatalogScrollHero(slug);
-
-    if (scrollHero) {
-      return (
-        <SmoothScroll>
-          <CatalogProductScrollHero slug={slug} />
-          <div className="shop-typography bg-brand-white text-brand-text">
-            <main>
-              <CatalogProductPage product={product} />
-            </main>
-            <CertificatesProofSection />
-            <Footer variant="full" />
-          </div>
-        </SmoothScroll>
-      );
+    if (hasCatalogScrollHero(slug)) {
+      return <CatalogScrollProductPage product={product} slug={slug} />;
     }
 
     return (
