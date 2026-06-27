@@ -48,6 +48,19 @@ export default function BrandHeader() {
     setMobileOpen(false);
   }, []);
 
+  const handleLogoNavigate = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      onNavigate();
+      if (pathname === "/") {
+        e.preventDefault();
+        return;
+      }
+      e.preventDefault();
+      navigateToRoute(router, "/");
+    },
+    [onNavigate, pathname, router],
+  );
+
   const handleMobileNavigate = useCallback(
     (href: string) => {
       setMobileOpen(false);
@@ -211,7 +224,7 @@ export default function BrandHeader() {
               prefetch
               scroll={false}
               onPointerDown={onNavigate}
-              onClick={onNavigate}
+              onClick={handleLogoNavigate}
               aria-label="Har Ghar Shudhi home"
               className="flex h-full items-center"
             >

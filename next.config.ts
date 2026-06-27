@@ -17,6 +17,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/home",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     // Hero media is content-addressed by filename and never mutated in place,
     // so cache it aggressively. Repeat visits then skip the network entirely.

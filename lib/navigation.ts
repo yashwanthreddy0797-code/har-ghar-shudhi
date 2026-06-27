@@ -5,7 +5,7 @@ export const ANNOUNCEMENTS = [
 ];
 
 export const PRIMARY_NAV_LINKS = [
-  { href: "/home", label: "Home" },
+  { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/shop", label: "Shop" },
   { href: "/science-trust", label: "Science" },
