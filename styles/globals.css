@@ -813,6 +813,11 @@ html.site-intro-active body {
 .certificates-proof-section {
   overflow: visible;
   isolation: isolate;
+  margin-bottom: 0;
+}
+
+.certificates-proof-section + footer {
+  margin-top: 0;
 }
 
 .certificates-proof-section #proof-heading span {

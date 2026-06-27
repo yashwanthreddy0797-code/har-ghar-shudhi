@@ -169,7 +169,7 @@ export default function CertificatesProofSection({
   return (
     <section
       aria-labelledby="proof-heading"
-      className={`certificates-proof-section relative z-20 overflow-visible bg-white px-6 py-16 md:px-10 md:py-20 lg:px-12 lg:py-20 ${className}`}
+      className={`certificates-proof-section relative z-20 overflow-visible bg-white px-6 pt-14 pb-8 md:px-10 md:pt-16 md:pb-10 lg:px-12 lg:pt-16 lg:pb-10 ${className}`}
     >
       <div className="mx-auto max-w-5xl">
         <div className="overflow-visible pt-2 text-center">
@@ -206,7 +206,7 @@ export default function CertificatesProofSection({
         </ul>
 
         <ul
-          className="mt-12 flex flex-col items-center gap-12 border-t border-[#c9a962]/15 pt-12 sm:mt-14 sm:flex-row sm:justify-center sm:gap-0 lg:mt-16 lg:pt-16"
+          className="mt-10 flex flex-col items-center gap-10 border-t border-[#c9a962]/15 pt-10 sm:mt-12 sm:flex-row sm:justify-center sm:gap-0 sm:pt-12 lg:mt-12 lg:pt-12"
         >
           {BOTTOM_ROW.map((cert, index) => (
             <li

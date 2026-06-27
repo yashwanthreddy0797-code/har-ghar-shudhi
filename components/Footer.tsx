@@ -42,12 +42,12 @@ export default function Footer({ variant = "full" }: FooterProps) {
   return (
     <footer
       id="contact"
-      className="relative z-30 w-full max-w-[100vw] overflow-visible text-brand-text max-md:pb-[env(safe-area-inset-bottom,0px)] md:min-h-[40rem] md:overflow-hidden"
+      className="relative z-30 w-full max-w-[100vw] overflow-visible text-brand-text max-md:pb-[env(safe-area-inset-bottom,0px)] md:overflow-hidden"
     >
       <FooterIllustration variant="background" />
 
       <div className="relative z-10">
-        <div className="mx-auto max-w-6xl px-5 pb-12 pt-24 max-md:pt-28 sm:px-6 md:px-10 md:pb-12 md:pt-40 lg:px-12 lg:pt-44">
+        <div className="mx-auto max-w-6xl px-5 pb-12 pt-8 sm:px-6 md:px-10 md:pb-12 md:pt-10 lg:px-12 lg:pt-12">
           <div className="grid grid-cols-1 items-start gap-10 max-md:gap-8 md:grid-cols-12 md:gap-8 lg:gap-10">
             {/* Left — logo & tagline */}
             <div className="flex flex-col items-center md:col-span-3 md:items-start">
