@@ -21,10 +21,7 @@ import {
 } from "@/lib/scroll/responsiveScroll";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 import { createVideoScrubSeeker } from "@/lib/scroll/videoScrub";
-import {
-  isVideoFrameReady,
-  waitForVideoFirstFrame,
-} from "@/lib/scroll/videoReadiness";
+import { isVideoFrameReady } from "@/lib/scroll/videoReadiness";
 
 type Theme = {
   section: string;
@@ -85,8 +82,11 @@ const THEMES: Record<"light" | "dark", Theme> = {
   },
 };
 
-function waitForVideoReady(video: HTMLVideoElement) {
-  return waitForVideoFirstFrame(video, 8000).then(() => undefined);
+function beginVideoPreload(video: HTMLVideoElement) {
+  video.preload = "auto";
+  if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+    video.load();
+  }
 }
 
 interface ProductVideoScrollSectionProps {
@@ -169,6 +169,7 @@ export default function ProductVideoScrollSection({
     let setupAttempts = 0;
     let syncScroll: (() => void) | undefined;
     let detachVideoScrub: (() => void) | undefined;
+    let stopScrubWaiting: (() => void) | undefined;
 
     const setup = async () => {
       if (cancelled) return;
@@ -198,6 +199,8 @@ export default function ProductVideoScrollSection({
 
       let videoScrubReady = isVideoFrameReady(video);
       let videoScrub: ReturnType<typeof createVideoScrubSeeker> | undefined;
+      let scrubPoll: number | undefined;
+      let detachScrubListeners: (() => void) | undefined;
 
       const revealIntroCopy = () => {
         gsap.set(introLeftRef.current, { y: 0, autoAlpha: 1 });
@@ -206,8 +209,22 @@ export default function ProductVideoScrollSection({
         gsap.set(introRightDesktopRef.current, { y: 0, autoAlpha: 1 });
       };
 
+      const stopWaitingForScrub = () => {
+        if (scrubPoll !== undefined) {
+          window.clearInterval(scrubPoll);
+          scrubPoll = undefined;
+        }
+        detachScrubListeners?.();
+        detachScrubListeners = undefined;
+      };
+      stopScrubWaiting = stopWaitingForScrub;
+
       const ensureVideoScrub = () => {
-        if (videoScrub || !isVideoFrameReady(video)) return;
+        if (videoScrub) return true;
+        if (cancelled || !videoRef.current || videoRef.current !== video) {
+          return false;
+        }
+        if (!isVideoFrameReady(video)) return false;
         video.pause();
         try {
           video.currentTime = 0;
@@ -216,26 +233,43 @@ export default function ProductVideoScrollSection({
         }
         const touchScroll = preferNativeScroll();
         videoScrub = createVideoScrubSeeker(video, { touchScroll });
-        detachVideoScrub = () => videoScrub?.detach();
+        detachVideoScrub = () => {
+          stopWaitingForScrub();
+          videoScrub?.detach();
+        };
         videoScrubReady = true;
         setVideoReady(true);
         revealIntroCopy();
+        stopWaitingForScrub();
+        syncScroll?.();
+        return true;
       };
 
-      ensureVideoScrub();
+      // Wire the scrubber the instant the video can paint a frame. A poll plus
+      // media events guarantee it initializes regardless of how the decode/cache
+      // race resolves, so the video never ends up frozen while scrolling.
+      if (!ensureVideoScrub()) {
+        beginVideoPreload(video);
+        const onMediaReady = () => {
+          ensureVideoScrub();
+        };
+        video.addEventListener("loadeddata", onMediaReady);
+        video.addEventListener("canplay", onMediaReady);
+        video.addEventListener("canplaythrough", onMediaReady);
+        video.addEventListener("seeked", onMediaReady);
+        detachScrubListeners = () => {
+          video.removeEventListener("loadeddata", onMediaReady);
+          video.removeEventListener("canplay", onMediaReady);
+          video.removeEventListener("canplaythrough", onMediaReady);
+          video.removeEventListener("seeked", onMediaReady);
+        };
+        scrubPoll = window.setInterval(() => {
+          if (!ensureVideoScrub() && !cancelled) beginVideoPreload(video);
+        }, 250);
+      }
 
       void warmPromise?.then(() => {
-        if (cancelled || !videoRef.current || videoRef.current !== video) return;
         ensureVideoScrub();
-        syncScroll?.();
-      });
-
-      void waitForVideoReady(video).then((ready) => {
-        if (cancelled || !videoRef.current || videoRef.current !== video) return;
-        if (ready) {
-          ensureVideoScrub();
-          syncScroll?.();
-        }
       });
 
       ctx = gsap.context(() => {
@@ -481,6 +515,7 @@ export default function ProductVideoScrollSection({
       removeLenisListener();
       const { gsap } = getGsap();
       if (syncScroll) gsap.ticker.remove(syncScroll);
+      stopScrubWaiting?.();
       detachVideoScrub?.();
       ctx?.revert();
     };

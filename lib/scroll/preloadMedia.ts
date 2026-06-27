@@ -2,27 +2,23 @@ const preloadedVideos = new Set<string>();
 const preloadedImages = new Set<string>();
 
 /**
- * Hint the browser to fetch scroll-scrubbed hero videos early.
+ * Warm the HTTP cache for a scroll-scrubbed hero video.
  *
- * Emits a single `<link rel="preload">` so the request joins the document's
- * fetch queue at high priority. Actual decode is handled by the warm helper or
- * the inline `<video>` element, so we deliberately avoid spinning up an extra
- * detached `<video>` here — that just duplicated the same download.
+ * Note: `<link rel="preload" as="video">` is NOT a valid preload type — browsers
+ * reject it ("unsupported `as` value") and fetch nothing. The reliable way to
+ * prime the cache is a muted, detached `<video preload="auto">`, which shares the
+ * download with the inline player via the HTTP cache.
  */
 export function preloadVideoAsset(src: string) {
   if (typeof document === "undefined" || preloadedVideos.has(src)) return;
   preloadedVideos.add(src);
 
-  const linkId = `preload-video-${src}`;
-  if (!document.getElementById(linkId)) {
-    const link = document.createElement("link");
-    link.id = linkId;
-    link.rel = "preload";
-    link.as = "video";
-    link.href = src;
-    link.setAttribute("fetchpriority", "high");
-    document.head.appendChild(link);
-  }
+  const video = document.createElement("video");
+  video.preload = "auto";
+  video.muted = true;
+  video.playsInline = true;
+  video.src = src;
+  video.load();
 }
 
 export function preloadImageAsset(src: string) {

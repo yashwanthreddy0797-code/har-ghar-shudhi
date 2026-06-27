@@ -81,7 +81,7 @@ export default function AboutPage() {
         eyebrow="Our Process"
         title={NATURE_TO_YOU.headline}
         description={NATURE_TO_YOU.subline}
-        imageSrc="/hero/moringa/sequence/frame-001.webp"
+        imageSrc="/hero/moringa/video/moringa-reveal-poster.webp"
         imageAlt="Natural herbs and botanical ingredients"
         imagePosition="left"
         variant="light"

@@ -23,19 +23,12 @@ import {
 } from "@/lib/scroll/smoothProgress";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 import { createVideoScrubSeeker } from "@/lib/scroll/videoScrub";
-import {
-  isVideoFrameReady,
-  waitForVideoFirstFrame,
-} from "@/lib/scroll/videoReadiness";
+import { isVideoFrameReady } from "@/lib/scroll/videoReadiness";
 import { markHomeHeroScrollReady } from "@/lib/scroll/heroMediaGate";
 import {
   bindScrollProgressLock,
   createScrollProgressLock,
 } from "@/lib/scroll/scrollProgressLock";
-
-function waitForVideoReady(video: HTMLVideoElement, timeoutMs = 4500): Promise<boolean> {
-  return waitForVideoFirstFrame(video, timeoutMs);
-}
 
 function beginVideoPreload(video: HTMLVideoElement) {
   video.preload = "auto";
@@ -98,14 +91,10 @@ export default function CinematicFullscreenVideoScrollSection({
     beginVideoPreload(video);
 
     const markReady = () => {
-      if (priority && video.currentTime > 0.02) {
-        try {
-          video.currentTime = 0;
-        } catch {
-          /* ignore seek errors during decode */
-        }
-      }
-
+      // Do NOT reset currentTime here: media events (canplay/loadeddata/seeked)
+      // fire after every scrub seek, so resetting would fight the scrubber and
+      // freeze the hero on frame 0 (most visible on touch devices). The scrub
+      // seeker owns currentTime once it's wired.
       if (isVideoFrameReady(video)) {
         setVideoReady(true);
       }
@@ -138,6 +127,7 @@ export default function CinematicFullscreenVideoScrollSection({
     let setupAttempts = 0;
     let syncScroll: (() => void) | undefined;
     let detachVideoScrub: (() => void) | undefined;
+    let stopScrubWaiting: (() => void) | undefined;
     let sectionObserver: IntersectionObserver | undefined;
     let setupComplete = false;
     let setupInFlight = false;
@@ -207,9 +197,25 @@ export default function CinematicFullscreenVideoScrollSection({
 
       let videoScrubReady = isVideoFrameReady(video);
       let videoScrub: ReturnType<typeof createVideoScrubSeeker> | undefined;
+      let scrubPoll: number | undefined;
+      let detachScrubListeners: (() => void) | undefined;
+
+      const stopWaitingForScrub = () => {
+        if (scrubPoll !== undefined) {
+          window.clearInterval(scrubPoll);
+          scrubPoll = undefined;
+        }
+        detachScrubListeners?.();
+        detachScrubListeners = undefined;
+      };
+      stopScrubWaiting = stopWaitingForScrub;
 
       const ensureVideoScrub = () => {
-        if (videoScrub || !isVideoFrameReady(video)) return;
+        if (videoScrub) return true;
+        if (cancelled || !videoRef.current || videoRef.current !== video) {
+          return false;
+        }
+        if (!isVideoFrameReady(video)) return false;
         video.pause();
         try {
           video.currentTime = 0;
@@ -217,35 +223,42 @@ export default function CinematicFullscreenVideoScrollSection({
           /* ignore */
         }
         videoScrub = createVideoScrubSeeker(video, { touchScroll });
-        detachVideoScrub = () => videoScrub?.detach();
+        detachVideoScrub = () => {
+          stopWaitingForScrub();
+          videoScrub?.detach();
+        };
         videoScrubReady = true;
         if (priority) setVideoReady(true);
+        stopWaitingForScrub();
+        syncScroll?.();
+        return true;
       };
 
-      ensureVideoScrub();
+      // Create the scrubber the instant the video can paint a frame. We don't
+      // rely on a single timed wait: a poll + media events guarantee the
+      // scrubber is wired no matter how the decode/cache race resolves.
+      if (!ensureVideoScrub()) {
+        const onMediaReady = () => {
+          ensureVideoScrub();
+        };
+        video.addEventListener("loadeddata", onMediaReady);
+        video.addEventListener("canplay", onMediaReady);
+        video.addEventListener("canplaythrough", onMediaReady);
+        video.addEventListener("seeked", onMediaReady);
+        detachScrubListeners = () => {
+          video.removeEventListener("loadeddata", onMediaReady);
+          video.removeEventListener("canplay", onMediaReady);
+          video.removeEventListener("canplaythrough", onMediaReady);
+          video.removeEventListener("seeked", onMediaReady);
+        };
+        beginVideoPreload(video);
+        scrubPoll = window.setInterval(() => {
+          if (!ensureVideoScrub() && !cancelled) beginVideoPreload(video);
+        }, 250);
+      }
 
       void warmPromise?.then(() => {
-        if (cancelled || !videoRef.current || videoRef.current !== video) return;
         ensureVideoScrub();
-        syncScroll?.();
-      });
-
-      void waitForVideoReady(
-        video,
-        preferNativeScroll() ? 6000 : 5000
-      ).then((ready) => {
-        if (cancelled || !videoRef.current || videoRef.current !== video) return;
-        if (!ready) return;
-        ensureVideoScrub();
-        if (priority) {
-          try {
-            video.currentTime = 0;
-          } catch {
-            /* ignore */
-          }
-          setVideoReady(true);
-        }
-        syncScroll?.();
       });
 
       ctx = gsap.context(() => {
@@ -466,6 +479,7 @@ export default function CinematicFullscreenVideoScrollSection({
       sectionObserver?.disconnect();
       const { gsap } = getGsap();
       if (syncScroll) gsap.ticker.remove(syncScroll);
+      stopScrubWaiting?.();
       detachVideoScrub?.();
       ctx?.revert();
     };

@@ -2,19 +2,11 @@
 
 import { useLayoutEffect } from "react";
 import { getGsap } from "@/lib/gsap/client";
-import { onHomeHeroScrollReady } from "@/lib/scroll/heroMediaGate";
 
 declare global {
   interface Window {
     __scrollBootstrapDone?: boolean;
-    __siteIntroComplete?: boolean;
   }
-}
-
-const INTRO_COMPLETE_EVENT = "site-intro-complete";
-
-function isHomeRoute() {
-  return typeof window !== "undefined" && window.location.pathname === "/";
 }
 
 function releaseScrollLock() {
@@ -59,14 +51,11 @@ export default function ScrollBootstrap() {
     };
 
     let lenisReady = false;
-    let introDone = !isHomeRoute() || window.__siteIntroComplete === true;
-    let heroReady = false;
     let releaseQueued = false;
 
     const tryRelease = () => {
       if (releaseQueued) return;
       if (!lenisReady) return;
-      if (isHomeRoute() && (!introDone || !heroReady)) return;
       releaseQueued = true;
       releaseAfterBootstrap();
     };
@@ -76,34 +65,10 @@ export default function ScrollBootstrap() {
       tryRelease();
     };
 
-    const onIntroComplete = () => {
-      introDone = true;
-      tryRelease();
-    };
-
-    const onHeroReady = () => {
-      heroReady = true;
-      tryRelease();
-    };
-
     window.addEventListener("lenis-init", onLenisInit, { once: true });
 
-    let introListener: (() => void) | undefined;
-    let removeHeroListener: (() => void) | undefined;
-    let shopFallback: number | undefined;
-    let hardFallback: number;
-
-    if (isHomeRoute()) {
-      if (!introDone) {
-        introListener = onIntroComplete;
-        window.addEventListener(INTRO_COMPLETE_EVENT, introListener, { once: true });
-      }
-      removeHeroListener = onHomeHeroScrollReady(onHeroReady);
-      hardFallback = window.setTimeout(releaseAfterBootstrap, 8000);
-    } else {
-      shopFallback = window.setTimeout(releaseAfterBootstrap, 0);
-      hardFallback = window.setTimeout(releaseAfterBootstrap, 800);
-    }
+    const shopFallback = window.setTimeout(releaseAfterBootstrap, 0);
+    const hardFallback = window.setTimeout(releaseAfterBootstrap, 800);
 
     const onPageShow = (e: PageTransitionEvent) => {
       if (!e.persisted) return;
@@ -116,14 +81,10 @@ export default function ScrollBootstrap() {
     window.addEventListener("pageshow", onPageShow);
 
     return () => {
-      if (shopFallback !== undefined) window.clearTimeout(shopFallback);
+      window.clearTimeout(shopFallback);
       window.clearTimeout(hardFallback);
       window.removeEventListener("pageshow", onPageShow);
       window.removeEventListener("lenis-init", onLenisInit);
-      if (introListener) {
-        window.removeEventListener(INTRO_COMPLETE_EVENT, introListener);
-      }
-      removeHeroListener?.();
     };
   }, []);
 

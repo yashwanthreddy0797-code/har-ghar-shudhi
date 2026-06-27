@@ -696,7 +696,7 @@ export default function ProductScrollExperience({
         <>
           {config.id === "moringa" ? (
             <Image
-              src="/hero/moringa/sequence/frame-001.webp"
+              src="/hero/moringa/video/moringa-reveal-poster.webp"
               alt=""
               width={720}
               height={1024}
