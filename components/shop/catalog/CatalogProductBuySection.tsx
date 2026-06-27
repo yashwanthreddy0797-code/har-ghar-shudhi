@@ -64,7 +64,7 @@ export default function CatalogProductBuySection({
           ) : null}
         </div>
 
-        <div className="grid items-center gap-5 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-8">
+        <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
           <div>
             <ProductImageGallery
               images={galleryImages}
