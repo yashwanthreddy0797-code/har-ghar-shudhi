@@ -16,11 +16,8 @@ const TRUST_BADGES = [
 
 export default function CatalogProductPage({
   product,
-  skipImageHero = false,
 }: {
   product: CatalogProduct;
-  /** When a cinematic scroll hero renders above, hide the duplicate product image. */
-  skipImageHero?: boolean;
 }) {
   const related = getRelatedCatalogProducts(product.relatedSlugs);
 
@@ -37,8 +34,8 @@ export default function CatalogProductPage({
             Back to shop
           </Link>
 
-          <div className={`grid items-start gap-10 ${skipImageHero ? "" : "lg:grid-cols-2 lg:gap-16"}`}>
-            <div className={skipImageHero ? "" : "order-2 lg:order-1"}>
+          <div className="grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
+            <div className="order-2 lg:order-1">
               <p className="font-shop text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-green">
                 {product.badge ?? product.tagline}
               </p>
@@ -83,7 +80,6 @@ export default function CatalogProductPage({
               </div>
             </div>
 
-            {!skipImageHero ? (
             <div className="order-1 lg:order-2">
               <div className="relative overflow-hidden rounded-xl border border-brand-border bg-brand-cream shadow-[0_24px_60px_rgba(45,82,57,0.08)]">
                 <ProductImage
@@ -95,7 +91,6 @@ export default function CatalogProductPage({
                 />
               </div>
             </div>
-            ) : null}
           </div>
         </div>
       </section>

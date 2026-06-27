@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: Props) {
           <CatalogProductScrollHero slug={slug} />
           <div className="shop-typography bg-brand-white text-brand-text">
             <main>
-              <CatalogProductPage product={product} skipImageHero />
+              <CatalogProductPage product={product} />
             </main>
             <CertificatesProofSection />
             <Footer variant="full" />
