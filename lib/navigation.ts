@@ -6,9 +6,10 @@ export const ANNOUNCEMENTS = [
 
 export const PRIMARY_NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
   { href: "/shop", label: "Shop" },
+  { href: "/about", label: "Our Story" },
   { href: "/science-trust", label: "Science" },
+  { href: "/philosophy", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

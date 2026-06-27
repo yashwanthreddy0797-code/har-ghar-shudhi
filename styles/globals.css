@@ -2139,3 +2139,52 @@ html.site-intro-active body {
     transform: none;
   }
 }
+
+/* Homepage hero & welcome */
+.home-hero {
+  background: #1a2421;
+}
+
+.home-hero__mortar {
+  opacity: 0.95;
+}
+
+@media (max-width: 767px) {
+  .home-hero__mortar {
+    right: -8%;
+    bottom: 6%;
+    opacity: 0.55;
+  }
+}
+
+@media (min-width: 768px) {
+  .home-hero__mortar {
+    right: 2%;
+    bottom: 0;
+  }
+}
+
+.home-welcome {
+  background-color: #f7f4ef;
+  background-image:
+    radial-gradient(
+      ellipse 60% 50% at 50% 0%,
+      rgba(232, 242, 235, 0.55),
+      transparent 65%
+    );
+}
+
+.home-welcome__leaf--left {
+  left: -2rem;
+}
+
+.home-welcome__leaf--right {
+  right: -2rem;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+@media (max-width: 767px) {
+  .home-welcome__leaf {
+    display: none;
+  }
+}

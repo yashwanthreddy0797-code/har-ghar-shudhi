@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Menu, ShoppingBag, X } from "lucide-react";
+import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import BrandLogo from "@/components/BrandLogo";
 import {
   PRIMARY_NAV_LINKS,
@@ -127,7 +127,13 @@ export default function BrandHeader() {
   }, [mobileOpen, closeMobileMenu]);
 
   const showGlass = !isHome || scrolled;
+  const showHeroNav = isHome && !scrolled;
   const cartCount = cart?.totalQuantity ?? 0;
+
+  const isNavActive = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   const mobileMenu =
     mobileOpen && mounted
@@ -217,7 +223,7 @@ export default function BrandHeader() {
             : "border-transparent bg-transparent",
         ].join(" ")}
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5 md:h-[4.5rem] md:px-12 lg:grid lg:grid-cols-3 lg:gap-4">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-5 md:h-[4.5rem] md:px-12 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
           <div className="flex h-full min-w-0 items-center lg:justify-self-start">
             <Link
               href="/"
@@ -232,35 +238,67 @@ export default function BrandHeader() {
                 size="nav"
                 priority
                 href={null}
-                className="brightness-0 invert"
+                variant={showHeroNav ? "default" : "white"}
+                className={showHeroNav ? "" : "brightness-0 invert"}
               />
             </Link>
           </div>
 
           <nav
             aria-label="Main navigation"
-            className="hidden items-center justify-center gap-7 justify-self-center lg:flex"
+            className="hidden items-center justify-center gap-5 justify-self-center xl:gap-7 lg:flex"
           >
-            {NAV_LINKS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch
-                scroll={false}
-                onPointerDown={onNavigate}
-                onClick={onNavigate}
-                className="whitespace-nowrap font-sans text-xs font-medium uppercase tracking-wider text-white/75 transition-colors duration-150 hover:text-white"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {NAV_LINKS.map((item) => {
+              const active = isNavActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  prefetch
+                  scroll={false}
+                  onPointerDown={onNavigate}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={[
+                    "relative whitespace-nowrap pb-1 font-sans text-[11px] font-medium uppercase tracking-[0.14em] transition-colors duration-150",
+                    active
+                      ? "text-white after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white"
+                      : "text-white/75 hover:text-white",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="flex items-center gap-3 md:gap-4 lg:justify-self-end">
+            <Link
+              href="/search"
+              prefetch
+              scroll={false}
+              onPointerDown={onNavigate}
+              onClick={onNavigate}
+              aria-label="Search"
+              className="hidden text-white/75 transition-colors duration-150 hover:text-white md:inline-flex"
+            >
+              <Search className="h-4 w-4" strokeWidth={1.5} />
+            </Link>
             <SearchBar
-              className="brand-header-search hidden md:block [&_input]:border-white/20 [&_input]:bg-white/10 [&_input]:text-white [&_input]:placeholder:text-white/40"
+              className="brand-header-search hidden lg:block [&_input]:border-white/20 [&_input]:bg-white/10 [&_input]:text-white [&_input]:placeholder:text-white/40"
               onNavigate={onNavigate}
             />
+            <Link
+              href="/track-order"
+              prefetch
+              scroll={false}
+              onPointerDown={onNavigate}
+              onClick={onNavigate}
+              aria-label="Account"
+              className="hidden text-white/75 transition-colors duration-150 hover:text-white sm:inline-flex"
+            >
+              <User className="h-4 w-4" strokeWidth={1.5} />
+            </Link>
             <button
               type="button"
               aria-label="Open cart"
