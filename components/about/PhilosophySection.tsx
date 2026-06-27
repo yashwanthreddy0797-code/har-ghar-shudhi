@@ -19,35 +19,6 @@ export default function PhilosophySection() {
       id="why-we-exist"
       className="philosophy-section scroll-mt-36 border-b border-brand-border/60"
     >
-      <div className="philosophy-section__leaf philosophy-section__leaf--tl" aria-hidden>
-        <Image
-          src="/cinematic/herbs/leaf-1.svg"
-          alt=""
-          width={120}
-          height={120}
-          className="h-full w-full opacity-[0.14]"
-        />
-      </div>
-      <div className="philosophy-section__leaf philosophy-section__leaf--bl" aria-hidden>
-        <Image
-          src="/cinematic/herbs/leaf-3.svg"
-          alt=""
-          width={140}
-          height={140}
-          className="h-full w-full opacity-[0.12]"
-        />
-      </div>
-
-      <div className="philosophy-section__seal" aria-hidden>
-        <Image
-          src="/about/philosophy/seal.png"
-          alt=""
-          width={88}
-          height={88}
-          className="h-full w-full object-contain opacity-[0.55]"
-        />
-      </div>
-
       <div className="relative z-[1] mx-auto max-w-6xl px-6 py-16 md:px-12 md:py-24">
         <header className="mx-auto max-w-3xl text-center">
           <p className="font-shop text-[10px] font-semibold uppercase tracking-[0.32em] text-[#3d5c44]">
@@ -106,6 +77,7 @@ export default function PhilosophySection() {
                       src={item.image}
                       alt=""
                       fill
+                      unoptimized
                       sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 260px"
                       className="object-cover object-center"
                     />

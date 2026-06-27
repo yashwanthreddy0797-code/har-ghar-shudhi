@@ -3,6 +3,7 @@ import Link from "next/link";
 
 export const BRAND_LOGO_SRC = "/brand/har-ghar-shudhi-logo.png";
 export const BRAND_LOGO_WHITE_SRC = "/brand/har-ghar-shudhi-logo-white.png";
+export const BRAND_HOME_ROUTE = "/";
 
 /** Height-based sizes — `nav` fits inside the fixed header bar (h-16 / md:h-[4.5rem]) */
 const SIZE_CLASS = {
@@ -28,7 +29,7 @@ interface BrandLogoProps {
 export default function BrandLogo({
   size = "md",
   variant = "default",
-  href = "/",
+  href = BRAND_HOME_ROUTE,
   className = "",
   priority = false,
 }: BrandLogoProps) {

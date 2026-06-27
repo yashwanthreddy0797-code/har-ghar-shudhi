@@ -9,6 +9,7 @@ import AshwagandhaScrollSection from "@/components/ashwagandha/AshwagandhaScroll
 import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import { SHILAJIT_VIDEO_SCROLL } from "@/lib/hero/shilajitVideoScrollConfig";
 import { SPIRULINA_LUXURY_VIDEO_SCROLL } from "@/lib/hero/spirulinaLuxuryVideoScrollConfig";
+import { ASHWAGANDHA_LUXURY_VIDEO_SCROLL } from "@/lib/hero/ashwagandhaLuxuryVideoScrollConfig";
 import { preloadImageAsset, preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 import type { CatalogScrollSlug } from "@/lib/catalog/scrollProducts";
@@ -23,6 +24,17 @@ export default function CatalogProductScrollHero({ slug }: { slug: CatalogScroll
       window.__heroWarmPromises = {
         ...window.__heroWarmPromises,
         moringa: warmVideoToFirstFrame(MORINGA_VIDEO_SCROLL.sources.hd, 10000),
+      };
+    }
+
+    if (slug === "ashwagandha-advance") {
+      preloadVideoAsset(ASHWAGANDHA_LUXURY_VIDEO_SCROLL.src);
+      window.__heroWarmPromises = {
+        ...window.__heroWarmPromises,
+        ashwagandha: warmVideoToFirstFrame(
+          ASHWAGANDHA_LUXURY_VIDEO_SCROLL.src,
+          14000,
+        ),
       };
     }
   }, [slug]);

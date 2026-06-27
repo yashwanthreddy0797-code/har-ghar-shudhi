@@ -5,7 +5,6 @@ import ShopExploreSection from "@/components/shop/ShopExploreSection";
 import ProductGrid from "@/components/shop/ProductGrid";
 import BrandPillarsBar from "@/components/about/BrandPillarsBar";
 import { getStoreProducts } from "@/lib/commerce/products";
-import { BRAND_INTRO, BRAND_TAGLINE } from "@/lib/brand/content";
 
 export const revalidate = 3600;
 
@@ -22,7 +21,6 @@ export default async function ShopPage() {
     <PageShell proofSectionClassName="relative z-20 !overflow-visible border-t border-brand-border/60 !pt-14 md:!pt-16">
       <CategoryHero
         title="All Products"
-        description={`${BRAND_TAGLINE} — ${BRAND_INTRO}`}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Shop" }]}
       />
       <BrandPillarsBar />

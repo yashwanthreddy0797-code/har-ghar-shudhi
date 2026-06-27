@@ -14,25 +14,25 @@ export const WHY_WE_EXIST = [
     id: "nature",
     title: "Reconnect with Nature",
     description: "To reconnect people with the healing power of nature.",
-    image: "/about/philosophy/nature.png",
+    image: "/about/philosophy/nature.jpg",
   },
   {
     id: "pure",
     title: "Pure & Effective",
     description: "To create products that are pure, safe and effective.",
-    image: "/about/philosophy/pure-effective.png",
+    image: "/about/philosophy/pure-effective.jpg",
   },
   {
     id: "trust",
     title: "A Brand You Can Trust",
     description: "To build a brand you can trust, always.",
-    image: "/about/philosophy/trust.png",
+    image: "/about/philosophy/trust.jpg",
   },
   {
     id: "planet",
     title: "Greener Planet",
     description: "To contribute to a greener and healthier planet.",
-    image: "/about/philosophy/greener-planet.png",
+    image: "/about/philosophy/greener-planet.jpg",
   },
 ] as const;
 
@@ -201,11 +201,8 @@ export const BRAND_PILLARS = [
 export const ABOUT_SECTIONS = [
   { id: "story", label: "Our Story" },
   { id: "vision-mission", label: "Vision & Mission" },
-  { id: "why-we-exist", label: "Why We Exist" },
-  { id: "promise", label: "Our Promise" },
+  { id: "why-we-exist", label: "Our Philosophy" },
   { id: "journey", label: "From Nature to You" },
-  { id: "transparency", label: "Transparency" },
   { id: "quality", label: "Quality" },
-  { id: "value", label: "Fair Value" },
-  { id: "delivery", label: "Delivery" },
+  { id: "who-we-are", label: "Who We Are" },
 ] as const;

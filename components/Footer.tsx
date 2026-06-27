@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import BrandLogo from "@/components/BrandLogo";
 import FooterIllustration from "@/components/FooterIllustration";
-import { SHOP_LINKS, ABOUT_LINKS, CUSTOMER_LINKS } from "@/lib/navigation";
+import { HOME_ROUTE, SHOP_LINKS, ABOUT_LINKS, CUSTOMER_LINKS } from "@/lib/navigation";
 
 const POLICY_LINKS = CUSTOMER_LINKS.filter((link) =>
   link.href.startsWith("/policies")
@@ -32,6 +32,13 @@ const SOCIAL_LINKS = [
   { href: "https://linkedin.com", label: "LinkedIn", icon: Linkedin },
 ] as const;
 
+const FOOTER_NAV_SECTIONS = [
+  { label: "Quick Links", links: SHOP_LINKS.slice(0, 5) },
+  { label: "About", links: ABOUT_LINKS.slice(0, 5) },
+  { label: "Policies", links: POLICY_LINKS },
+  { label: "Connect", links: CONNECT_LINKS },
+] as const;
+
 interface FooterProps {
   variant?: "minimal" | "full";
 }
@@ -42,7 +49,7 @@ export default function Footer({ variant = "full" }: FooterProps) {
   return (
     <footer
       id="contact"
-      className="relative z-30 w-full max-w-[100vw] overflow-visible text-brand-text max-md:pb-[env(safe-area-inset-bottom,0px)] md:overflow-hidden"
+      className="relative z-30 w-full max-w-[100vw] overflow-visible text-brand-text max-md:pb-[env(safe-area-inset-bottom,0px)]"
     >
       <FooterIllustration variant="background" />
 
@@ -53,17 +60,17 @@ export default function Footer({ variant = "full" }: FooterProps) {
             <div className="flex flex-col items-center md:col-span-3 md:items-start">
               <BrandLogo
                 size="md"
-                href="/"
+                href={HOME_ROUTE}
                 className="h-24 w-auto max-w-[170px] sm:h-28 sm:max-w-[190px]"
               />
-              <p className="mt-4 max-w-[190px] text-center font-sans text-[11px] leading-[1.6] tracking-[0.04em] text-brand-muted md:text-left">
+              <p className="mt-4 max-w-[190px] text-center font-sans text-[11px] leading-[1.6] tracking-[0.04em] text-black md:text-left">
                 Rooted in Nature, Driven by Purpose — pure wellness for every home.
               </p>
             </div>
 
             {/* Center — headline, newsletter, nav, social */}
             <div className="md:col-span-6">
-              <div className="mx-auto max-w-lg text-center">
+              <div className="mx-auto max-w-lg text-center md:max-w-none">
                 <h2 className="font-sans text-base font-semibold uppercase tracking-[0.14em] text-brand-green-dark md:text-lg">
                   Pure Wellness, Thoughtfully Made
                 </h2>
@@ -95,34 +102,38 @@ export default function Footer({ variant = "full" }: FooterProps) {
                 </form>
 
                 <nav
-                  className="mt-8 flex flex-col items-stretch gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-center sm:gap-x-2 sm:gap-y-3 md:gap-x-3"
+                  className="relative mt-8 hidden md:flex md:items-center md:justify-center md:gap-0"
                   aria-label="Footer navigation"
                 >
-                  <FooterDropdown
-                    label="Quick Links"
-                    links={SHOP_LINKS.slice(0, 5)}
-                  />
-                  <span
-                    className="hidden text-brand-border/80 sm:inline"
-                    aria-hidden
-                  >
-                    |
-                  </span>
-                  <FooterDropdown label="About" links={ABOUT_LINKS.slice(0, 5)} />
-                  <span
-                    className="hidden text-brand-border/80 sm:inline"
-                    aria-hidden
-                  >
-                    |
-                  </span>
-                  <FooterDropdown label="Policies" links={POLICY_LINKS} />
-                  <span
-                    className="hidden text-brand-border/80 sm:inline"
-                    aria-hidden
-                  >
-                    |
-                  </span>
-                  <FooterDropdown label="Connect" links={CONNECT_LINKS} />
+                  {FOOTER_NAV_SECTIONS.map((section, index) => (
+                    <div key={section.label} className="flex items-center">
+                      {index > 0 && (
+                        <span
+                          className="mx-5 text-brand-green-dark/35 select-none"
+                          aria-hidden
+                        >
+                          |
+                        </span>
+                      )}
+                      <FooterHoverDropdown
+                        label={section.label}
+                        links={[...section.links]}
+                      />
+                    </div>
+                  ))}
+                </nav>
+
+                <nav
+                  className="mt-8 flex flex-col gap-3 md:hidden"
+                  aria-label="Footer navigation"
+                >
+                  {FOOTER_NAV_SECTIONS.map((section) => (
+                    <FooterAccordion
+                      key={section.label}
+                      label={section.label}
+                      links={[...section.links]}
+                    />
+                  ))}
                 </nav>
 
                 <div className="mt-8 flex items-center justify-center gap-5">
@@ -175,7 +186,7 @@ export default function Footer({ variant = "full" }: FooterProps) {
   );
 }
 
-function FooterDropdown({
+function FooterHoverDropdown({
   label,
   links,
 }: {
@@ -183,20 +194,54 @@ function FooterDropdown({
   links: { href: string; label: string }[];
 }) {
   return (
-    <details className="group relative">
-      <summary className="flex cursor-pointer list-none items-center gap-1 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-brand-green-dark transition-colors hover:text-brand-green [&::-webkit-details-marker]:hidden">
+    <div className="group relative">
+      <div className="flex cursor-default items-center gap-1.5 py-1 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-brand-green-dark">
         {label}
         <ChevronDown
-          className="h-3.5 w-3.5 transition-transform duration-200 group-open:rotate-180"
+          className="h-3 w-3 shrink-0 transition-transform duration-150 group-hover:rotate-180"
+          strokeWidth={2}
+        />
+      </div>
+      <div className="pointer-events-none invisible absolute left-0 top-full z-30 min-w-[170px] pt-2 opacity-0 group-hover:pointer-events-auto group-hover:visible group-hover:opacity-100">
+        <ul className="bg-white/95 py-2 shadow-[0_8px_24px_rgba(45,82,57,0.12)] backdrop-blur-sm">
+          {links.map((link) => (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                className="block whitespace-nowrap px-4 py-2 text-left font-sans text-sm text-brand-green-dark transition-colors hover:bg-brand-green-light/40 hover:text-brand-green"
+              >
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function FooterAccordion({
+  label,
+  links,
+}: {
+  label: string;
+  links: { href: string; label: string }[];
+}) {
+  return (
+    <details className="group overflow-hidden rounded-md border border-brand-border/60 bg-white/90 shadow-[0_4px_16px_rgba(45,82,57,0.06)] backdrop-blur-md">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-2 px-4 py-3 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-brand-green-dark transition-colors hover:text-brand-green [&::-webkit-details-marker]:hidden">
+        {label}
+        <ChevronDown
+          className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-open:rotate-180"
           strokeWidth={2}
         />
       </summary>
-      <ul className="relative left-0 z-40 mt-2 w-full min-w-0 translate-x-0 border border-brand-border/60 bg-white/95 py-2 shadow-[0_8px_24px_rgba(45,82,57,0.08)] backdrop-blur-md sm:absolute sm:left-1/2 sm:top-full sm:mt-3 sm:min-w-[200px] sm:-translate-x-1/2 sm:border-white/60 sm:shadow-[0_16px_48px_rgba(45,82,57,0.12)]">
+      <ul className="border-t border-brand-border/40 px-2 py-2">
         {links.map((link) => (
           <li key={link.href}>
             <Link
               href={link.href}
-              className="block px-5 py-2.5 text-left font-sans text-sm text-brand-muted transition-colors hover:bg-brand-green-light/50 hover:text-brand-green"
+              className="block rounded px-3 py-2.5 text-left font-sans text-sm text-brand-muted transition-colors hover:bg-brand-green-light/50 hover:text-brand-green"
             >
               {link.label}
             </Link>

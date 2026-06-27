@@ -123,6 +123,11 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
         answer:
           "Yes. Every batch is tested for purity, heavy metals, and quality standards.",
       },
+      {
+        question: "How do I take Pure Shilajit?",
+        answer:
+          "Dissolve a pea-sized portion in warm water, milk, or tea once daily, preferably in the morning.",
+      },
     ],
     relatedSlugs: [
       "ashwagandha-advance",
@@ -233,6 +238,11 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
         question: "Is it suitable for daily use?",
         answer: "Yes. It is formulated for consistent daily wellness support.",
       },
+      {
+        question: "Can it be used without a prescription?",
+        answer:
+          "Ashwagandha Advance is a wellness supplement and does not require a prescription. Consult your doctor if you are pregnant, nursing, or on medication.",
+      },
     ],
     relatedSlugs: ["pure-shilajit", "gut-shudhi", "master-mineral", "pain-shield"],
     finalCta: {
@@ -317,6 +327,16 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
         answer:
           "No. This is a wellness supplement. Consult your healthcare provider before use alongside medication.",
       },
+      {
+        question: "What is the benefit of Diabetes Shudhi?",
+        answer:
+          "Diabetes Shudhi combines Ayurvedic herbs traditionally used to support healthy blood sugar levels as part of a balanced diet and active lifestyle.",
+      },
+      {
+        question: "How long should I take it?",
+        answer:
+          "Most customers use it consistently for at least 8–12 weeks alongside dietary changes. Results vary by individual.",
+      },
     ],
     relatedSlugs: ["gut-shudhi", "master-mineral", "moringa-powder", "spirulina-powder"],
     finalCta: {
@@ -387,6 +407,16 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
       {
         question: "How long before I notice results?",
         answer: "Most users report improved digestion within 2–4 weeks of consistent use.",
+      },
+      {
+        question: "What is the benefit of Gut Shudhi?",
+        answer:
+          "Gut Shudhi supports digestive comfort, reduces bloating, and helps maintain a balanced gut environment using gentle Ayurvedic botanicals.",
+      },
+      {
+        question: "Can it be taken daily?",
+        answer:
+          "Yes. It is designed for everyday digestive wellness. Take as directed on the label or as advised by your practitioner.",
       },
     ],
     relatedSlugs: ["diabetes-shudhi", "ashwagandha-advance", "spirulina-powder", "moringa-powder"],
@@ -459,6 +489,15 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
         question: "Can I take this with other supplements?",
         answer: "Consult your practitioner when combining multiple mineral supplements.",
       },
+      {
+        question: "What is the benefit of Master Mineral?",
+        answer:
+          "Master Mineral delivers essential trace minerals in a bioavailable form to support energy, immunity, and overall daily wellness.",
+      },
+      {
+        question: "Is it suitable for vegetarians?",
+        answer: "Yes. Master Mineral is plant-derived and suitable for vegetarian diets.",
+      },
     ],
     relatedSlugs: ["pure-shilajit", "ashwagandha-advance", "pain-shield", "moringa-powder"],
     finalCta: {
@@ -530,6 +569,16 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
         question: "What does moringa taste like?",
         answer: "Moringa has a mild, earthy, green taste that blends well into smoothies and foods.",
       },
+      {
+        question: "What is the benefit of Moringa Powder?",
+        answer:
+          "Moringa is rich in vitamins, minerals, and antioxidants — supporting natural energy, immunity, and everyday nutrition.",
+      },
+      {
+        question: "How should I use it?",
+        answer:
+          "Mix one teaspoon into smoothies, juices, or warm water daily. Start with a smaller dose if you are new to moringa.",
+      },
     ],
     relatedSlugs: ["spirulina-powder", "wildforest-multiflora-honey", "gut-shudhi", "pure-shilajit"],
     finalCta: {
@@ -600,6 +649,16 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
       {
         question: "Is spirulina safe for daily use?",
         answer: "Yes. Our spirulina is tested for purity and suitable for daily consumption.",
+      },
+      {
+        question: "What is the benefit of Spirulina Powder?",
+        answer:
+          "Spirulina is a complete plant protein with iron, B vitamins, and antioxidants — ideal for energy, stamina, and immune support.",
+      },
+      {
+        question: "How do I take it?",
+        answer:
+          "Blend into smoothies or mix with water or juice. A typical serving is one teaspoon daily.",
       },
     ],
     relatedSlugs: ["moringa-powder", "gut-shudhi", "master-mineral", "ashwagandha-advance"],
@@ -676,6 +735,11 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
         question: "Does raw honey crystallise?",
         answer: "Yes. Crystallisation is a natural sign of purity. Gently warm to re-liquify.",
       },
+      {
+        question: "What is the benefit of Wildforest Honey?",
+        answer:
+          "Our multiflora honey is raw, unfiltered, and sourced from wild Himalayan forests — rich in natural enzymes and floral complexity.",
+      },
     ],
     relatedSlugs: ["pure-shilajit", "moringa-powder", "gut-shudhi", "pain-shield"],
     finalCta: {
@@ -746,6 +810,16 @@ export const HGS_CATALOG_PRODUCTS: CatalogProductInput[] = [
       {
         question: "Is Pain Shield suitable for daily use?",
         answer: "Yes. It is formulated for regular topical use on muscles and joints.",
+      },
+      {
+        question: "What is the benefit of Pain Shield?",
+        answer:
+          "Pain Shield provides fast-acting Ayurvedic relief for muscle stiffness, joint discomfort, and post-activity soreness.",
+      },
+      {
+        question: "How do I apply it?",
+        answer:
+          "Spray 2–3 pumps on the affected area and massage gently until absorbed. Use 2–3 times daily or as needed.",
       },
     ],
     relatedSlugs: ["ashwagandha-advance", "master-mineral", "pure-shilajit", "wildforest-multiflora-honey"],

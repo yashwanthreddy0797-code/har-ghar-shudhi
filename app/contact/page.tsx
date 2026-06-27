@@ -89,7 +89,7 @@ export default function ContactPage() {
               </li>
             </ul>
             <Link
-              href="/about#delivery"
+              href="/policies/shipping"
               className="mt-8 inline-block font-shop text-xs font-semibold uppercase tracking-[0.16em] text-brand-green hover:underline"
             >
               Learn about our delivery promise →

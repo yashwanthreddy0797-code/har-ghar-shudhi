@@ -12,6 +12,7 @@ import NavScrollReset from "@/components/NavScrollReset";
 import ScrollBootstrap from "@/components/ScrollBootstrap";
 import { CartProvider } from "@/components/cart/CartProvider";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { fetchCartAction } from "@/app/actions/cart";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -66,11 +67,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let initialCart = null;
+  try {
+    initialCart = await fetchCartAction();
+  } catch {
+    initialCart = null;
+  }
+
   return (
     <html
       lang="en"
@@ -87,7 +95,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ScrollBootstrap />
         <NavScrollReset />
-        <CartProvider>
+        <CartProvider initialCart={initialCart}>
           <BrandHeader />
           {children}
           <CartDrawer />

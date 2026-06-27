@@ -4,12 +4,13 @@ export const ANNOUNCEMENTS = [
   "Pure Ayurvedic wellness — Shilajit, Ashwagandha, superfoods & more",
 ];
 
+export const HOME_ROUTE = "/" as const;
+
 export const PRIMARY_NAV_LINKS = [
-  { href: "/", label: "Home" },
+  { href: HOME_ROUTE, label: "Home" },
   { href: "/shop", label: "Shop" },
   { href: "/about", label: "Our Story" },
   { href: "/science-trust", label: "Science" },
-  { href: "/philosophy", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ] as const;
 
@@ -28,13 +29,10 @@ export const SHOP_LINKS = [
 export const ABOUT_LINKS = [
   { href: "/about", label: "Our Story" },
   { href: "/about#vision-mission", label: "Vision & Mission" },
-  { href: "/about#why-we-exist", label: "Why We Exist" },
-  { href: "/about#promise", label: "Our Promise" },
+  { href: "/about#why-we-exist", label: "Our Philosophy" },
   { href: "/about#journey", label: "From Nature to You" },
-  { href: "/about#transparency", label: "Transparency" },
   { href: "/about#quality", label: "Quality Standards" },
-  { href: "/about#value", label: "Fair Value" },
-  { href: "/about#delivery", label: "Delivery & Care" },
+  { href: "/about#who-we-are", label: "Who We Are" },
 ];
 
 export const PHILOSOPHY_LINKS = [

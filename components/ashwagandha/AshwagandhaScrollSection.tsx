@@ -1,6 +1,11 @@
-import ProductScrollExperience from "@/components/ProductScrollExperience";
-import { ASHWAGANDHA_SCROLL } from "@/lib/hero/productScrollConfig";
+import CinematicFullscreenVideoScrollSection from "@/components/CinematicFullscreenVideoScrollSection";
+import { ASHWAGANDHA_LUXURY_VIDEO_SCROLL } from "@/lib/hero/ashwagandhaLuxuryVideoScrollConfig";
 
 export default function AshwagandhaScrollSection() {
-  return <ProductScrollExperience config={ASHWAGANDHA_SCROLL} />;
+  return (
+    <CinematicFullscreenVideoScrollSection
+      config={ASHWAGANDHA_LUXURY_VIDEO_SCROLL}
+      priority
+    />
+  );
 }

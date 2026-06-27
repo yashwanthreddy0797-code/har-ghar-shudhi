@@ -17,13 +17,14 @@ export default function AboutEditorialSplit({
   title: string;
   description?: string;
   children?: ReactNode;
-  imageSrc: string;
+  imageSrc?: string;
   imageAlt?: string;
   imagePosition?: "left" | "right";
   variant?: "light" | "dark";
 }) {
   const isDark = variant === "dark";
   const imageFirst = imagePosition === "left";
+  const hasImage = Boolean(imageSrc);
 
   return (
     <section
@@ -35,32 +36,39 @@ export default function AboutEditorialSplit({
           : "border-brand-border bg-brand-white text-brand-text",
       ].join(" ")}
     >
-      <div className="mx-auto grid max-w-6xl lg:grid-cols-2 lg:items-stretch">
-        <div
-          className={[
-            "relative min-h-[280px] lg:min-h-[480px]",
-            imageFirst ? "lg:order-1" : "lg:order-2",
-          ].join(" ")}
-        >
-          <Image
-            src={imageSrc}
-            alt={imageAlt}
-            fill
-            className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
-          />
+      <div
+        className={[
+          "mx-auto grid max-w-6xl",
+          hasImage ? "lg:grid-cols-2 lg:items-stretch" : "",
+        ].join(" ")}
+      >
+        {hasImage && imageSrc ? (
           <div
             className={[
-              "absolute inset-0",
-              isDark ? "bg-brand-green-dark/20" : "bg-brand-green/5",
+              "relative min-h-[280px] lg:min-h-[480px]",
+              imageFirst ? "lg:order-1" : "lg:order-2",
             ].join(" ")}
-          />
-        </div>
+          >
+            <Image
+              src={imageSrc}
+              alt={imageAlt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+            />
+            <div
+              className={[
+                "absolute inset-0",
+                isDark ? "bg-brand-green-dark/20" : "bg-brand-green/5",
+              ].join(" ")}
+            />
+          </div>
+        ) : null}
 
         <div
           className={[
             "flex flex-col justify-center px-6 py-14 md:px-12 md:py-20 lg:py-24",
-            imageFirst ? "lg:order-2" : "lg:order-1",
+            hasImage ? (imageFirst ? "lg:order-2" : "lg:order-1") : "mx-auto max-w-3xl",
           ].join(" ")}
         >
           <p

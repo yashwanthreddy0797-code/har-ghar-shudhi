@@ -3,7 +3,7 @@ import { CONCERNS } from "@/lib/types/product";
 
 interface CategoryHeroProps {
   title: string;
-  description: string;
+  description?: string;
   breadcrumbs?: { label: string; href?: string }[];
 }
 
@@ -38,9 +38,11 @@ export default function CategoryHero({
         <h1 className="font-display text-3xl font-medium tracking-[0.02em] text-brand-text md:text-[2.75rem]">
           {title}
         </h1>
-        <p className="mt-4 max-w-2xl font-body text-base italic leading-[1.8] text-brand-muted md:text-lg">
-          {description}
-        </p>
+        {description ? (
+          <p className="mt-4 max-w-2xl font-body text-base italic leading-[1.8] text-brand-muted md:text-lg">
+            {description}
+          </p>
+        ) : null}
 
         <div className="mt-7 flex flex-wrap gap-2">
           {CONCERNS.map((concern) => (

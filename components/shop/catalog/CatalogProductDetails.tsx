@@ -1,7 +1,9 @@
 import type { CatalogProduct } from "@/lib/catalog/types";
 import { getRelatedCatalogProducts } from "@/lib/catalog";
 import CatalogProductInfoAccordion from "@/components/shop/catalog/CatalogProductInfoAccordion";
+import CatalogProductFaqSection from "@/components/shop/catalog/CatalogProductFaqSection";
 import CatalogRelatedProducts from "@/components/shop/catalog/CatalogRelatedProducts";
+import CatalogCustomerReviews from "@/components/shop/catalog/CatalogCustomerReviews";
 
 export default function CatalogProductDetails({
   product,
@@ -18,11 +20,15 @@ export default function CatalogProductDetails({
         </div>
       </section>
 
+      <CatalogProductFaqSection product={product} />
+
       <section className="border-b border-brand-border bg-brand-white px-4 py-10 sm:px-6 md:px-10 md:py-14">
         <div className="mx-auto max-w-6xl">
           <CatalogRelatedProducts products={related} />
         </div>
       </section>
+
+      <CatalogCustomerReviews product={product} />
     </>
   );
 }

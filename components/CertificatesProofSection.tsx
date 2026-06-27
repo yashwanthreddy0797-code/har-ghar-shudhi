@@ -84,6 +84,17 @@ const BOTTOM_ROW: Certification[] = [
     logoClassName: "h-[4.5rem] w-auto sm:h-20",
     ring: true,
   },
+  {
+    id: "nmr-tested",
+    title: "NMR Certified",
+    description:
+      "NMR spectroscopy verified for purity and authenticity of every batch.",
+    logo: "/certifications/nmr-tested.png",
+    logoWidth: 120,
+    logoHeight: 120,
+    logoClassName: "h-[4.5rem] w-auto sm:h-20",
+    ring: true,
+  },
 ];
 
 function LotusEmblem() {
@@ -206,12 +217,12 @@ export default function CertificatesProofSection({
         </ul>
 
         <ul
-          className="mt-10 flex flex-col items-center gap-10 border-t border-[#c9a962]/15 pt-10 sm:mt-12 sm:flex-row sm:justify-center sm:gap-0 sm:pt-12 lg:mt-12 lg:pt-12"
+          className="mt-10 grid grid-cols-1 gap-10 border-t border-[#c9a962]/15 pt-10 sm:mt-12 sm:grid-cols-3 sm:gap-8 sm:pt-12 lg:mt-12 lg:gap-10 lg:pt-12"
         >
           {BOTTOM_ROW.map((cert, index) => (
             <li
               key={cert.id}
-              className={`flex w-full max-w-xs flex-col items-center px-6 sm:w-auto sm:max-w-none sm:px-14 lg:px-20 ${
+              className={`flex flex-col items-center px-4 sm:px-6 ${
                 index > 0 ? "sm:border-l sm:border-[#d4cfc4]/80" : ""
               }`}
             >

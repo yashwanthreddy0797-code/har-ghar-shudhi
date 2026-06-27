@@ -1,5 +1,17 @@
 export type CinematicVideoScrollTheme = "darkLuxury" | "warmHoney" | "spirulinaLuxury";
 
+export interface CinematicVideoScrollProgressSmoothing {
+  visualSmoothness?: number;
+  mediaSmoothness?: number;
+}
+
+export interface CinematicVideoScrollScrubOptions {
+  seekThreshold?: number;
+  seekMinIntervalMs?: number;
+  seekUnlockMs?: number;
+  performanceMode?: boolean;
+}
+
 export interface CinematicVideoScrollConfig {
   scrollId: string;
   src: string;
@@ -19,12 +31,46 @@ export interface CinematicVideoScrollConfig {
     title: string;
     link: { label: string; href: string };
   };
+  /** Hide headline / subtext overlay on the pinned video. */
+  hideOverlayCopy?: boolean;
+  /** Hide the top-right variant badge on the video. */
+  hideVariantLabel?: boolean;
+  /** Hide the bottom scroll hint on the video. */
+  hideScrollHint?: boolean;
+  /** Disable zoom scale on the video while scrolling — reduces jank on long films. */
+  disableVideoScale?: boolean;
+  /** Override default scroll-to-video smoothing (higher media = tighter scrub tracking). */
+  scrollProgressSmoothing?: CinematicVideoScrollProgressSmoothing;
+  /** Override seek coalescing for smoother scrub on heavier encodes. */
+  videoScrub?: CinematicVideoScrollScrubOptions;
+  /** Map scroll progress directly to video time (no media lag / easing). */
+  directVideoScrub?: boolean;
+  /** Scroll progress 0 maps to this timestamp instead of 00:00 (seconds). */
+  videoStartTime?: number;
   /** White logo pinned over the video — e.g. to mask a generator watermark. */
   videoLogoOverlay?: {
     className?: string;
     logoClassName?: string;
     backdropClassName?: string;
   };
+  /** Optional override for overlay subtext colour. */
+  subtextClassName?: string;
+  /** Fine-tune crop so in-video labels stay visible (e.g. `center 62%`). */
+  videoObjectPosition?: string;
+  /** Nudge the film downward inside the frame (e.g. `translateY(9vh)`). */
+  videoTransform?: string;
+}
+
+/** Map normalized scroll progress to a scrub timestamp, optionally skipping a dark intro. */
+export function cinematicScrubTimeFromProgress(
+  progress: number,
+  duration: number,
+  startTime = 0
+): number {
+  const clampedProgress = Math.max(0, Math.min(1, progress));
+  const start = Math.max(0, Math.min(startTime, duration - 0.05));
+  if (duration <= start) return start;
+  return start + clampedProgress * (duration - start);
 }
 
 export const CINEMATIC_VIDEO_THEMES: Record<

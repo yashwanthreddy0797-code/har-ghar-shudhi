@@ -6,6 +6,7 @@ import BrandLogo from "@/components/BrandLogo";
 import { getGsap } from "@/lib/gsap/client";
 import {
   CINEMATIC_VIDEO_THEMES,
+  cinematicScrubTimeFromProgress,
   type CinematicVideoScrollConfig,
 } from "@/lib/hero/cinematicVideoScroll";
 import { isScrollExperienceReady, onLenisInit } from "@/lib/scroll/lenisReady";
@@ -74,9 +75,20 @@ export default function CinematicFullscreenVideoScrollSection({
     headline,
     subtext,
     sequenceLabel,
-    closing,
-    videoLogoOverlay,
-  } = config;
+  closing,
+  videoLogoOverlay,
+  subtextClassName,
+  videoObjectPosition,
+  videoTransform,
+  hideOverlayCopy = false,
+  hideVariantLabel = false,
+  hideScrollHint = false,
+  disableVideoScale = false,
+  scrollProgressSmoothing,
+  videoScrub: videoScrubOptions,
+  directVideoScrub = false,
+  videoStartTime = 0,
+} = config;
   const t = CINEMATIC_VIDEO_THEMES[theme];
   const responsiveScrollVh = useResponsiveScrollHeight(
     scrollHeightVh,
@@ -91,6 +103,17 @@ export default function CinematicFullscreenVideoScrollSection({
     beginVideoPreload(video);
 
     const markReady = () => {
+      if (
+        videoStartTime > 0 &&
+        isVideoFrameReady(video) &&
+        video.currentTime < videoStartTime - 0.05
+      ) {
+        try {
+          video.currentTime = videoStartTime;
+        } catch {
+          /* ignore seek races while metadata loads */
+        }
+      }
       // Do NOT reset currentTime here: media events (canplay/loadeddata/seeked)
       // fire after every scrub seek, so resetting would fight the scrubber and
       // freeze the hero on frame 0 (most visible on touch devices). The scrub
@@ -112,14 +135,14 @@ export default function CinematicFullscreenVideoScrollSection({
       video.removeEventListener("canplay", markReady);
       video.removeEventListener("error", markReady);
     };
-  }, [src, priority]);
+  }, [src, priority, videoStartTime]);
 
   useLayoutEffect(() => {
-    if (priority) return;
+    if (priority || hideOverlayCopy) return;
     const { gsap } = getGsap();
     if (copyRef.current) gsap.set(copyRef.current, { autoAlpha: 0 });
-    if (hintRef.current) gsap.set(hintRef.current, { autoAlpha: 0 });
-  }, [priority]);
+    if (hintRef.current && !hideScrollHint) gsap.set(hintRef.current, { autoAlpha: 0 });
+  }, [hideOverlayCopy, hideScrollHint, priority]);
 
   useLayoutEffect(() => {
     let ctx: { revert: () => void } | undefined;
@@ -163,8 +186,6 @@ export default function CinematicFullscreenVideoScrollSection({
         !video ||
         !videoWrap ||
         !overlay ||
-        !copy ||
-        !hint ||
         !progress
       ) {
         setupInFlight = false;
@@ -218,11 +239,14 @@ export default function CinematicFullscreenVideoScrollSection({
         if (!isVideoFrameReady(video)) return false;
         video.pause();
         try {
-          video.currentTime = 0;
+          video.currentTime = videoStartTime;
         } catch {
           /* ignore */
         }
-        videoScrub = createVideoScrubSeeker(video, { touchScroll });
+        videoScrub = createVideoScrubSeeker(video, {
+          touchScroll,
+          ...videoScrubOptions,
+        });
         detachVideoScrub = () => {
           stopWaitingForScrub();
           videoScrub?.detach();
@@ -268,7 +292,7 @@ export default function CinematicFullscreenVideoScrollSection({
 
         video.pause();
         try {
-          video.currentTime = 0;
+          video.currentTime = videoStartTime;
         } catch {
           /* ignore */
         }
@@ -277,55 +301,83 @@ export default function CinematicFullscreenVideoScrollSection({
         let sectionActive = priority;
 
         const progressSmoother = createScrollProgressSmoother(
-          cinematicScrollProgressSmoothingForViewport()
+          scrollProgressSmoothing ??
+            cinematicScrollProgressSmoothingForViewport()
         );
 
-        const applyProgress = (visualProgress: number, mediaProgress: number) => {
-          const scrollProgress = easeInOutCubic(gsap.utils.clamp(0, 1, visualProgress));
+        const applyProgress = (
+          visualProgress: number,
+          mediaProgress: number,
+          skipVideoSeek = false
+        ) => {
+          const scrollProgress = directVideoScrub
+            ? gsap.utils.clamp(0, 1, visualProgress)
+            : easeInOutCubic(gsap.utils.clamp(0, 1, visualProgress));
           const media = gsap.utils.clamp(0, 1, mediaProgress);
           const duration = video.duration;
 
-          if (videoScrubReady && videoScrub && Number.isFinite(duration) && duration > 0) {
-            videoScrub.setTargetTime(media * duration);
+          if (
+            !skipVideoSeek &&
+            videoScrubReady &&
+            videoScrub &&
+            Number.isFinite(duration) &&
+            duration > 0
+          ) {
+            videoScrub.setTargetTime(
+              cinematicScrubTimeFromProgress(media, duration, videoStartTime)
+            );
           }
 
-          const copyIn = priority
-            ? 1 - easeOutCubic(gsap.utils.clamp(0, 1, scrollProgress / 0.28))
-            : easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.03) / 0.22));
-          const copyOut = easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.58) / 0.16));
+          const copyIn = hideOverlayCopy
+            ? 0
+            : priority
+              ? 1 - easeOutCubic(gsap.utils.clamp(0, 1, scrollProgress / 0.28))
+              : easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.03) / 0.22));
+          const copyOut = hideOverlayCopy
+            ? 0
+            : easeOutCubic(gsap.utils.clamp(0, 1, (scrollProgress - 0.58) / 0.16));
           const copyAlpha = copyIn * (1 - copyOut);
-          const hintFade = priority
-            ? gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.12)
-            : gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.08);
+          const hintFade = hideScrollHint
+            ? 0
+            : priority
+              ? gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.12)
+              : gsap.utils.clamp(0, 1, 1 - scrollProgress / 0.08);
 
           gsap.set(videoWrap, {
-            scale: touchScroll
-              ? 1
-              : gsap.utils.interpolate(1.06, 1, scrollProgress),
+            scale:
+              disableVideoScale || touchScroll
+                ? 1
+                : gsap.utils.interpolate(1.06, 1, scrollProgress),
             force3D: true,
             overwrite: "auto",
           });
 
           gsap.set(overlay, {
-            opacity: gsap.utils.interpolate(0.48, 0.22, scrollProgress),
+            opacity: hideOverlayCopy
+              ? gsap.utils.interpolate(0.18, 0.08, scrollProgress)
+              : gsap.utils.interpolate(0.48, 0.22, scrollProgress),
             overwrite: "auto",
           });
 
-          gsap.set(copy, {
-            autoAlpha: copyAlpha,
-            y:
-              gsap.utils.interpolate(28, 0, copyIn) +
-              gsap.utils.interpolate(0, -18, copyOut),
-            force3D: true,
-            overwrite: "auto",
-          });
+          if (copy) {
+            gsap.set(copy, {
+              autoAlpha: copyAlpha,
+              y:
+                gsap.utils.interpolate(28, 0, copyIn) +
+                gsap.utils.interpolate(0, -18, copyOut),
+              force3D: true,
+              overwrite: "auto",
+            });
+          }
 
-          gsap.set(hint, {
-            autoAlpha: hintFade,
-            y: gsap.utils.interpolate(0, -10, 1 - hintFade),
-            force3D: true,
-            overwrite: "auto",
-          });
+          if (hint) {
+            gsap.set(hint, {
+              autoAlpha: hintFade,
+              y: gsap.utils.interpolate(0, -10, 1 - hintFade),
+              force3D: true,
+              overwrite: "auto",
+            });
+          }
 
           gsap.set(progress, {
             scaleX: scrollProgress,
@@ -335,14 +387,20 @@ export default function CinematicFullscreenVideoScrollSection({
           });
         };
 
-        gsap.set(videoWrap, { scale: touchScroll ? 1 : 1.06, force3D: true });
-        gsap.set(overlay, { opacity: 0.48 });
-        if (priority) {
+        gsap.set(videoWrap, {
+          scale: disableVideoScale || touchScroll ? 1 : 1.06,
+          force3D: true,
+        });
+        gsap.set(overlay, { opacity: hideOverlayCopy ? 0.18 : 0.48 });
+        if (priority && copy && !hideOverlayCopy) {
           gsap.set(copy, { autoAlpha: 1, y: 0, force3D: true });
-          gsap.set(hint, { autoAlpha: 1, y: 0, force3D: true });
-        } else {
+        } else if (copy) {
           gsap.set(copy, { autoAlpha: 0, y: 28, force3D: true });
-          gsap.set(hint, { autoAlpha: 1, y: 0, force3D: true });
+        }
+        if (hint && !hideScrollHint) {
+          gsap.set(hint, { autoAlpha: priority ? 1 : 1, y: 0, force3D: true });
+        } else if (hint) {
+          gsap.set(hint, { autoAlpha: 0, y: 0, force3D: true });
         }
         gsap.set(progress, {
           scaleX: 0,
@@ -370,6 +428,61 @@ export default function CinematicFullscreenVideoScrollSection({
           applyProgress(0, 0);
         };
 
+        const applyVideoFromScroll = (progress: number) => {
+          const duration = video.duration;
+          if (
+            videoScrubReady &&
+            videoScrub &&
+            Number.isFinite(duration) &&
+            duration > 0
+          ) {
+            videoScrub.setTargetTime(
+              cinematicScrubTimeFromProgress(progress, duration, videoStartTime)
+            );
+          }
+        };
+
+        const scrollTriggerConfig = directVideoScrub
+          ? {
+              onEnter: () => {
+                sectionActive = true;
+              },
+              onEnterBack: () => {
+                sectionActive = true;
+              },
+              onLeave: () => {
+                sectionActive = false;
+              },
+              onLeaveBack: () => {
+                sectionActive = false;
+              },
+              onUpdate: (self: { progress: number }) => {
+                const progress = gsap.utils.clamp(0, 1, self.progress);
+                scrollTarget = progress;
+                applyVideoFromScroll(progress);
+                applyProgress(progress, progress, true);
+              },
+            }
+          : bindScrollProgressLock(progressLock, {
+              onEnter: () => {
+                sectionActive = true;
+              },
+              onEnterBack: () => {
+                sectionActive = true;
+              },
+              onLeave: () => {
+                sectionActive = false;
+              },
+              onLeaveBack: () => {
+                sectionActive = false;
+                snapUnlockedStart();
+              },
+              onUpdate: (progress) => {
+                scrollTarget = progress;
+              },
+              onLockedEnd: snapLockedEnd,
+            });
+
         ScrollTrigger.create({
           id: scrollId,
           trigger: sequence,
@@ -383,30 +496,17 @@ export default function CinematicFullscreenVideoScrollSection({
           fastScrollEnd: touchScroll,
           invalidateOnRefresh: true,
           refreshPriority: 1,
-          ...bindScrollProgressLock(progressLock, {
-            onEnter: () => {
-              sectionActive = true;
-            },
-            onEnterBack: () => {
-              sectionActive = true;
-            },
-            onLeave: () => {
-              sectionActive = false;
-            },
-            onLeaveBack: () => {
-              sectionActive = false;
-              snapUnlockedStart();
-            },
-            onUpdate: (progress) => {
-              scrollTarget = progress;
-            },
-            onLockedEnd: snapLockedEnd,
-          }),
+          ...scrollTriggerConfig,
         });
 
         syncScroll = () => {
           if (!priority && !isScrollExperienceReady()) return;
           if (!sectionActive) return;
+
+          if (directVideoScrub) {
+            applyProgress(scrollTarget, scrollTarget, true);
+            return;
+          }
 
           const { visual, media } = progressSmoother.step(
             scrollTarget,
@@ -483,10 +583,11 @@ export default function CinematicFullscreenVideoScrollSection({
       detachVideoScrub?.();
       ctx?.revert();
     };
-  }, [deferUntilVisible, priority, scrollId, responsiveScrollVh]);
+  }, [deferUntilVisible, directVideoScrub, disableVideoScale, hideOverlayCopy, hideScrollHint, priority, scrollId, scrollProgressSmoothing, responsiveScrollVh, videoScrubOptions, videoStartTime]);
 
   return (
     <section
+      id={scrollId}
       ref={rootRef}
       data-video-ready={videoReady ? "" : undefined}
       data-priority={priority ? "" : undefined}
@@ -514,7 +615,13 @@ export default function CinematicFullscreenVideoScrollSection({
           >
             <video
               ref={videoRef}
-              className="cinematic-video-scroll__video h-full w-full object-cover"
+              className="cinematic-video-scroll__video h-full w-full object-cover [transform:translateZ(0)]"
+              style={{
+                objectPosition: videoObjectPosition,
+                transform: videoTransform
+                  ? `${videoTransform} translateZ(0)`
+                  : undefined,
+              }}
               src={src}
               poster={poster}
               muted
@@ -529,7 +636,7 @@ export default function CinematicFullscreenVideoScrollSection({
             className={`pointer-events-none absolute inset-0 ${t.overlay}`}
           />
 
-          {variantLabel ? (
+          {variantLabel && !hideVariantLabel ? (
             <p
               className={`pointer-events-none absolute right-6 top-8 z-[4] rounded-full border px-3 py-1 font-sans text-[9px] uppercase tracking-[0.28em] backdrop-blur-sm md:right-10 ${t.badge}`}
             >
@@ -558,35 +665,39 @@ export default function CinematicFullscreenVideoScrollSection({
             </div>
           ) : null}
 
-          <div className="relative z-[2] flex h-full items-center justify-center px-5 pb-16 pt-20 max-md:px-4 max-md:pb-20 max-md:pt-24 md:px-12">
-            <div ref={copyRef} data-cinematic-overlay className="max-w-3xl text-center">
-              <p
-                className={`font-sans text-[9px] font-medium uppercase tracking-[0.3em] max-md:tracking-[0.28em] md:text-[10px] md:tracking-[0.34em] ${t.eyebrow}`}
-              >
-                {eyebrow}
-              </p>
-              <h2
-                className={`mt-4 font-display text-[clamp(1.85rem,8.5vw,4.5rem)] font-medium leading-[1.04] tracking-[0.02em] md:mt-5 ${t.headline}`}
-              >
-                {headline[0]}
-                <br />
-                <span className={t.headlineAccent}>{headline[1]}</span>
-              </h2>
-              <p
-                className={`mx-auto mt-4 max-w-xl font-body text-[13px] leading-[1.8] max-md:px-1 md:mt-6 md:text-base md:leading-[1.85] ${t.subtext}`}
-              >
-                {subtext}
-              </p>
+          {!hideOverlayCopy ? (
+            <div className="relative z-[2] flex h-full items-center justify-center px-5 pb-16 pt-20 max-md:px-4 max-md:pb-20 max-md:pt-24 md:px-12">
+              <div ref={copyRef} data-cinematic-overlay className="max-w-3xl text-center">
+                <p
+                  className={`font-sans text-[9px] font-medium uppercase tracking-[0.3em] max-md:tracking-[0.28em] md:text-[10px] md:tracking-[0.34em] ${t.eyebrow}`}
+                >
+                  {eyebrow}
+                </p>
+                <h2
+                  className={`mt-4 font-display text-[clamp(1.85rem,8.5vw,4.5rem)] font-medium leading-[1.04] tracking-[0.02em] md:mt-5 ${t.headline}`}
+                >
+                  {headline[0]}
+                  <br />
+                  <span className={t.headlineAccent}>{headline[1]}</span>
+                </h2>
+                <p
+                  className={`mx-auto mt-4 max-w-xl font-body text-[13px] leading-[1.8] max-md:px-1 md:mt-6 md:text-base md:leading-[1.85] ${subtextClassName ?? t.subtext}`}
+                >
+                  {subtext}
+                </p>
+              </div>
             </div>
-          </div>
+          ) : null}
 
-          <p
-            ref={hintRef}
-            data-cinematic-hint
-            className={`pointer-events-none absolute bottom-8 left-1/2 z-[3] max-md:bottom-6 -translate-x-1/2 font-sans text-[8px] uppercase tracking-[0.36em] md:bottom-10 md:text-[9px] md:tracking-[0.42em] ${t.hint}`}
-          >
-            {sequenceLabel}
-          </p>
+          {!hideScrollHint ? (
+            <p
+              ref={hintRef}
+              data-cinematic-hint
+              className={`pointer-events-none absolute bottom-8 left-1/2 z-[3] max-md:bottom-6 -translate-x-1/2 font-sans text-[8px] uppercase tracking-[0.36em] md:bottom-10 md:text-[9px] md:tracking-[0.42em] ${t.hint}`}
+            >
+              {sequenceLabel}
+            </p>
+          ) : null}
 
           <div className={`absolute bottom-0 left-0 right-0 z-[3] h-px ${t.progressTrack}`}>
             <div ref={progressRef} className={`h-full w-full origin-left ${t.progressBar}`} />

@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import BrandLogo from "@/components/BrandLogo";
 import {
+  HOME_ROUTE,
   PRIMARY_NAV_LINKS,
   SHOP_LINKS,
   CONCERN_LINKS,
@@ -33,7 +34,7 @@ function getScrollY() {
 export default function BrandHeader() {
   const pathname = usePathname();
   const router = useRouter();
-  const isHome = pathname === "/";
+  const isHome = pathname === HOME_ROUTE;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -50,13 +51,15 @@ export default function BrandHeader() {
 
   const handleLogoNavigate = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
       onNavigate();
-      if (pathname === "/") {
-        e.preventDefault();
+      prepareInstantNavigation();
+
+      if (pathname === HOME_ROUTE) {
         return;
       }
-      e.preventDefault();
-      navigateToRoute(router, "/");
+
+      navigateToRoute(router, HOME_ROUTE);
     },
     [onNavigate, pathname, router],
   );
@@ -127,11 +130,10 @@ export default function BrandHeader() {
   }, [mobileOpen, closeMobileMenu]);
 
   const showGlass = !isHome || scrolled;
-  const showHeroNav = isHome && !scrolled;
   const cartCount = cart?.totalQuantity ?? 0;
 
   const isNavActive = (href: string) => {
-    if (href === "/") return pathname === "/";
+    if (href === HOME_ROUTE) return pathname === HOME_ROUTE;
     return pathname === href || pathname.startsWith(`${href}/`);
   };
 
@@ -226,7 +228,7 @@ export default function BrandHeader() {
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-5 md:h-[4.5rem] md:px-12 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6">
           <div className="flex h-full min-w-0 items-center lg:justify-self-start">
             <Link
-              href="/"
+              href={HOME_ROUTE}
               prefetch
               scroll={false}
               onPointerDown={onNavigate}
@@ -238,8 +240,8 @@ export default function BrandHeader() {
                 size="nav"
                 priority
                 href={null}
-                variant={showHeroNav ? "default" : "white"}
-                className={showHeroNav ? "" : "brightness-0 invert"}
+                variant="white"
+                className="brightness-0 invert"
               />
             </Link>
           </div>

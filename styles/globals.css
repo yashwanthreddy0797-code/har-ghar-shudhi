@@ -1412,11 +1412,21 @@ html.site-intro-active body {
 }
 
 .vision-mission-card--vision {
-  background: #ffffff;
+  background: transparent;
+}
+
+.vision-mission-card--vision .vision-mission-card__media--full {
+  left: 0;
+  width: 100%;
 }
 
 .vision-mission-card--mission {
-  background: #f0ebe3;
+  background: transparent;
+}
+
+.vision-mission-card--mission .vision-mission-card__media--full {
+  left: 0;
+  width: 100%;
 }
 
 .vision-mission-card__content {
@@ -1461,7 +1471,6 @@ html.site-intro-active body {
 }
 
 .vision-mission-card__label {
-  margin-top: 1.25rem;
   font-family: var(--font-source-sans), system-ui, sans-serif;
   font-size: 10px;
   font-weight: 600;
@@ -1514,9 +1523,10 @@ html.site-intro-active body {
 .vision-mission-card--vision .vision-mission-card__media::before {
   background: linear-gradient(
     90deg,
-    #ffffff 0%,
-    rgba(255, 255, 255, 0.92) 18%,
-    rgba(255, 255, 255, 0.35) 55%,
+    rgba(255, 255, 255, 0.97) 0%,
+    rgba(255, 255, 255, 0.9) 28%,
+    rgba(255, 255, 255, 0.55) 48%,
+    rgba(255, 255, 255, 0.15) 68%,
     transparent 100%
   );
 }
@@ -1524,9 +1534,10 @@ html.site-intro-active body {
 .vision-mission-card--mission .vision-mission-card__media::before {
   background: linear-gradient(
     90deg,
-    #f0ebe3 0%,
-    rgba(240, 235, 227, 0.92) 18%,
-    rgba(240, 235, 227, 0.35) 55%,
+    rgba(249, 246, 241, 0.97) 0%,
+    rgba(249, 246, 241, 0.9) 28%,
+    rgba(249, 246, 241, 0.55) 48%,
+    rgba(249, 246, 241, 0.15) 68%,
     transparent 100%
   );
 }
@@ -2145,6 +2156,11 @@ html.site-intro-active body {
   background: #1a2421;
 }
 
+.home-hero__eyebrow {
+  color: #ffffff;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
+}
+
 .home-hero__mortar {
   opacity: 0.95;
 }
@@ -2166,25 +2182,4 @@ html.site-intro-active body {
 
 .home-welcome {
   background-color: #f7f4ef;
-  background-image:
-    radial-gradient(
-      ellipse 60% 50% at 50% 0%,
-      rgba(232, 242, 235, 0.55),
-      transparent 65%
-    );
-}
-
-.home-welcome__leaf--left {
-  left: -2rem;
-}
-
-.home-welcome__leaf--right {
-  right: -2rem;
-  transform: translateY(-50%) scaleX(-1);
-}
-
-@media (max-width: 767px) {
-  .home-welcome__leaf {
-    display: none;
-  }
 }

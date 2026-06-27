@@ -6,6 +6,7 @@ declare global {
     __heroWarmPromises?: {
       honey?: Promise<boolean>;
       moringa?: Promise<boolean>;
+      ashwagandha?: Promise<boolean>;
     };
     __homeHeroScrollReady?: boolean;
   }

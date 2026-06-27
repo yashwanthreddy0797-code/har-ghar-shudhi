@@ -3,6 +3,57 @@ export interface VideoScrubOptions {
   seekThreshold?: number;
   seekMinIntervalMs?: number;
   seekUnlockMs?: number;
+  /** Fire-and-forget rAF seeks — best for short homepage brand films. */
+  performanceMode?: boolean;
+}
+
+function createPerformanceVideoScrubSeeker(
+  video: HTMLVideoElement,
+  seekThreshold: number
+) {
+  let pendingTime = 0;
+  let lastApplied = -1;
+  let seekRaf: number | undefined;
+
+  const flush = () => {
+    seekRaf = undefined;
+    if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+
+    const clamped = Math.max(0, Math.min(video.duration - 0.05, pendingTime));
+    const delta = clamped - lastApplied;
+    if (lastApplied >= 0 && Math.abs(delta) < seekThreshold) return;
+
+    lastApplied = clamped;
+    try {
+      if (
+        delta < 0 &&
+        "fastSeek" in video &&
+        typeof (video as HTMLVideoElement & { fastSeek?: (time: number) => void })
+          .fastSeek === "function"
+      ) {
+        (video as HTMLVideoElement & { fastSeek: (time: number) => void }).fastSeek(
+          clamped
+        );
+      } else {
+        video.currentTime = clamped;
+      }
+    } catch {
+      /* ignore seek races while metadata loads */
+    }
+  };
+
+  return {
+    setTargetTime(time: number) {
+      if (!Number.isFinite(time)) return;
+      pendingTime = time;
+      if (seekRaf !== undefined) return;
+      seekRaf = window.requestAnimationFrame(flush);
+    },
+    detach() {
+      if (seekRaf !== undefined) window.cancelAnimationFrame(seekRaf);
+      seekRaf = undefined;
+    },
+  };
 }
 
 /** Coalesced video.currentTime updates for scroll-scrubbed films on touch devices. */
@@ -10,6 +61,13 @@ export function createVideoScrubSeeker(
   video: HTMLVideoElement,
   options: VideoScrubOptions = {}
 ) {
+  if (options.performanceMode) {
+    return createPerformanceVideoScrubSeeker(
+      video,
+      options.seekThreshold ?? 0.08
+    );
+  }
+
   const touchScroll = options.touchScroll ?? false;
   const SEEK_THRESHOLD =
     options.seekThreshold ?? (touchScroll ? 0.1 : 1 / 30);
