@@ -28,6 +28,7 @@ import {
   MORINGA_HERO_CALLOUTS_LEFT,
   MORINGA_HERO_CALLOUTS_RIGHT,
 } from "@/lib/hero/moringaContent";
+import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 
 const BOTTLE_FRAME_SIZE =
   "block h-full w-full max-w-none object-contain object-bottom";
@@ -696,7 +697,7 @@ export default function ProductScrollExperience({
         <>
           {config.id === "moringa" ? (
             <Image
-              src="/hero/moringa/video/moringa-reveal-poster.webp"
+              src={MORINGA_VIDEO_SCROLL.poster ?? "/hero/moringa/video/moringa-reveal-poster.jpg"}
               alt=""
               width={720}
               height={1024}

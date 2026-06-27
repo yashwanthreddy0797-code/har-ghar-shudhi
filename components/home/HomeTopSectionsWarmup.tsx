@@ -9,7 +9,7 @@ import { HONEY_LUXURY_VIDEO_SCROLL } from "@/lib/hero/honeyLuxuryVideoScrollConf
 import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import { SHILAJIT_HERO_ZOOM } from "@/lib/hero/shilajitHeroZoomConfig";
 
-const MORINGA_POSTER_SRC = "/hero/moringa/video/moringa-reveal-poster.webp";
+const MORINGA_POSTER_SRC = MORINGA_VIDEO_SCROLL.poster ?? "/hero/moringa/video/moringa-reveal-poster.jpg";
 
 const INTRO_COMPLETE_EVENT = "site-intro-complete";
 

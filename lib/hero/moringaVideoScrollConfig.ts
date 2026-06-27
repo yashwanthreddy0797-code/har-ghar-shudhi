@@ -8,6 +8,7 @@ export const MORINGA_VIDEO_SCROLL: ProductVideoScrollConfig = {
   width: 1920,
   height: 1080,
   scrollHeightVh: 320,
+  poster: "/hero/moringa/video/moringa-reveal-poster.jpg",
   layout: {
     stageClass:
       "aspect-video w-full max-w-[min(960px,52vw)] max-h-[min(62vh,540px)] max-md:aspect-video max-md:max-h-[42svh] max-md:max-w-[min(90vw,360px)]",

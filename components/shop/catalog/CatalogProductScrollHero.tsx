@@ -13,7 +13,7 @@ import { preloadImageAsset, preloadVideoAsset } from "@/lib/scroll/preloadMedia"
 import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 import type { CatalogScrollSlug } from "@/lib/catalog/scrollProducts";
 
-const MORINGA_POSTER = "/hero/moringa/video/moringa-reveal-poster.webp";
+const MORINGA_POSTER = MORINGA_VIDEO_SCROLL.poster ?? "/hero/moringa/video/moringa-reveal-poster.jpg";
 
 export default function CatalogProductScrollHero({ slug }: { slug: CatalogScrollSlug }) {
   useLayoutEffect(() => {
@@ -38,7 +38,7 @@ export default function CatalogProductScrollHero({ slug }: { slug: CatalogScroll
           scrollId="moringa-video-scroll"
           theme="light"
           priority
-          poster="/hero/moringa/video/moringa-reveal-poster.webp"
+          poster={MORINGA_VIDEO_SCROLL.poster}
         />
       );
 

@@ -496,9 +496,9 @@ html.site-intro-active body {
   visibility: hidden;
 }
 
-.product-video-scroll[data-priority]:not([data-video-ready]) [data-video-intro] {
-  opacity: 0;
-  visibility: hidden;
+.product-video-scroll[data-priority] [data-video-intro] {
+  opacity: 1;
+  visibility: visible;
 }
 
 .product-video-scroll:not([data-video-ready]) .product-video-scroll-video {

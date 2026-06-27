@@ -135,8 +135,10 @@ export default function ProductVideoScrollSection({
       scrollHintRef.current,
     ].filter(Boolean) as HTMLElement[];
 
-    if (introTargets.length) gsap.set(introTargets, { autoAlpha: 0 });
-  }, []);
+    if (introTargets.length) {
+      gsap.set(introTargets, { autoAlpha: priority ? 1 : 0 });
+    }
+  }, [priority]);
 
   useLayoutEffect(() => {
     if (!priority || !videoSrc) return;
@@ -408,10 +410,10 @@ export default function ProductVideoScrollSection({
           }
         };
 
-        gsap.set(introLeftRef.current, { y: 0, autoAlpha: 0 });
-        gsap.set(introRightRef.current, { y: 0, autoAlpha: 0 });
-        gsap.set(introLeftDesktopRef.current, { y: 0, autoAlpha: 0 });
-        gsap.set(introRightDesktopRef.current, { y: 0, autoAlpha: 0 });
+        gsap.set(introLeftRef.current, { y: 0, autoAlpha: priority ? 1 : 0 });
+        gsap.set(introRightRef.current, { y: 0, autoAlpha: priority ? 1 : 0 });
+        gsap.set(introLeftDesktopRef.current, { y: 0, autoAlpha: priority ? 1 : 0 });
+        gsap.set(introRightDesktopRef.current, { y: 0, autoAlpha: priority ? 1 : 0 });
         if (videoScrubReady) revealIntroCopy();
         [benefitsLeftRef.current, benefitsRightRef.current]
           .filter(Boolean)
@@ -650,7 +652,7 @@ export default function ProductVideoScrollSection({
             <div
               className={`${stageClass} ${t.panel} w-full max-w-[min(92vw,380px)] md:max-h-[min(62vh,540px)] md:max-w-[min(960px,52vw)]`}
               style={
-                poster
+                poster && !videoReady
                   ? {
                       backgroundImage: `url(${poster})`,
                       backgroundSize: "cover",
@@ -663,7 +665,7 @@ export default function ProductVideoScrollSection({
                 ref={videoRef}
                 className={`product-video-scroll-video block h-full w-full ${t.videoClass}`}
                 src={videoSrc}
-                poster={poster}
+                poster={videoReady ? undefined : poster}
                 width={width}
                 height={height}
                 muted

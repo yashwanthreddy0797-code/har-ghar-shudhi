@@ -11,6 +11,7 @@ import BrandPillarsBar from "@/components/about/BrandPillarsBar";
 import PhilosophySection from "@/components/about/PhilosophySection";
 import VisionMissionSection from "@/components/about/VisionMissionSection";
 import WhoWeAreSection from "@/components/about/WhoWeAreSection";
+import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import {
   AFFORDABLE_WELLNESS,
   BRAND_PROMISE,
@@ -81,7 +82,7 @@ export default function AboutPage() {
         eyebrow="Our Process"
         title={NATURE_TO_YOU.headline}
         description={NATURE_TO_YOU.subline}
-        imageSrc="/hero/moringa/video/moringa-reveal-poster.webp"
+        imageSrc={MORINGA_VIDEO_SCROLL.poster ?? "/hero/moringa/video/moringa-reveal-poster.jpg"}
         imageAlt="Natural herbs and botanical ingredients"
         imagePosition="left"
         variant="light"

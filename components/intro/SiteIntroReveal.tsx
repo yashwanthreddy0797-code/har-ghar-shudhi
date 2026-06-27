@@ -9,7 +9,7 @@ import { HONEY_LUXURY_VIDEO_SCROLL } from "@/lib/hero/honeyLuxuryVideoScrollConf
 import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 
-const HERO_POSTER_SRC = "/hero/moringa/video/moringa-reveal-poster.webp";
+const HERO_POSTER_SRC = MORINGA_VIDEO_SCROLL.poster ?? "/hero/moringa/video/moringa-reveal-poster.jpg";
 const HONEY_POSTER_SRC = HONEY_LUXURY_VIDEO_SCROLL.poster;
 const HONEY_VIDEO_SRC = HONEY_LUXURY_VIDEO_SCROLL.src;
 const MORINGA_VIDEO_SRC = MORINGA_VIDEO_SCROLL.sources.hd;

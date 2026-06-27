@@ -11,6 +11,8 @@ export interface ProductVideoScrollConfig {
   width: number;
   height: number;
   scrollHeightVh: number;
+  /** First-frame still shown until the reveal video can paint. */
+  poster?: string;
   /** Layout of the centered video stage. */
   layout: {
     /** Full Tailwind sizing for the video panel (aspect + width/height caps). */
