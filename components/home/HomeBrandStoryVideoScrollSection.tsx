@@ -7,7 +7,6 @@ export default function HomeBrandStoryVideoScrollSection() {
   return (
     <CinematicFullscreenVideoScrollSection
       config={BRAND_STORY_VIDEO_SCROLL}
-      deferUntilVisible
     />
   );
 }

@@ -477,6 +477,10 @@ html.site-intro-active body {
   opacity: 0;
 }
 
+.cinematic-video-scroll[data-video-ready] .cinematic-video-scroll__video {
+  opacity: 1;
+}
+
 .cinematic-video-scroll[data-priority] [data-cinematic-overlay],
 .cinematic-video-scroll[data-priority] [data-cinematic-hint] {
   opacity: 1;

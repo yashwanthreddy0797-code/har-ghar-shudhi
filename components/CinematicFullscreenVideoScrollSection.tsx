@@ -252,7 +252,7 @@ export default function CinematicFullscreenVideoScrollSection({
           videoScrub?.detach();
         };
         videoScrubReady = true;
-        if (priority) setVideoReady(true);
+        setVideoReady(true);
         stopWaitingForScrub();
         syncScroll?.();
         return true;
@@ -518,6 +518,8 @@ export default function CinematicFullscreenVideoScrollSection({
         gsap.ticker.add(syncScroll);
         ScrollTrigger.refresh();
         syncScroll();
+        sectionObserver?.disconnect();
+        sectionObserver = undefined;
         setupComplete = true;
         setupInFlight = false;
         if (priority) markHomeHeroScrollReady();
@@ -525,7 +527,10 @@ export default function CinematicFullscreenVideoScrollSection({
     };
 
     const runSetup = () => {
-      if (typeof window !== "undefined" && !window.__lenisInitialized) return;
+      if (typeof window !== "undefined" && !window.__lenisInitialized) {
+        onLenisInit(runSetup);
+        return;
+      }
       if (setupComplete || setupInFlight) return;
       void setup();
     };
@@ -542,6 +547,7 @@ export default function CinematicFullscreenVideoScrollSection({
         return;
       }
 
+      sectionObserver?.disconnect();
       sectionObserver = new IntersectionObserver(
         (entries) => {
           const visible = entries.some((entry) => entry.isIntersecting);
