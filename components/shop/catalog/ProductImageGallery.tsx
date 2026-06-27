@@ -49,8 +49,8 @@ export default function ProductImageGallery({
 
   return (
     <>
-      <div className="flex flex-col gap-3">
-        <div className="group relative overflow-hidden rounded-xl border border-brand-border bg-brand-cream">
+      <div className="flex flex-col gap-2">
+        <div className="group relative mx-auto w-full max-w-[240px] overflow-hidden rounded-lg border border-brand-border bg-brand-cream sm:max-w-[280px] lg:mx-0 lg:max-w-[300px]">
           <div className="relative aspect-square w-full">
             {activeSrc ? (
               <Image
@@ -58,8 +58,8 @@ export default function ProductImageGallery({
                 alt={`${alt} — image ${activeIndex + 1}`}
                 fill
                 priority={priority && activeIndex === 0}
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="object-contain p-4 transition-opacity duration-300 md:p-6"
+                sizes="(max-width: 1024px) 280px, 300px"
+                className="object-contain p-2 transition-opacity duration-300 sm:p-3"
               />
             ) : (
               <div className="flex h-full items-center justify-center font-shop text-xs uppercase tracking-[0.2em] text-brand-muted">
@@ -68,15 +68,15 @@ export default function ProductImageGallery({
             )}
           </div>
 
-          <div className="absolute right-3 top-3 flex flex-col gap-2">
+          <div className="absolute right-2 top-2 flex flex-col gap-1.5">
             <button
               type="button"
               aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
               onClick={() => setWishlisted((v) => !v)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted shadow-sm transition-colors hover:text-brand-green"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted shadow-sm transition-colors hover:text-brand-green"
             >
               <Heart
-                className={`h-4 w-4 ${wishlisted ? "fill-brand-green text-brand-green" : ""}`}
+                className={`h-3.5 w-3.5 ${wishlisted ? "fill-brand-green text-brand-green" : ""}`}
                 strokeWidth={1.75}
               />
             </button>
@@ -84,9 +84,9 @@ export default function ProductImageGallery({
               type="button"
               aria-label="Zoom image"
               onClick={() => setZoomOpen(true)}
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted shadow-sm transition-colors hover:text-brand-green"
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted shadow-sm transition-colors hover:text-brand-green"
             >
-              <ZoomIn className="h-4 w-4" strokeWidth={1.75} />
+              <ZoomIn className="h-3.5 w-3.5" strokeWidth={1.75} />
             </button>
           </div>
 
@@ -96,15 +96,15 @@ export default function ProductImageGallery({
                 type="button"
                 aria-label="Previous image"
                 onClick={() => goTo(activeIndex - 1)}
-                className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:text-brand-green"
+                className="absolute left-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:text-brand-green"
               >
-                <ChevronLeft className="h-4 w-4" />
+                <ChevronLeft className="h-3.5 w-3.5" />
               </button>
               <button
                 type="button"
                 aria-label="Next image"
                 onClick={() => goTo(activeIndex + 1)}
-                className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:text-brand-green md:right-16"
+                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full border border-brand-border/80 bg-white/95 text-brand-muted opacity-0 shadow-sm transition-opacity group-hover:opacity-100 hover:text-brand-green md:right-12"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -126,7 +126,7 @@ export default function ProductImageGallery({
                   aria-label={`View image ${index + 1}`}
                   aria-current={isActive ? "true" : undefined}
                   onClick={() => setActiveIndex(index)}
-                  className={`relative h-[72px] w-[72px] shrink-0 overflow-hidden rounded-lg border-2 bg-brand-cream transition-colors md:h-20 md:w-20 ${
+                  className={`relative h-12 w-12 shrink-0 overflow-hidden rounded-md border-2 bg-brand-cream transition-colors sm:h-14 sm:w-14 ${
                     isActive
                       ? "border-brand-green"
                       : "border-brand-border hover:border-brand-green/40"

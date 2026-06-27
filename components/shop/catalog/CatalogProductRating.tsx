@@ -11,12 +11,12 @@ export default function CatalogProductRating({
   className?: string;
 }) {
   return (
-    <div className={`flex flex-wrap items-center gap-2 ${className}`}>
+    <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
       <div className="flex items-center gap-0.5" aria-hidden>
         {Array.from({ length: 5 }).map((_, i) => (
           <Star
             key={i}
-            className={`h-4 w-4 ${
+            className={`h-3.5 w-3.5 ${
               i < Math.floor(rating)
                 ? "fill-amber-400 text-amber-400"
                 : i < rating
@@ -27,13 +27,13 @@ export default function CatalogProductRating({
           />
         ))}
       </div>
-      <span className="font-shop text-sm text-brand-text">
+      <span className="font-shop text-xs text-brand-text">
         {rating.toFixed(2)}
       </span>
-      <span className="font-shop text-sm text-brand-muted" aria-hidden>
+      <span className="font-shop text-xs text-brand-muted" aria-hidden>
         |
       </span>
-      <span className="font-shop text-sm text-brand-muted underline decoration-brand-border underline-offset-2">
+      <span className="font-shop text-xs text-brand-muted underline decoration-brand-border underline-offset-2">
         {formatReviews(reviewCount)} Review{reviewCount === 1 ? "" : "s"}
       </span>
     </div>

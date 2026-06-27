@@ -73,24 +73,24 @@ export default function CatalogCommerceActions({
 
   return (
     <div className={className}>
-      <div className="flex flex-wrap items-center gap-3">
-        <p className="font-shop text-[clamp(1.75rem,4vw,2.25rem)] font-semibold tabular-nums tracking-tight text-brand-text">
+      <div className="flex flex-wrap items-center gap-2">
+        <p className="font-shop text-[clamp(1.35rem,3vw,1.65rem)] font-semibold tabular-nums tracking-tight text-brand-text">
           {formatPrice(displayPrice)}
         </p>
         {!canPurchase ? (
-          <span className="rounded-md bg-[#6b4f8a] px-3 py-1 font-shop text-[11px] font-semibold uppercase tracking-[0.14em] text-white">
+          <span className="rounded bg-[#6b4f8a] px-2 py-0.5 font-shop text-[10px] font-semibold uppercase tracking-[0.12em] text-white">
             Sold Out
           </span>
         ) : null}
       </div>
-      <p className="mt-1 font-shop text-xs text-brand-muted">
+      <p className="mt-0.5 font-shop text-[10px] text-brand-muted">
         MRP (Incl. of all taxes)
       </p>
 
       {resolvedVariants.length > 0 ? (
-        <div className="mt-7">
-          <p className="mb-3 font-shop text-sm font-semibold text-brand-text">Size</p>
-          <div className="flex flex-wrap gap-3">
+        <div className="mt-3">
+          <p className="mb-1.5 font-shop text-xs font-semibold text-brand-text">Size</p>
+          <div className="flex flex-wrap gap-2">
             {resolvedVariants.map((variant) => {
               const isSelected = variant.id === selectedVariantId;
               return (
@@ -99,16 +99,16 @@ export default function CatalogCommerceActions({
                   type="button"
                   disabled={!variant.availableForSale}
                   onClick={() => setSelectedVariantId(variant.id)}
-                  className={`min-w-[9.5rem] rounded-lg border-2 px-5 py-4 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                  className={`min-w-[7.5rem] rounded-md border-2 px-3 py-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                     isSelected
                       ? "border-brand-green bg-brand-green-light"
                       : "border-brand-border bg-brand-white hover:border-brand-green/35"
                   }`}
                 >
-                  <span className="block font-shop text-base font-semibold text-brand-text">
+                  <span className="block font-shop text-sm font-semibold text-brand-text">
                     {variant.label}
                   </span>
-                  <span className="mt-1 block font-shop text-sm tabular-nums text-brand-muted">
+                  <span className="mt-0.5 block font-shop text-xs tabular-nums text-brand-muted">
                     {formatPrice(variant.price)}
                   </span>
                 </button>
@@ -118,12 +118,12 @@ export default function CatalogCommerceActions({
         </div>
       ) : null}
 
-      <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
         <button
           type="button"
           disabled={isPending || !canPurchase}
           onClick={() => handleAddToCart(false)}
-          className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-brand-green px-8 py-4 font-shop text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-brand-green-dark disabled:cursor-not-allowed disabled:opacity-70"
+          className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-brand-green px-5 py-2.5 font-shop text-xs font-semibold uppercase tracking-[0.1em] text-white transition-colors hover:bg-brand-green-dark disabled:cursor-not-allowed disabled:opacity-70"
         >
           {isPending ? (
             <>
@@ -141,7 +141,7 @@ export default function CatalogCommerceActions({
             type="button"
             disabled={isPending}
             onClick={() => handleAddToCart(true)}
-            className="inline-flex flex-1 items-center justify-center rounded-lg border-2 border-brand-green bg-transparent px-8 py-4 font-shop text-sm font-semibold uppercase tracking-[0.12em] text-brand-green transition-colors hover:bg-brand-green-light disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex flex-1 items-center justify-center rounded-md border-2 border-brand-green bg-transparent px-5 py-2.5 font-shop text-xs font-semibold uppercase tracking-[0.1em] text-brand-green transition-colors hover:bg-brand-green-light disabled:cursor-not-allowed disabled:opacity-70"
           >
             Buy Now
           </button>
