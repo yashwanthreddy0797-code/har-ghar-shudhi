@@ -47,6 +47,8 @@ export interface CinematicVideoScrollConfig {
   directVideoScrub?: boolean;
   /** Scroll progress 0 maps to this timestamp instead of 00:00 (seconds). */
   videoStartTime?: number;
+  /** Warm a hero film on page load via `window.__heroWarmPromises`. */
+  warmPromiseKey?: "brandStory" | "honey" | "moringa" | "ashwagandha";
   /** White logo pinned over the video — e.g. to mask a generator watermark. */
   videoLogoOverlay?: {
     className?: string;

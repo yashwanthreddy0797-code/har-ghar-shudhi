@@ -4,6 +4,7 @@ export const HOME_HERO_SCROLL_READY_EVENT = "home-hero-scroll-ready";
 declare global {
   interface Window {
     __heroWarmPromises?: {
+      brandStory?: Promise<boolean>;
       honey?: Promise<boolean>;
       moringa?: Promise<boolean>;
       ashwagandha?: Promise<boolean>;

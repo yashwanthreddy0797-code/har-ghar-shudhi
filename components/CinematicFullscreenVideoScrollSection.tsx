@@ -88,6 +88,7 @@ export default function CinematicFullscreenVideoScrollSection({
   videoScrub: videoScrubOptions,
   directVideoScrub = false,
   videoStartTime = 0,
+  warmPromiseKey,
 } = config;
   const t = CINEMATIC_VIDEO_THEMES[theme];
   const responsiveScrollVh = useResponsiveScrollHeight(
@@ -203,9 +204,14 @@ export default function CinematicFullscreenVideoScrollSection({
         return;
       }
 
-      const warmPromise = priority
-        ? window.__heroWarmPromises?.honey
-        : undefined;
+      const warmPromise =
+        warmPromiseKey && window.__heroWarmPromises?.[warmPromiseKey]
+          ? window.__heroWarmPromises[warmPromiseKey]
+          : priority
+            ? window.__heroWarmPromises?.honey
+            : undefined;
+
+      const scrubPollMs = priority || warmPromiseKey ? 100 : 250;
 
       const { gsap, ScrollTrigger } = getGsap();
       const touchScroll = preferNativeScroll();
@@ -255,6 +261,13 @@ export default function CinematicFullscreenVideoScrollSection({
         setVideoReady(true);
         stopWaitingForScrub();
         syncScroll?.();
+        requestAnimationFrame(() => {
+          try {
+            getGsap().ScrollTrigger.refresh();
+          } catch {
+            /* GSAP may not be ready yet */
+          }
+        });
         return true;
       };
 
@@ -278,11 +291,16 @@ export default function CinematicFullscreenVideoScrollSection({
         beginVideoPreload(video);
         scrubPoll = window.setInterval(() => {
           if (!ensureVideoScrub() && !cancelled) beginVideoPreload(video);
-        }, 250);
+        }, scrubPollMs);
       }
 
       void warmPromise?.then(() => {
         ensureVideoScrub();
+        try {
+          getGsap().ScrollTrigger.refresh();
+        } catch {
+          /* ignore */
+        }
       });
 
       ctx = gsap.context(() => {
@@ -589,7 +607,7 @@ export default function CinematicFullscreenVideoScrollSection({
       detachVideoScrub?.();
       ctx?.revert();
     };
-  }, [deferUntilVisible, directVideoScrub, disableVideoScale, hideOverlayCopy, hideScrollHint, priority, scrollId, scrollProgressSmoothing, responsiveScrollVh, videoScrubOptions, videoStartTime]);
+  }, [deferUntilVisible, directVideoScrub, disableVideoScale, hideOverlayCopy, hideScrollHint, priority, scrollId, scrollProgressSmoothing, responsiveScrollVh, videoScrubOptions, videoStartTime, warmPromiseKey]);
 
   return (
     <section
@@ -633,6 +651,9 @@ export default function CinematicFullscreenVideoScrollSection({
               muted
               playsInline
               preload="auto"
+              {...(priority || warmPromiseKey
+                ? { fetchPriority: "high" as const }
+                : {})}
               aria-label={videoAriaLabel}
             />
           </div>

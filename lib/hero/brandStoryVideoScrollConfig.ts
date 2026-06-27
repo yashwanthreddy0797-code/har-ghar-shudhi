@@ -3,10 +3,12 @@ import type { CinematicVideoScrollConfig } from "@/lib/hero/cinematicVideoScroll
 export const BRAND_STORY_VIDEO_SCROLL: CinematicVideoScrollConfig = {
   scrollId: "home-brand-story-video-scroll",
   src: "/cinematic/har-ghar-shudhi-brand-story-scrub.mp4",
+  poster: "/home/hero-valley.jpg",
   scrollHeightVh: 225,
   theme: "darkLuxury",
   ariaLabel: "Har Ghar Shudhi brand story cinematic experience",
   videoAriaLabel: "Har Ghar Shudhi brand story film",
+  warmPromiseKey: "brandStory",
   eyebrow: "",
   headline: ["", ""],
   subtext: "",
