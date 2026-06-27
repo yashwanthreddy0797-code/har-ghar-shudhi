@@ -1,4 +1,5 @@
 import { getGsap } from "@/lib/gsap/client";
+import { PRIMARY_NAV_LINKS } from "@/lib/navigation";
 
 export const INTRO_NAV_EVENT = "site-intro-navigate";
 export const INTRO_COMPLETE_EVENT = "site-intro-complete";
@@ -39,16 +40,9 @@ export function prepareInstantNavigation() {
   }
 }
 
-export const PRIMARY_NAV_HREFS = [
-  "/about",
-  "/shop",
-  "/science-trust",
-  "/contact",
-] as const;
-
 export function prefetchPrimaryNav(router: { prefetch: (href: string) => void }) {
-  for (const href of PRIMARY_NAV_HREFS) {
-    router.prefetch(href);
+  for (const link of PRIMARY_NAV_LINKS) {
+    router.prefetch(link.href);
   }
 }
 
