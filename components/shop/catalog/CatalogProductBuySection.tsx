@@ -1,14 +1,17 @@
 import Link from "next/link";
-import { ChevronLeft, ShieldCheck } from "lucide-react";
+import { Leaf, ShieldCheck, Truck, Wallet } from "lucide-react";
 import type { CatalogProduct } from "@/lib/catalog/types";
-import { ProductImage } from "@/components/shop/ProductImage";
+import { getProductGalleryImages } from "@/lib/catalog/productGalleryImages";
+import { formatReviews } from "@/lib/types/product";
+import ProductImageGallery from "@/components/shop/catalog/ProductImageGallery";
 import CatalogCommerceActions from "@/components/shop/catalog/CatalogCommerceActions";
+import CatalogProductRating from "@/components/shop/catalog/CatalogProductRating";
 
-const TRUST_BADGES = [
-  "Ayush Licensed",
-  "Lab Tested",
-  "Premium Quality",
-  "No Preservatives",
+const TRUST_STRIP = [
+  { icon: Truck, label: "Free shipping above ₹999" },
+  { icon: ShieldCheck, label: "Secure payments" },
+  { icon: Leaf, label: "Ayurvedic sourcing" },
+  { icon: Wallet, label: "COD available" },
 ];
 
 export default function CatalogProductBuySection({
@@ -19,82 +22,106 @@ export default function CatalogProductBuySection({
   /** Renders below a fullscreen scroll film — adds a clean hand-off into commerce. */
   afterCinematicScroll?: boolean;
 }) {
+  const galleryImages = getProductGalleryImages(product.slug, product.images);
+  const benefitIcons = product.keyBenefits.slice(0, 4);
+  const subtitle = product.productType
+    ? `${product.tagline} | ${product.productType}`
+    : product.tagline;
+
   return (
     <section
-      className={`border-b border-brand-border bg-brand-white px-6 py-10 md:px-12 md:py-14 lg:py-16 ${
+      className={`border-b border-brand-border bg-brand-white px-4 py-10 sm:px-6 md:px-10 md:py-14 lg:py-16 ${
         afterCinematicScroll ? "shadow-[inset_0_1px_0_0_rgba(45,82,57,0.06)]" : ""
       }`}
     >
-      <div className="mx-auto max-w-6xl">
-        <Link
-          href="/shop"
-          className="mb-8 inline-flex items-center gap-2 font-shop text-xs font-semibold uppercase tracking-[0.16em] text-brand-muted transition-colors hover:text-brand-green"
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Back to shop
-        </Link>
-
+      <div className="mx-auto max-w-7xl">
         {afterCinematicScroll ? (
           <p className="mb-6 font-shop text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-green">
             Shop this product
           </p>
         ) : null}
 
-        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
-          <div className="order-2 lg:order-1">
-            <p className="font-shop text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-green">
-              {product.badge ?? product.tagline}
-            </p>
-            <h1 className="mt-3 font-display text-[clamp(2rem,5vw,3.25rem)] font-medium leading-[1.05] tracking-[0.02em] text-brand-text">
+        <nav
+          aria-label="Breadcrumb"
+          className="mb-6 font-shop text-sm text-brand-muted"
+        >
+          <ol className="flex flex-wrap items-center gap-1.5">
+            <li>
+              <Link href="/" className="transition-colors hover:text-brand-green">
+                Home
+              </Link>
+            </li>
+            <li aria-hidden className="text-brand-border">
+              /
+            </li>
+            <li>
+              <Link href="/shop" className="transition-colors hover:text-brand-green">
+                Shop
+              </Link>
+            </li>
+            <li aria-hidden className="text-brand-border">
+              /
+            </li>
+            <li className="text-brand-text">{product.name}</li>
+          </ol>
+        </nav>
+
+        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14 xl:gap-16">
+          <div className="lg:sticky lg:top-8">
+            <ProductImageGallery
+              images={galleryImages}
+              alt={product.name}
+              priority
+            />
+          </div>
+
+          <div className="min-w-0">
+            <h1 className="font-shop text-[clamp(1.75rem,4.5vw,2.5rem)] font-semibold leading-[1.15] tracking-[-0.01em] text-brand-text">
               {product.name}
             </h1>
-            <p className="mt-3 font-body text-base italic leading-relaxed text-brand-muted md:text-lg">
-              {product.tagline}
-            </p>
-            <p className="mt-5 max-w-lg font-body text-[15px] leading-[1.85] text-brand-muted">
+            <p className="mt-2 font-shop text-base text-brand-muted">{subtitle}</p>
+
+            <CatalogProductRating
+              rating={product.rating}
+              reviewCount={product.reviewCount}
+              className="mt-4"
+            />
+
+            <p className="mt-5 max-w-xl font-body text-[15px] leading-[1.8] text-brand-muted md:text-base">
               {product.description}
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-2">
-              {product.benefitPills.map((pill) => (
-                <span
-                  key={pill}
-                  className="rounded-full border border-brand-green/20 bg-brand-green-light px-3.5 py-1.5 font-shop text-[11px] font-medium uppercase tracking-[0.12em] text-brand-green"
-                >
-                  {pill}
-                </span>
-              ))}
-            </div>
+            {benefitIcons.length > 0 ? (
+              <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+                {benefitIcons.map((benefit) => (
+                  <div key={benefit.label} className="text-center">
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-brand-green/20 bg-brand-green-light/60 text-2xl">
+                      <span aria-hidden>{benefit.icon}</span>
+                    </div>
+                    <p className="mt-2.5 font-shop text-[11px] font-semibold uppercase leading-snug tracking-[0.08em] text-brand-green">
+                      {benefit.label}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : null}
 
             <CatalogCommerceActions
               price={product.price}
-              variantId={product.variants[0]?.id ?? ""}
+              variants={product.variants}
               availableForSale={product.availableForSale}
-              className="mt-8"
+              className="mt-8 border-t border-brand-border pt-8"
             />
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              {TRUST_BADGES.map((badge) => (
-                <span
-                  key={badge}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-brand-border bg-brand-cream px-3 py-1.5 font-shop text-[10px] uppercase tracking-[0.14em] text-brand-muted"
-                >
-                  <ShieldCheck className="h-3 w-3 text-brand-green" />
-                  {badge}
-                </span>
+            <div className="mt-8 grid grid-cols-2 gap-4 border-t border-brand-border pt-8 sm:grid-cols-4">
+              {TRUST_STRIP.map(({ icon: Icon, label }) => (
+                <div key={label} className="flex flex-col items-center gap-2 text-center">
+                  <Icon className="h-5 w-5 text-brand-green" strokeWidth={1.5} />
+                  <span className="font-shop text-[11px] leading-snug text-brand-muted">
+                    {label}
+                  </span>
+                </div>
               ))}
-            </div>
-          </div>
-
-          <div className="order-1 lg:order-2">
-            <div className="relative overflow-hidden rounded-xl border border-brand-border bg-brand-cream shadow-[0_24px_60px_rgba(45,82,57,0.08)]">
-              <ProductImage
-                src={product.image}
-                alt={product.name}
-                priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="aspect-[4/5] w-full rounded-xl object-cover md:aspect-square"
-              />
             </div>
           </div>
         </div>
