@@ -267,14 +267,14 @@ export default function SiteIntroReveal() {
           warmVideoToFirstFrame(MORINGA_VIDEO_SRC, 6000);
         window.__heroWarmPromises = { honey: honeyWarm, moringa: moringaWarm };
 
+        // Only block the intro on the first visible section (honey hero).
+        // Moringa keeps warming in the background and shows its poster until ready,
+        // so the experience opens fast instead of waiting on the larger second clip.
+        void moringaWarm;
+
         const honeyReady = await honeyWarm;
 
-        if (!honeyReady) {
-          setBarProgress(94);
-        }
-
-        await moringaWarm;
-        setBarProgress(100);
+        setBarProgress(honeyReady ? 100 : 94);
 
         const elapsed = Date.now() - startTime;
         if (elapsed < MIN_DISPLAY_MS) {
