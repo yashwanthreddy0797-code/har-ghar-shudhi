@@ -106,19 +106,23 @@ export const QUALITY = {
   pillars: [
     {
       title: "Premium Quality Herbs",
-      description: "Carefully selected botanicals sourced for potency and purity.",
+      description:
+        "Carefully selected botanicals sourced for their potency, purity and authenticity.",
     },
     {
       title: "Hygienic & Modern Processing",
-      description: "Clean, controlled facilities that honour traditional wisdom.",
+      description:
+        "Clean, controlled facilities that honour traditional wisdom with modern technology.",
     },
     {
       title: "Rigorous Quality Testing",
-      description: "Every batch tested before it reaches your home.",
+      description:
+        "Every batch tested for purity, safety and effectiveness because you deserve only the best.",
     },
     {
       title: "Eco-friendly Packaging",
-      description: "Thoughtful materials that protect products and the planet.",
+      description:
+        "Thoughtful, sustainable materials that protect our products and our planet.",
     },
   ],
   exclusions: [
@@ -178,9 +182,9 @@ export const WHO_WE_ARE_TRUST = [
 ] as const;
 
 export const BRAND_CLOSING = {
-  headline: "Your Trust. Our Greatest Strength.",
-  body: "We are not just a brand, we are a promise of purity, transparency and care. Thank you for choosing natural. Thank you for choosing Har Ghar Shudhi.",
-  closing: "Let's build a healthier tomorrow, together.",
+  headline: "Where Ayurveda Meets Modern Integrity",
+  body: "Rooted in ancient herbal science and refined through modern quality systems, Har Ghar Shudhi creates wellness you can believe in. Premium herbs. Hygienic processing. Every batch lab tested. Ayush-aligned formulations made with complete transparency — from source to your doorstep.",
+  closing: "Natural by choice. Pure by promise.",
 } as const;
 
 export const VISION_MISSION_VALUES = [
@@ -201,8 +205,7 @@ export const BRAND_PILLARS = [
 export const ABOUT_SECTIONS = [
   { id: "story", label: "Our Story" },
   { id: "vision-mission", label: "Vision & Mission" },
-  { id: "why-we-exist", label: "Our Philosophy" },
-  { id: "journey", label: "From Nature to You" },
-  { id: "quality", label: "Quality" },
   { id: "who-we-are", label: "Who We Are" },
+  { id: "why-we-exist", label: "Our Philosophy" },
+  { id: "quality", label: "Quality" },
 ] as const;

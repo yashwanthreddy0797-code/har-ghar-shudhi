@@ -7,6 +7,68 @@ export const SCIENCE_HERO = {
     "Every Har Ghar Shudhi product is developed with Ayurvedic expertise, manufactured in certified facilities, and guided by qualified doctors and nutritionists.",
 } as const;
 
+export const SCIENCE_PRODUCT_PROMO = {
+  ratingLabel: "Excellent",
+  ratingValue: "4.8/5 Rated",
+  headline: "Har Ghar Shudhi — Advanced Ayurvedic Formulas",
+  description:
+    "Rooted in ancient herbal science and refined through modern quality systems, our natural formulations support daily wellness with premium herbs, hygienic processing, and batch-tested purity — Ayush-aligned, fully transparent, and made for your home.",
+  ctaLabel: "Buy Now",
+  ctaHref: "/shop",
+  socialRating: "Excellent 4.8",
+  customers: [
+    { initials: "AK", tone: "#2d5239" },
+    { initials: "PS", tone: "#3d6b4f" },
+    { initials: "RM", tone: "#4a7d5c" },
+    { initials: "SN", tone: "#356048" },
+    { initials: "DV", tone: "#2a4635" },
+  ],
+} as const;
+
+export const SCIENCE_PRODUCT_HIGHLIGHTS = [
+  {
+    id: "honey",
+    highlight: "100%",
+    title: "Pure Raw Honey",
+    description: "Unprocessed, unheated and 100% natural raw honey.",
+  },
+  {
+    id: "superfoods",
+    highlight: "6+",
+    title: "Superfoods Range",
+    description:
+      "Naturally powerful superfoods like Moringa, Ashwagandha, Spirulina and more.",
+  },
+  {
+    id: "additives",
+    highlight: "0%",
+    title: "No Additives",
+    description: "No artificial colors, flavors, preservatives or fillers.",
+  },
+  {
+    id: "lab-tested",
+    highlight: "Lab Tested",
+    title: "Third Party Tested",
+    description:
+      "Every batch is tested for purity, heavy metals and contaminants.",
+  },
+  {
+    id: "sourcing",
+    highlight: "Sourced from Trusted Farms",
+    title: "Premium Sourcing",
+    description: "Carefully sourced from high altitude and trusted farms.",
+  },
+  {
+    id: "customers",
+    highlight: "500K+",
+    title: "Happy Customers",
+    description: "Trusted by over 5 lakh+ customers across India.",
+  },
+] as const;
+
+export const SCIENCE_PRODUCTS_FOOTER =
+  "Committed to your health and the purity of nature in every product we create." as const;
+
 export const TRUST_STATS = [
   { value: "6+", label: "International & national certifications" },
   { value: "100%", label: "Natural & herbal formulations" },

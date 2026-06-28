@@ -1198,6 +1198,318 @@ html.site-intro-active body {
   display: none;
 }
 
+/* ── About page — unified white layout preview ── */
+.about-page section {
+  border-bottom: none !important;
+}
+
+.about-page .vision-mission-section,
+.about-page .philosophy-section,
+.about-page .quality-standards-section {
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+.about-page__proof {
+  border-top: none !important;
+}
+
+.about-page__proof .border-t {
+  border-top: none !important;
+}
+
+/* Premium static images — crisp downscaling for editorial photography */
+.premium-static-image {
+  max-width: 100%;
+  height: auto;
+  image-rendering: auto;
+}
+
+.premium-static-image--cover {
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.science-trust-hero .premium-static-image {
+  display: block;
+  width: 100%;
+}
+
+/* Science products highlights */
+.science-products-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse 90% 55% at 50% 0%,
+      rgba(232, 242, 235, 0.55),
+      transparent 68%
+    ),
+    linear-gradient(180deg, #faf9f6 0%, #f7f6f2 100%);
+}
+
+.science-products-section__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 12% 88%,
+      rgba(61, 107, 79, 0.06),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 88% 18%,
+      rgba(45, 82, 57, 0.05),
+      transparent 24%
+    );
+}
+
+.science-products-section__inner {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  max-width: 76rem;
+  padding: 4rem 1.25rem 4.25rem;
+}
+
+@media (min-width: 768px) {
+  .science-products-section__inner {
+    padding: 5rem 2rem 5.25rem;
+  }
+}
+
+.science-products-section__header {
+  margin: 0 auto 3rem;
+  max-width: 40rem;
+  text-align: center;
+}
+
+.science-products-section__eyebrow {
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: #2d5239;
+}
+
+.science-products-section__header-accent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin: 1rem auto 0;
+  max-width: 9rem;
+  color: #3d6b4f;
+}
+
+.science-products-section__header-accent span {
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(61, 107, 79, 0.45),
+    transparent
+  );
+}
+
+.science-products-section__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .science-products-section__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .science-products-section__grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.85rem;
+  }
+}
+
+.science-products-section__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.85rem 1.15rem 2rem;
+  border-radius: 1.15rem;
+  border: 1px solid rgba(45, 82, 57, 0.07);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 1px 2px rgba(26, 36, 33, 0.03),
+    0 10px 28px rgba(45, 82, 57, 0.04);
+  text-align: center;
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    background-color 0.35s ease;
+}
+
+.science-products-section__card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(45, 82, 57, 0.14);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 2px 4px rgba(26, 36, 33, 0.04),
+    0 18px 40px rgba(45, 82, 57, 0.08);
+}
+
+.science-products-section__icon-shell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.75rem;
+  height: 4.75rem;
+}
+
+.science-products-section__icon-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(61, 107, 79, 0.14);
+  background: radial-gradient(
+    circle at 30% 25%,
+    rgba(255, 255, 255, 0.95),
+    rgba(232, 242, 235, 0.55) 58%,
+    rgba(61, 107, 79, 0.08) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 8px 20px rgba(45, 82, 57, 0.08);
+}
+
+.science-products-section__icon-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.35rem;
+  height: 3.35rem;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #3d6b4f 0%, #2d5239 100%);
+  box-shadow: 0 6px 16px rgba(45, 82, 57, 0.22);
+}
+
+.science-products-section__icon {
+  width: 1.55rem;
+  height: 1.55rem;
+  color: #f4fbe8;
+}
+
+.science-products-section__highlight {
+  margin-top: 1.35rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1.7rem, 2.1vw, 2.05rem);
+  font-weight: 500;
+  line-height: 1.08;
+  color: #1a1a1a;
+}
+
+.science-products-section__highlight--compact {
+  font-size: clamp(0.92rem, 1.15vw, 1.02rem);
+  line-height: 1.38;
+  max-width: 10rem;
+  color: #2d5239;
+}
+
+.science-products-section__accent-dot {
+  display: block;
+  width: 4px;
+  height: 4px;
+  margin-top: 0.85rem;
+  border-radius: 50%;
+  background: #3d6b4f;
+  opacity: 0.55;
+}
+
+.science-products-section__title {
+  margin-top: 0.55rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+  font-weight: 600;
+  line-height: 1.35;
+  color: #1a1a1a;
+}
+
+.science-products-section__description {
+  margin-top: 0.7rem;
+  max-width: 12rem;
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 0.78rem;
+  line-height: 1.72;
+  color: #6b7280;
+}
+
+.science-products-section__logo-wrap {
+  margin-top: 3.25rem;
+  text-align: center;
+}
+
+.science-products-section__footer-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2.25rem auto 0;
+  max-width: 38rem;
+  padding: 1.1rem 1.5rem;
+  border: 1px solid rgba(45, 82, 57, 0.1);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 30px rgba(45, 82, 57, 0.06);
+}
+
+.science-products-section__footer-icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #e8f2eb 0%, #f7faf8 100%);
+  border: 1px solid rgba(45, 82, 57, 0.1);
+}
+
+.science-products-section__footer-icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  color: #2d5239;
+}
+
+.science-products-section__footer-text {
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #4b5563;
+  text-align: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .science-products-section__card {
+    transition: none;
+  }
+
+  .science-products-section__card:hover {
+    transform: none;
+  }
+}
+
 /* ── About page — Har Ghar Shudhi brand system ── */
 
 .about-luxury-hero {
@@ -1851,73 +2163,40 @@ html.site-intro-active body {
   position: relative;
   overflow: hidden;
   background-color: #f7f4ef;
-  background-image:
-    radial-gradient(
-      ellipse 70% 55% at 18% 85%,
-      rgba(232, 242, 235, 0.45),
-      transparent 58%
-    ),
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-.who-we-are-section__mortar {
+.who-we-are-section__background {
   position: absolute;
-  left: 0;
-  bottom: 4.5rem;
-  width: min(38vw, 320px);
-  height: min(52vw, 420px);
+  inset: 0;
   pointer-events: none;
   z-index: 0;
 }
 
-.who-we-are-section__leaf {
+.who-we-are-section__background::after {
+  content: "";
   position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.who-we-are-section__leaf--tl {
-  top: 1rem;
-  left: 0.5rem;
-  width: 6.5rem;
-  height: 6.5rem;
-}
-
-.who-we-are-section__seal {
-  position: absolute;
-  top: 1.25rem;
-  right: 1rem;
-  width: 4.5rem;
-  height: 4.5rem;
-  pointer-events: none;
-  z-index: 0;
-}
-
-@media (min-width: 768px) {
-  .who-we-are-section__seal {
-    top: 2rem;
-    right: 2.5rem;
-    width: 5.5rem;
-    height: 5.5rem;
-  }
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(247, 244, 239, 0.98) 0%, rgba(247, 244, 239, 0.9) 35%, rgba(247, 244, 239, 0.18) 72%, rgba(247, 244, 239, 0.04) 100%),
+    linear-gradient(180deg, rgba(247, 244, 239, 0.28) 0%, rgba(247, 244, 239, 0.1) 50%, rgba(247, 244, 239, 0.65) 100%);
 }
 
 .who-we-are-section__inner {
   position: relative;
   z-index: 1;
-  padding: 4rem 1.5rem 3rem;
+  padding: 3.35rem 1.5rem 2.25rem;
 }
 
 @media (min-width: 768px) {
   .who-we-are-section__inner {
-    padding: 5.5rem 3rem 3.5rem;
+    padding: 4.25rem 3rem 2.75rem;
   }
 }
 
 .who-we-are-section__header {
-  margin: 0 auto;
+  margin: 0;
   max-width: 40rem;
-  text-align: center;
+  text-align: left;
 }
 
 .who-we-are-section__eyebrow {
@@ -1932,9 +2211,9 @@ html.site-intro-active body {
 .who-we-are-section__divider {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 1rem;
-  margin: 1rem auto 0;
+  margin: 1rem 0 0;
   max-width: 14rem;
   color: #a98467;
 }
@@ -1955,7 +2234,7 @@ html.site-intro-active body {
 }
 
 .who-we-are-section__body {
-  margin: 1.75rem auto 0;
+  margin: 1.75rem 0 0;
   max-width: 34rem;
   font-family: var(--font-lora), Georgia, serif;
   font-size: clamp(0.95rem, 1.8vw, 1.05rem);
@@ -1967,25 +2246,20 @@ html.site-intro-active body {
   margin-top: 2rem;
 }
 
-.who-we-are-section__flourish {
-  display: block;
-  color: #a98467;
-}
-
 .who-we-are-section__tagline {
-  margin-top: 0.35rem;
+  margin-top: 0;
   font-family: var(--font-playfair), Georgia, serif;
   font-size: clamp(1.1rem, 2.2vw, 1.45rem);
   font-style: italic;
   line-height: 1.45;
-  color: #a98467;
+  color: #000000;
 }
 
 .who-we-are-section__actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: 0.85rem;
   margin-top: 2.25rem;
 }
@@ -2130,9 +2404,7 @@ html.site-intro-active body {
 }
 
 @media (max-width: 639px) {
-  .who-we-are-section__mortar {
-    width: 42vw;
-    height: 38vw;
+  .who-we-are-section__background {
     opacity: 0.55;
   }
 
@@ -2151,6 +2423,187 @@ html.site-intro-active body {
   }
 
   .who-we-are-section__btn:hover {
+    transform: none;
+  }
+}
+
+/* Quality Standards — premium pillar cards */
+.quality-standards-section__inner {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 4rem 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .quality-standards-section__inner {
+    padding: 5.5rem 3rem;
+  }
+}
+
+.quality-standards-section__header {
+  max-width: 36rem;
+}
+
+.quality-standards-section__eyebrow-divider {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 14rem;
+  color: #a98467;
+}
+
+.quality-standards-section__eyebrow-divider span {
+  height: 1px;
+  flex: 1;
+  background: rgba(169, 132, 103, 0.45);
+}
+
+.quality-standards-section__eyebrow {
+  margin-top: 1rem;
+  font-family: var(--font-source-sans), system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: #a98467;
+}
+
+.quality-standards-section__headline {
+  margin-top: 1.25rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 500;
+  line-height: 1.12;
+  color: #2a2a2a;
+}
+
+.quality-standards-section__headline-accent {
+  color: #2d5239;
+}
+
+.quality-standards-section__subline {
+  margin-top: 1rem;
+  max-width: 28rem;
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: clamp(0.95rem, 1.8vw, 1.05rem);
+  line-height: 1.75;
+  color: #6b6b6b;
+}
+
+.quality-standards-section__grid {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 2.75rem;
+  list-style: none;
+  padding: 0;
+}
+
+@media (min-width: 640px) {
+  .quality-standards-section__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .quality-standards-section__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+    margin-top: 3.25rem;
+  }
+}
+
+.quality-standards-section__card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1.35rem 1.75rem;
+  border: 1px solid rgba(169, 132, 103, 0.18);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.quality-standards-section__card:hover {
+  border-color: rgba(169, 132, 103, 0.35);
+  box-shadow: 0 18px 44px rgba(45, 82, 57, 0.08);
+  transform: translateY(-2px);
+}
+
+.quality-standards-section__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background: rgba(247, 241, 232, 0.95);
+  border: 1px solid rgba(169, 132, 103, 0.12);
+}
+
+.quality-standards-section__icon {
+  width: 1.65rem;
+  height: 1.65rem;
+  color: #a98467;
+}
+
+.quality-standards-section__card-title {
+  margin-top: 1.35rem;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1rem, 1.6vw, 1.125rem);
+  font-weight: 500;
+  line-height: 1.35;
+  color: #2a2a2a;
+}
+
+.quality-standards-section__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 7.5rem;
+  margin-top: 1rem;
+}
+
+.quality-standards-section__divider span:first-child,
+.quality-standards-section__divider span:last-child {
+  height: 1px;
+  flex: 1;
+  background: rgba(169, 132, 103, 0.4);
+}
+
+.quality-standards-section__divider-diamond {
+  width: 5px;
+  height: 5px;
+  flex-shrink: 0;
+  transform: rotate(45deg);
+  background: #a98467;
+}
+
+.quality-standards-section__card-body {
+  margin-top: 1rem;
+  font-family: var(--font-lora), Georgia, serif;
+  font-size: 0.8125rem;
+  line-height: 1.75;
+  color: #6b6b6b;
+}
+
+.quality-standards-section__card-accent {
+  display: block;
+  width: 2.5rem;
+  height: 1px;
+  margin-top: 1.35rem;
+  background: rgba(169, 132, 103, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quality-standards-section__card {
+    transition: none;
+  }
+
+  .quality-standards-section__card:hover {
     transform: none;
   }
 }

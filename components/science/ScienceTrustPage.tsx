@@ -4,23 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import {
   ChevronDown,
-  FlaskConical,
   Microscope,
   Stethoscope,
   Users,
 } from "lucide-react";
 import CertificatesProofSection from "@/components/CertificatesProofSection";
 import ScienceComparisonSection from "@/components/science/ScienceComparisonSection";
-import ScienceQualitySection from "@/components/science/ScienceQualitySection";
+import ScienceProductPromo from "@/components/science/ScienceProductPromo";
+import ScienceProductsSection from "@/components/science/ScienceProductsSection";
 import ScienceTrustHero from "@/components/science/ScienceTrustHero";
 import { LandingMarquee } from "@/components/landing/LandingMarquee";
 import {
   ADVISORY_NOTE,
   EXPERTS,
-  QUALITY_PROCESS,
   SCIENCE_FAQS,
   SCIENCE_HERO,
-  TRANSPARENCY,
   TRUST_STATS,
 } from "@/lib/brand/scienceTrust";
 
@@ -76,6 +74,10 @@ export default function ScienceTrustPage() {
 
       <ScienceTrustHero />
 
+      <ScienceProductPromo />
+
+      <ScienceComparisonSection />
+
       {/* Intro */}
       <section className="border-b border-brand-border bg-brand-white px-6 py-14 md:px-12 md:py-20">
         <div className="mx-auto max-w-3xl text-center">
@@ -90,6 +92,8 @@ export default function ScienceTrustPage() {
           </p>
         </div>
       </section>
+
+      <ScienceProductsSection />
 
       {/* Trust stats */}
       <section className="border-b border-brand-border bg-brand-sand px-6 py-12 md:px-12 md:py-16">
@@ -173,83 +177,6 @@ export default function ScienceTrustPage() {
 
       {/* Certifications */}
       <CertificatesProofSection className="border-b border-brand-border" />
-
-      <ScienceQualitySection />
-
-      {/* Process timeline */}
-      <section className="border-b border-brand-border bg-brand-white px-6 py-14 md:px-12 md:py-20">
-        <div className="mx-auto max-w-4xl">
-          <div className="text-center">
-            <p className="font-shop text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-green">
-              Our Process
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-medium text-brand-text">
-              From Nature to Your Home
-            </h2>
-          </div>
-          <ol className="mt-12 space-y-0">
-            {QUALITY_PROCESS.map((item, index) => (
-              <li key={item.title} className="relative flex gap-6 pb-10 last:pb-0">
-                {index < QUALITY_PROCESS.length - 1 && (
-                  <span
-                    className="absolute left-5 top-10 h-full w-px bg-brand-border"
-                    aria-hidden
-                  />
-                )}
-                <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-green font-shop text-sm font-bold text-white">
-                  {item.step}
-                </span>
-                <div className="pt-1.5">
-                  <h3 className="font-display text-lg font-medium text-brand-text">
-                    {item.title}
-                  </h3>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* Transparency */}
-      <section
-        id="transparency"
-        className="border-b border-brand-border bg-brand-cream px-6 py-14 md:px-12 md:py-20"
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="mx-auto max-w-2xl text-center">
-            <p className="font-shop text-[11px] font-semibold uppercase tracking-[0.22em] text-brand-green">
-              Transparency
-            </p>
-            <h2 className="mt-3 font-display text-3xl font-medium text-brand-text">
-              {TRANSPARENCY.headline}
-            </h2>
-            <p className="mt-4 font-body text-base text-brand-muted">
-              {TRANSPARENCY.subline}
-            </p>
-          </div>
-          <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {TRANSPARENCY.points.map((point) => (
-              <li
-                key={point.title}
-                className="rounded-xl border border-brand-border bg-brand-white p-6"
-              >
-                <FlaskConical className="h-5 w-5 text-brand-green" />
-                <h3 className="mt-4 font-display text-base font-medium text-brand-text">
-                  {point.title}
-                </h3>
-                <p className="mt-2 font-body text-sm leading-relaxed text-brand-muted">
-                  {point.description}
-                </p>
-              </li>
-            ))}
-          </ul>
-          <p className="mx-auto mt-10 max-w-xl text-center font-shop text-sm text-brand-green">
-            {TRANSPARENCY.cta}
-          </p>
-        </div>
-      </section>
-
-      <ScienceComparisonSection />
 
       {/* FAQ */}
       <section className="border-b border-brand-border bg-brand-sand px-6 py-14 md:px-12 md:py-20">

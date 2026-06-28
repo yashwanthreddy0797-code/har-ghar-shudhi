@@ -6,10 +6,16 @@ import ProductVideoScrollSection from "@/components/ProductVideoScrollSection";
 import ShilajitHeroZoomSection from "@/components/shilajit/ShilajitHeroZoomSection";
 import CinematicFullscreenVideoScrollSection from "@/components/CinematicFullscreenVideoScrollSection";
 import AshwagandhaScrollSection from "@/components/ashwagandha/AshwagandhaScrollSection";
+import GutShudhiScrollSection from "@/components/gut-shudhi/GutShudhiScrollSection";
+import MasterMineralScrollSection from "@/components/master-mineral/MasterMineralScrollSection";
+import DiabetesShudhiScrollSection from "@/components/diabetes-shudhi/DiabetesShudhiScrollSection";
 import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
 import { SHILAJIT_VIDEO_SCROLL } from "@/lib/hero/shilajitVideoScrollConfig";
 import { SPIRULINA_LUXURY_VIDEO_SCROLL } from "@/lib/hero/spirulinaLuxuryVideoScrollConfig";
 import { ASHWAGANDHA_LUXURY_VIDEO_SCROLL } from "@/lib/hero/ashwagandhaLuxuryVideoScrollConfig";
+import { GUT_SHUDHI_LUXURY_VIDEO_SCROLL } from "@/lib/hero/gutShudhiLuxuryVideoScrollConfig";
+import { MASTER_MINERAL_LUXURY_VIDEO_SCROLL } from "@/lib/hero/masterMineralLuxuryVideoScrollConfig";
+import { DIABETES_SHUDHI_LUXURY_VIDEO_SCROLL } from "@/lib/hero/diabetesShudhiLuxuryVideoScrollConfig";
 import { preloadImageAsset, preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 import type { CatalogScrollSlug } from "@/lib/catalog/scrollProducts";
@@ -34,6 +40,48 @@ export default function CatalogProductScrollHero({ slug }: { slug: CatalogScroll
         ashwagandha: warmVideoToFirstFrame(
           ASHWAGANDHA_LUXURY_VIDEO_SCROLL.src,
           14000,
+        ),
+      };
+    }
+
+    if (slug === "gut-shudhi") {
+      preloadVideoAsset(GUT_SHUDHI_LUXURY_VIDEO_SCROLL.src);
+      if (GUT_SHUDHI_LUXURY_VIDEO_SCROLL.poster) {
+        preloadImageAsset(GUT_SHUDHI_LUXURY_VIDEO_SCROLL.poster);
+      }
+      window.__heroWarmPromises = {
+        ...window.__heroWarmPromises,
+        gutShudhi: warmVideoToFirstFrame(
+          GUT_SHUDHI_LUXURY_VIDEO_SCROLL.src,
+          12000,
+        ),
+      };
+    }
+
+    if (slug === "master-mineral") {
+      preloadVideoAsset(MASTER_MINERAL_LUXURY_VIDEO_SCROLL.src);
+      if (MASTER_MINERAL_LUXURY_VIDEO_SCROLL.poster) {
+        preloadImageAsset(MASTER_MINERAL_LUXURY_VIDEO_SCROLL.poster);
+      }
+      window.__heroWarmPromises = {
+        ...window.__heroWarmPromises,
+        masterMineral: warmVideoToFirstFrame(
+          MASTER_MINERAL_LUXURY_VIDEO_SCROLL.src,
+          12000,
+        ),
+      };
+    }
+
+    if (slug === "diabetes-shudhi") {
+      preloadVideoAsset(DIABETES_SHUDHI_LUXURY_VIDEO_SCROLL.src);
+      if (DIABETES_SHUDHI_LUXURY_VIDEO_SCROLL.poster) {
+        preloadImageAsset(DIABETES_SHUDHI_LUXURY_VIDEO_SCROLL.poster);
+      }
+      window.__heroWarmPromises = {
+        ...window.__heroWarmPromises,
+        diabetesShudhi: warmVideoToFirstFrame(
+          DIABETES_SHUDHI_LUXURY_VIDEO_SCROLL.src,
+          12000,
         ),
       };
     }
@@ -77,6 +125,15 @@ export default function CatalogProductScrollHero({ slug }: { slug: CatalogScroll
           priority
         />
       );
+
+    case "gut-shudhi":
+      return <GutShudhiScrollSection />;
+
+    case "master-mineral":
+      return <MasterMineralScrollSection />;
+
+    case "diabetes-shudhi":
+      return <DiabetesShudhiScrollSection />;
 
     default:
       return null;

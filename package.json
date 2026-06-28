@@ -13,7 +13,8 @@
     "moringa:optimize": "python3 scripts/optimize-moringa-sequence.py",
     "honey:optimize": "python3 scripts/optimize-honey-sequence.py",
     "ashwagandha:optimize": "python3 scripts/optimize-ashwagandha-sequence.py",
-    "cinematic:assets": "python3 scripts/prepare-cinematic-assets.py"
+    "cinematic:assets": "python3 scripts/prepare-cinematic-assets.py",
+    "science:hero-assets": "python3 scripts/prepare-science-hero-assets.py"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",

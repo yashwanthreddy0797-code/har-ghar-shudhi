@@ -29,10 +29,9 @@ export const SHOP_LINKS = [
 export const ABOUT_LINKS = [
   { href: "/about", label: "Our Story" },
   { href: "/about#vision-mission", label: "Vision & Mission" },
-  { href: "/about#why-we-exist", label: "Our Philosophy" },
-  { href: "/about#journey", label: "From Nature to You" },
-  { href: "/about#quality", label: "Quality Standards" },
   { href: "/about#who-we-are", label: "Who We Are" },
+  { href: "/about#why-we-exist", label: "Our Philosophy" },
+  { href: "/about#quality", label: "Quality Standards" },
 ];
 
 export const PHILOSOPHY_LINKS = [

@@ -6,7 +6,7 @@ import {
   Rabbit,
   ShieldCheck,
 } from "lucide-react";
-import Image from "next/image";
+import PremiumStaticImage from "@/components/media/PremiumStaticImage";
 import { QUALITY } from "@/lib/brand/content";
 
 const GOLD = "#b89550";
@@ -16,21 +16,29 @@ const PILLAR_IMAGES = [
     title: "Premium Quality Herbs",
     image: "/science/quality/premium-quality-herbs.png",
     alt: "Premium Ayurvedic herbs and botanical ingredients in wooden bowls",
+    width: 1536,
+    height: 1024,
   },
   {
     title: "Hygienic & Modern Processing",
     image: "/science/quality/hygienic-processing.png",
     alt: "Hygienic modern processing facility with trained staff",
+    width: 1536,
+    height: 1024,
   },
   {
     title: "Rigorous Quality Testing",
     image: "/science/quality/rigorous-quality-testing.png",
     alt: "Rigorous quality testing in controlled laboratory conditions",
+    width: 1536,
+    height: 1024,
   },
   {
     title: "Eco-friendly Packaging",
     image: "/science/quality/eco-friendly-packaging.png",
     alt: "Eco-friendly sustainable product packaging",
+    width: 1536,
+    height: 1024,
   },
 ] as const;
 
@@ -101,14 +109,14 @@ export default function ScienceQualitySection() {
               key={pillar.title}
               className="flex flex-col overflow-hidden rounded-xl border border-brand-border/60 bg-brand-white shadow-[0_4px_24px_rgba(26,36,33,0.06)] transition-shadow duration-300 hover:shadow-[0_8px_32px_rgba(26,36,33,0.09)]"
             >
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-brand-cream">
-                <Image
+              <div className="science-quality-card__media relative aspect-[4/3] w-full overflow-hidden bg-brand-cream">
+                <PremiumStaticImage
                   src={pillar.image}
                   alt={pillar.alt}
-                  fill
-                  unoptimized
-                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                  className="object-cover object-center"
+                  width={pillar.width}
+                  height={pillar.height}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 384px"
+                  className="premium-static-image premium-static-image--cover h-full w-full"
                 />
               </div>
 

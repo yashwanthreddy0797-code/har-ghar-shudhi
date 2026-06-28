@@ -8,6 +8,9 @@ declare global {
       honey?: Promise<boolean>;
       moringa?: Promise<boolean>;
       ashwagandha?: Promise<boolean>;
+      gutShudhi?: Promise<boolean>;
+      masterMineral?: Promise<boolean>;
+      diabetesShudhi?: Promise<boolean>;
     };
     __homeHeroScrollReady?: boolean;
   }

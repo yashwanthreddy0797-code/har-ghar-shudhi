@@ -23,34 +23,14 @@ const TRUST_ICONS = {
 export default function WhoWeAreSection() {
   return (
     <section id="who-we-are" className="who-we-are-section">
-      <div className="who-we-are-section__mortar" aria-hidden>
+      <div className="who-we-are-section__background" aria-hidden>
         <Image
-          src="/about/who-we-are/mortar-herbs.png"
+          src="/about/who-we-are/premium-background.png"
           alt=""
           fill
-          sizes="(max-width: 768px) 40vw, 320px"
-          className="object-contain object-left-bottom"
+          sizes="100vw"
+          className="object-cover object-center"
           priority={false}
-        />
-      </div>
-
-      <div className="who-we-are-section__leaf who-we-are-section__leaf--tl" aria-hidden>
-        <Image
-          src="/cinematic/herbs/leaf-2.svg"
-          alt=""
-          width={100}
-          height={100}
-          className="h-full w-full opacity-[0.16]"
-        />
-      </div>
-
-      <div className="who-we-are-section__seal" aria-hidden>
-        <Image
-          src="/about/who-we-are/seal.png"
-          alt=""
-          width={88}
-          height={88}
-          className="h-full w-full object-contain opacity-[0.5]"
         />
       </div>
 
@@ -68,38 +48,8 @@ export default function WhoWeAreSection() {
             <span />
           </div>
           <h2 className="who-we-are-section__headline">{BRAND_CLOSING.headline}</h2>
-          <p className="who-we-are-section__body">
-            We are not just a brand, we are a promise of purity, transparency and
-            care. Thank you for choosing natural. Thank you for choosing{" "}
-            <strong className="font-semibold text-brand-green-dark">
-              Har Ghar Shudhi
-            </strong>
-            .
-          </p>
+          <p className="who-we-are-section__body">{BRAND_CLOSING.body}</p>
           <div className="who-we-are-section__closing">
-            <span className="who-we-are-section__flourish" aria-hidden>
-              <svg viewBox="0 0 280 56" fill="none" className="h-14 w-[min(280px,88vw)]">
-                <path
-                  d="M24 44V18M24 18H8M24 18H40"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M256 44V18M256 18H240M256 18H272"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M136 10c-4 6-8 10-12 12 4 2 8 6 12 12 4-6 8-10 12-12-4-2-8-6-12-12z"
-                  fill="currentColor"
-                  fillOpacity="0.2"
-                  stroke="currentColor"
-                  strokeWidth="0.75"
-                />
-              </svg>
-            </span>
             <p className="who-we-are-section__tagline">{BRAND_CLOSING.closing}</p>
           </div>
           <div className="who-we-are-section__actions">

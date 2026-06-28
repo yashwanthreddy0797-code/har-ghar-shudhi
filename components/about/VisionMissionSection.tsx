@@ -6,7 +6,7 @@ export default function VisionMissionSection() {
   return (
     <section
       id="vision-mission"
-      className="vision-mission-section scroll-mt-36 border-b border-brand-border/60"
+      className="vision-mission-section scroll-mt-36"
     >
       <div className="mx-auto max-w-6xl px-6 py-16 md:px-12 md:py-24">
         <header className="mx-auto max-w-3xl text-center">

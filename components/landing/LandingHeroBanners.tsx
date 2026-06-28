@@ -1,23 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { useCart } from "@/components/cart/CartProvider";
-
-const HERO_MAIN = {
-  src: "/landing/diabetes-shudhi-hero-main.png",
-  width: 1024,
-  height: 682,
-  alt: "Pure Ayurvedic Wellness For You and Your Family — Har Ghar Shudhi doctor and product range",
-} as const;
-
-const HERO_PANELS = {
-  src: "/landing/diabetes-shudhi-hero-panels.png",
-  width: 1024,
-  height: 341,
-  alt: "How to use Har Ghar Shudhi — shop now and empower your health with Ayurvedic goodness",
-} as const;
+import PremiumStaticImage from "@/components/media/PremiumStaticImage";
+import {
+  SCIENCE_HERO_MAIN,
+  SCIENCE_HERO_PANELS,
+} from "@/lib/media/scienceHeroAssets";
 
 function ShopNowHotspot({
   variantId,
@@ -77,27 +67,23 @@ export default function LandingHeroBanners({
       aria-label="Diabetes Shudhi hero"
       className="border-b border-brand-green/10 bg-[#f4fbe8]"
     >
-      <Image
-        src={HERO_MAIN.src}
-        alt={HERO_MAIN.alt}
-        width={HERO_MAIN.width}
-        height={HERO_MAIN.height}
-        unoptimized
+      <PremiumStaticImage
+        src={SCIENCE_HERO_MAIN.src}
+        retinaSrc={SCIENCE_HERO_MAIN.retinaSrc}
+        alt={SCIENCE_HERO_MAIN.alt}
+        width={SCIENCE_HERO_MAIN.width}
+        height={SCIENCE_HERO_MAIN.height}
         priority
-        sizes="100vw"
-        className="block h-auto w-full"
       />
 
       <div className="relative w-full">
-        <Image
-          src={HERO_PANELS.src}
-          alt={HERO_PANELS.alt}
-          width={HERO_PANELS.width}
-          height={HERO_PANELS.height}
-          unoptimized
+        <PremiumStaticImage
+          src={SCIENCE_HERO_PANELS.src}
+          retinaSrc={SCIENCE_HERO_PANELS.retinaSrc}
+          alt={SCIENCE_HERO_PANELS.alt}
+          width={SCIENCE_HERO_PANELS.width}
+          height={SCIENCE_HERO_PANELS.height}
           priority
-          sizes="100vw"
-          className="block h-auto w-full"
         />
         <ShopNowHotspot
           variantId={variantId}

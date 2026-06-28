@@ -48,7 +48,7 @@ export default function HomeHeroSection() {
             <h1 className="mt-5 font-display text-[clamp(2.35rem,5.5vw,4.35rem)] font-medium leading-[1.08] tracking-[0.02em] text-white md:mt-6">
               Rooted in Nature,
               <br />
-              Driven by <span className="text-[#c9a962]">Purpose</span>
+              Driven by <span className="text-white">Purpose</span>
             </h1>
 
             <Leaf
@@ -66,10 +66,12 @@ export default function HomeHeroSection() {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:flex-wrap md:mt-9">
               <Link
                 href="/shop"
-                className="inline-flex items-center justify-center gap-3 rounded-sm border border-[#1e3d2f]/60 bg-[#1e3d2f]/42 px-7 py-3.5 font-shop text-[10px] font-semibold uppercase tracking-[0.22em] !text-white shadow-[0_8px_28px_rgba(15,35,28,0.32)] backdrop-blur-md transition-all hover:border-[#1e3d2f]/80 hover:bg-[#1e3d2f]/58"
+                className="inline-flex items-center justify-center gap-3 rounded-sm border border-white/75 bg-white/5 px-7 py-3.5 font-shop text-[10px] font-semibold uppercase tracking-[0.22em] text-white backdrop-blur-[2px] transition-colors hover:border-white hover:bg-white/10"
               >
+                <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/80">
+                  <ArrowRight className="h-3.5 w-3.5 text-white" strokeWidth={1.6} aria-hidden />
+                </span>
                 Explore Our Products
-                <ArrowRight className="h-4 w-4" strokeWidth={2} aria-hidden />
               </Link>
               <Link
                 href="/#home-brand-story-video-scroll"
@@ -103,7 +105,7 @@ export default function HomeHeroSection() {
                       aria-hidden
                     />
                   </span>
-                  <span className="font-shop text-[8px] font-semibold uppercase leading-snug tracking-[0.12em] text-[#c9a962]/95 sm:text-[9px]">
+                  <span className="font-shop text-[8px] font-semibold uppercase leading-snug tracking-[0.12em] text-white sm:text-[9px]">
                     {label}
                   </span>
                 </li>

@@ -5,6 +5,9 @@ export const CATALOG_SCROLL_SLUGS = [
   "pure-shilajit",
   "ashwagandha-advance",
   "spirulina-powder",
+  "gut-shudhi",
+  "master-mineral",
+  "diabetes-shudhi",
 ] as const;
 
 export type CatalogScrollSlug = (typeof CATALOG_SCROLL_SLUGS)[number];

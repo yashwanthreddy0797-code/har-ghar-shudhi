@@ -17,7 +17,7 @@ export default function PhilosophySection() {
   return (
     <section
       id="why-we-exist"
-      className="philosophy-section scroll-mt-36 border-b border-brand-border/60"
+      className="philosophy-section scroll-mt-36"
     >
       <div className="relative z-[1] mx-auto max-w-6xl px-6 py-16 md:px-12 md:py-24">
         <header className="mx-auto max-w-3xl text-center">

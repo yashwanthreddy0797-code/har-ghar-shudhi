@@ -33,7 +33,7 @@ export default function AboutSubNav() {
   return (
     <nav
       aria-label="About page sections"
-      className="sticky top-[calc(4rem+env(safe-area-inset-top,0px))] z-40 border-b border-brand-border/80 bg-brand-white/95 backdrop-blur-sm md:top-[calc(4.5rem+env(safe-area-inset-top,0px))]"
+      className="sticky top-[calc(4rem+env(safe-area-inset-top,0px))] z-40 bg-brand-white/95 backdrop-blur-sm md:top-[calc(4.5rem+env(safe-area-inset-top,0px))]"
     >
       <div className="mx-auto max-w-6xl overflow-x-auto px-6 [-ms-overflow-style:none] [scrollbar-width:none] md:px-12 [&::-webkit-scrollbar]:hidden">
         <ul className="flex min-w-max items-center justify-center gap-1 py-4 md:gap-2">
