@@ -45,13 +45,40 @@ export default function NavScrollReset() {
     window.__scrollBootstrapDone = true;
 
     if (isProductRoute) {
+      let topLockActive = true;
+      const timers: number[] = [];
+      const resetWhileLocked = () => {
+        if (!topLockActive) return;
+        resetToTop();
+      };
+      const topLockInterval = window.setInterval(resetWhileLocked, 250);
+      const cancelTopLock = () => {
+        topLockActive = false;
+        window.clearInterval(topLockInterval);
+        for (const timer of timers) window.clearTimeout(timer);
+      };
+
       requestAnimationFrame(() => {
-        requestAnimationFrame(resetToTop);
+        requestAnimationFrame(resetWhileLocked);
       });
-      window.setTimeout(resetToTop, 120);
-      window.setTimeout(resetToTop, 360);
-      window.setTimeout(resetToTop, 900);
-      return;
+      timers.push(
+        window.setTimeout(resetWhileLocked, 120),
+        window.setTimeout(resetWhileLocked, 360),
+        window.setTimeout(resetWhileLocked, 900),
+        window.setTimeout(resetWhileLocked, 1600),
+        window.setTimeout(resetWhileLocked, 2600),
+        window.setTimeout(cancelTopLock, 4200)
+      );
+      window.addEventListener("wheel", cancelTopLock, { once: true, passive: true });
+      window.addEventListener("touchmove", cancelTopLock, { once: true, passive: true });
+      window.addEventListener("keydown", cancelTopLock, { once: true });
+
+      return () => {
+        cancelTopLock();
+        window.removeEventListener("wheel", cancelTopLock);
+        window.removeEventListener("touchmove", cancelTopLock);
+        window.removeEventListener("keydown", cancelTopLock);
+      };
     }
 
     if (hasHash) {
