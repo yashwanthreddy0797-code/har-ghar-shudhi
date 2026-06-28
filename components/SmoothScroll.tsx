@@ -74,16 +74,24 @@ export default function SmoothScroll({
       const { gsap, ScrollTrigger } = getGsap();
       if (cancelled) return;
 
-  if (preferNativeScroll()) {
-    document.documentElement.classList.add("native-scroll");
-    bootNativeScroll(ScrollTrigger);
+      if (preferNativeScroll()) {
+        document.documentElement.classList.add("native-scroll");
+        bootNativeScroll(ScrollTrigger);
         return;
       }
 
       ScrollTrigger.config({ limitCallbacks: true, ignoreMobileResize: true });
 
-      const Lenis = (await import("@studio-freight/lenis")).default;
+      const Lenis = await import("@studio-freight/lenis")
+        .then((mod) => mod.default)
+        .catch(() => undefined);
       if (cancelled) return;
+
+      if (!Lenis) {
+        document.documentElement.classList.add("native-scroll");
+        bootNativeScroll(ScrollTrigger);
+        return;
+      }
 
       lenis = new Lenis({
         duration: 1.85,

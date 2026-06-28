@@ -5,16 +5,13 @@ import Image from "next/image";
 import { getGsap } from "@/lib/gsap/client";
 import { BRAND_LOGO_SRC } from "@/components/BrandLogo";
 import { INTRO_NAV_EVENT } from "@/lib/navigation/instantNav";
-import { HONEY_LUXURY_VIDEO_SCROLL } from "@/lib/hero/honeyLuxuryVideoScrollConfig";
-import { MORINGA_VIDEO_SCROLL } from "@/lib/hero/moringaVideoScrollConfig";
+import { BRAND_STORY_VIDEO_SCROLL } from "@/lib/hero/brandStoryVideoScrollConfig";
 import { warmVideoToFirstFrame } from "@/lib/scroll/videoReadiness";
 
-const HERO_POSTER_SRC = MORINGA_VIDEO_SCROLL.poster ?? "/hero/moringa/video/moringa-reveal-poster.jpg";
-const HONEY_POSTER_SRC = HONEY_LUXURY_VIDEO_SCROLL.poster;
-const HONEY_VIDEO_SRC = HONEY_LUXURY_VIDEO_SCROLL.src;
-const MORINGA_VIDEO_SRC = MORINGA_VIDEO_SCROLL.sources.hd;
+const BRAND_STORY_POSTER_SRC = BRAND_STORY_VIDEO_SCROLL.poster;
+const BRAND_STORY_VIDEO_SRC = BRAND_STORY_VIDEO_SCROLL.src;
 const MIN_DISPLAY_MS = 1400;
-const MAX_INTRO_MS = 14000;
+const MAX_INTRO_MS = 12000;
 const INTRO_COMPLETE_EVENT = "site-intro-complete";
 
 declare global {
@@ -45,6 +42,42 @@ function preloadImage(src: string, timeoutMs = 2500) {
 
 function sleep(ms: number) {
   return new Promise<void>((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function preloadVideoFile(
+  src: string,
+  onProgress?: (ratio: number) => void
+) {
+  if (!("fetch" in window)) return false;
+
+  try {
+    const response = await fetch(src, { cache: "force-cache" });
+    if (!response.ok) return false;
+
+    const contentLength = Number(response.headers.get("content-length")) || 0;
+    if (!response.body) {
+      await response.arrayBuffer();
+      onProgress?.(1);
+      return true;
+    }
+
+    const reader = response.body.getReader();
+    let received = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      received += value.byteLength;
+      if (contentLength > 0) {
+        onProgress?.(Math.min(0.98, received / contentLength));
+      }
+    }
+
+    onProgress?.(1);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export default function SiteIntroReveal() {
@@ -228,7 +261,7 @@ export default function SiteIntroReveal() {
       };
 
       const startTime = Date.now();
-      let honeyRatio = 0;
+      let videoRatio = 0;
 
       progressTween = gsap.to(
         {},
@@ -237,7 +270,7 @@ export default function SiteIntroReveal() {
           ease: "none",
           onUpdate: function onProgressTick() {
             const eased = Math.min(88, this.progress() * 88);
-            const combined = Math.min(96, eased + honeyRatio * 10);
+            const combined = Math.min(96, eased + videoRatio * 10);
             setBarProgress(combined);
           },
         }
@@ -246,35 +279,42 @@ export default function SiteIntroReveal() {
       void (async () => {
         await preloadImage(BRAND_LOGO_SRC);
         setBarProgress(12);
-        if (HONEY_POSTER_SRC) {
-          await preloadImage(HONEY_POSTER_SRC);
+        if (BRAND_STORY_POSTER_SRC) {
+          await preloadImage(BRAND_STORY_POSTER_SRC);
         }
-        await preloadImage(HERO_POSTER_SRC);
         setBarProgress(22);
 
-        const honeyWarm =
-          window.__heroWarmPromises?.honey ??
+        const setVideoProgress = (ratio: number) => {
+          if (aborted) return;
+          videoRatio = Math.max(videoRatio, ratio);
+          setBarProgress(Math.min(96, 22 + videoRatio * 72));
+        };
+
+        const frameWarm =
+          window.__heroWarmPromises?.brandStory ??
           warmVideoToFirstFrame(
-            HONEY_VIDEO_SRC,
-            MAX_INTRO_MS - 500,
-            (ratio) => {
-              honeyRatio = ratio;
-              setBarProgress(Math.min(96, 22 + ratio * 68));
-            }
+            BRAND_STORY_VIDEO_SRC,
+            MAX_INTRO_MS - 800,
+            setVideoProgress
           );
-        const moringaWarm =
-          window.__heroWarmPromises?.moringa ??
-          warmVideoToFirstFrame(MORINGA_VIDEO_SRC, 6000);
-        window.__heroWarmPromises = { honey: honeyWarm, moringa: moringaWarm };
 
-        // Only block the intro on the first visible section (honey hero).
-        // Moringa keeps warming in the background and shows its poster until ready,
-        // so the experience opens fast instead of waiting on the larger second clip.
-        void moringaWarm;
+        const fileWarm = preloadVideoFile(BRAND_STORY_VIDEO_SRC, setVideoProgress);
+        const brandStoryReady = Promise.all([
+          frameWarm,
+          Promise.race([
+            fileWarm,
+            sleep(MAX_INTRO_MS - 900).then(() => false),
+          ]),
+        ]).then(([frameReady, fileReady]) => frameReady || fileReady);
 
-        const honeyReady = await honeyWarm;
+        window.__heroWarmPromises = {
+          ...window.__heroWarmPromises,
+          brandStory: brandStoryReady,
+        };
 
-        setBarProgress(honeyReady ? 100 : 94);
+        const ready = await brandStoryReady;
+
+        setBarProgress(ready ? 100 : 94);
 
         const elapsed = Date.now() - startTime;
         if (elapsed < MIN_DISPLAY_MS) {

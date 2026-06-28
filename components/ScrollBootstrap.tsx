@@ -42,8 +42,10 @@ export default function ScrollBootstrap() {
     window.scrollTo(0, 0);
 
     const releaseAfterBootstrap = () => {
+      if (window.__scrollBootstrapDone) return;
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
+          if (window.__scrollBootstrapDone) return;
           window.scrollTo(0, 0);
           releaseScrollLock();
         });
@@ -67,8 +69,13 @@ export default function ScrollBootstrap() {
 
     window.addEventListener("lenis-init", onLenisInit, { once: true });
 
-    const shopFallback = window.setTimeout(releaseAfterBootstrap, 0);
-    const hardFallback = window.setTimeout(releaseAfterBootstrap, 800);
+    const noScrollerFallback = window.setTimeout(() => {
+      const hasScrollDrivenSections = document.querySelector(
+        ".product-scroll-zone, .product-video-scroll-zone"
+      );
+      if (!hasScrollDrivenSections) releaseAfterBootstrap();
+    }, 120);
+    const hardFallback = window.setTimeout(releaseAfterBootstrap, 2400);
 
     const onPageShow = (e: PageTransitionEvent) => {
       if (!e.persisted) return;
@@ -81,7 +88,7 @@ export default function ScrollBootstrap() {
     window.addEventListener("pageshow", onPageShow);
 
     return () => {
-      window.clearTimeout(shopFallback);
+      window.clearTimeout(noScrollerFallback);
       window.clearTimeout(hardFallback);
       window.removeEventListener("pageshow", onPageShow);
       window.removeEventListener("lenis-init", onLenisInit);

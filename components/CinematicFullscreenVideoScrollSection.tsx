@@ -155,16 +155,6 @@ export default function CinematicFullscreenVideoScrollSection({
     let sectionObserver: IntersectionObserver | undefined;
     let setupComplete = false;
     let setupInFlight = false;
-    let setupRetryTimer: number | undefined;
-
-    const scheduleSetupRetry = (delayMs = 450) => {
-      if (cancelled || setupComplete) return;
-      window.clearTimeout(setupRetryTimer);
-      setupRetryTimer = window.setTimeout(() => {
-        setupInFlight = false;
-        void setup();
-      }, delayMs);
-    };
 
     const setup = async () => {
       if (cancelled || setupInFlight || setupComplete) return;
@@ -522,6 +512,7 @@ export default function CinematicFullscreenVideoScrollSection({
           if (!sectionActive) return;
 
           if (directVideoScrub) {
+            applyVideoFromScroll(scrollTarget);
             applyProgress(scrollTarget, scrollTarget, true);
             return;
           }
@@ -598,7 +589,6 @@ export default function CinematicFullscreenVideoScrollSection({
       cancelled = true;
       window.clearTimeout(setupRetry);
       window.clearTimeout(setupRetryLate);
-      window.clearTimeout(setupRetryTimer);
       removeLenisListener();
       sectionObserver?.disconnect();
       const { gsap } = getGsap();

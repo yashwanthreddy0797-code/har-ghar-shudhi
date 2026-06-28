@@ -2,7 +2,7 @@ import type { CinematicVideoScrollConfig } from "@/lib/hero/cinematicVideoScroll
 
 export const BRAND_STORY_VIDEO_SCROLL: CinematicVideoScrollConfig = {
   scrollId: "home-brand-story-video-scroll",
-  src: "/cinematic/har-ghar-shudhi-brand-story-scrub.mp4",
+  src: "/cinematic/har-ghar-shudhi-brand-story-scrub-v2.mp4",
   poster: "/home/hero-valley.jpg",
   scrollHeightVh: 225,
   theme: "darkLuxury",
