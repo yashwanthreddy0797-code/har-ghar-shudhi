@@ -3,8 +3,27 @@ export interface VideoScrubOptions {
   seekThreshold?: number;
   seekMinIntervalMs?: number;
   seekUnlockMs?: number;
-  /** Fire-and-forget rAF seeks — best for short homepage brand films. */
+  /** Fire-and-forget rAF seeks — best for short homepage brand films and touch scrub. */
   performanceMode?: boolean;
+}
+
+function applyVideoTime(video: HTMLVideoElement, time: number) {
+  if (!Number.isFinite(time)) return;
+  try {
+    if (
+      "fastSeek" in video &&
+      typeof (video as HTMLVideoElement & { fastSeek?: (t: number) => void })
+        .fastSeek === "function"
+    ) {
+      (video as HTMLVideoElement & { fastSeek: (t: number) => void }).fastSeek(
+        time
+      );
+      return;
+    }
+    video.currentTime = time;
+  } catch {
+    /* ignore seek races while metadata loads */
+  }
 }
 
 function createPerformanceVideoScrubSeeker(
@@ -24,22 +43,7 @@ function createPerformanceVideoScrubSeeker(
     if (lastApplied >= 0 && Math.abs(delta) < seekThreshold) return;
 
     lastApplied = clamped;
-    try {
-      if (
-        delta < 0 &&
-        "fastSeek" in video &&
-        typeof (video as HTMLVideoElement & { fastSeek?: (time: number) => void })
-          .fastSeek === "function"
-      ) {
-        (video as HTMLVideoElement & { fastSeek: (time: number) => void }).fastSeek(
-          clamped
-        );
-      } else {
-        video.currentTime = clamped;
-      }
-    } catch {
-      /* ignore seek races while metadata loads */
-    }
+    applyVideoTime(video, clamped);
   };
 
   return {
@@ -61,19 +65,22 @@ export function createVideoScrubSeeker(
   video: HTMLVideoElement,
   options: VideoScrubOptions = {}
 ) {
-  if (options.performanceMode) {
+  const touchScroll = options.touchScroll ?? false;
+  const usePerformanceSeeker =
+    options.performanceMode === true ||
+    (options.performanceMode !== false && touchScroll);
+
+  if (usePerformanceSeeker) {
     return createPerformanceVideoScrubSeeker(
       video,
-      options.seekThreshold ?? 0.08
+      options.seekThreshold ?? (touchScroll ? 0.1 : 0.08)
     );
   }
 
-  const touchScroll = options.touchScroll ?? false;
   const SEEK_THRESHOLD =
-    options.seekThreshold ?? (touchScroll ? 0.1 : 1 / 30);
-  const SEEK_MIN_INTERVAL_MS =
-    options.seekMinIntervalMs ?? (touchScroll ? 48 : 0);
-  const SEEK_UNLOCK_MS = options.seekUnlockMs ?? (touchScroll ? 260 : 140);
+    options.seekThreshold ?? 1 / 30;
+  const SEEK_MIN_INTERVAL_MS = options.seekMinIntervalMs ?? 0;
+  const SEEK_UNLOCK_MS = options.seekUnlockMs ?? 140;
 
   let targetTime = 0;
   let seeking = false;
@@ -113,17 +120,7 @@ export function createVideoScrubSeeker(
     seekUnlockTimer = window.setTimeout(releaseSeekLock, SEEK_UNLOCK_MS);
 
     try {
-      if (
-        "fastSeek" in video &&
-        typeof (video as HTMLVideoElement & { fastSeek?: (time: number) => void })
-          .fastSeek === "function"
-      ) {
-        (video as HTMLVideoElement & { fastSeek: (time: number) => void }).fastSeek(
-          clamped
-        );
-      } else {
-        video.currentTime = clamped;
-      }
+      applyVideoTime(video, clamped);
     } catch {
       releaseSeekLock();
     }

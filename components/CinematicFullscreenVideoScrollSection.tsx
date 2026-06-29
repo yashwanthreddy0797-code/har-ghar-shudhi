@@ -465,10 +465,7 @@ export default function CinematicFullscreenVideoScrollSection({
                 sectionActive = false;
               },
               onUpdate: (self: { progress: number }) => {
-                const progress = gsap.utils.clamp(0, 1, self.progress);
-                scrollTarget = progress;
-                applyVideoFromScroll(progress);
-                applyProgress(progress, progress, true);
+                scrollTarget = gsap.utils.clamp(0, 1, self.progress);
               },
             }
           : bindScrollProgressLock(progressLock, {
@@ -521,7 +518,8 @@ export default function CinematicFullscreenVideoScrollSection({
             scrollTarget,
             tickerDeltaSeconds(gsap)
           );
-          applyProgress(visual, media);
+          const videoMedia = touchScroll ? scrollTarget : media;
+          applyProgress(visual, videoMedia);
         };
 
         gsap.ticker.add(syncScroll);

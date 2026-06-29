@@ -105,17 +105,17 @@ export function productVideoScrollProgressSmoothingForViewport(
   width = typeof window !== "undefined" ? window.innerWidth : 1024
 ) {
   if (width <= MOBILE_MAX_WIDTH) {
-    return { visualSmoothness: 0.5, mediaSmoothness: 1.3 };
+    return { visualSmoothness: 0.58, mediaSmoothness: 0.9 };
   }
   return scrollProgressSmoothingForViewport(width);
 }
 
-/** Cinematic fullscreen films — video tracks the finger more tightly on touch. */
+/** Cinematic fullscreen films — video tracks the finger on touch; UI eases gently. */
 export function cinematicScrollProgressSmoothingForViewport(
   width = typeof window !== "undefined" ? window.innerWidth : 1024
 ) {
   if (width <= MOBILE_MAX_WIDTH) {
-    return { visualSmoothness: 0.58, mediaSmoothness: 1.4 };
+    return { visualSmoothness: 0.62, mediaSmoothness: 0.9 };
   }
   return scrollProgressSmoothingForViewport(width);
 }

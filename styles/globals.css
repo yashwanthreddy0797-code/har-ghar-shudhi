@@ -894,16 +894,29 @@ html.site-intro-active body {
   .cinematic-video-scroll__video {
     transform: translate3d(0, 0, 0);
     -webkit-transform: translate3d(0, 0, 0);
-    contain: layout paint;
+    contain: strict;
+    content-visibility: auto;
   }
 
   .product-video-scroll-video {
-    contain: layout paint;
+    contain: strict;
+    content-visibility: auto;
     transition: none;
   }
 
   .cinematic-video-scroll__video {
     transition: none;
+  }
+
+  .cinematic-video-scroll [data-cinematic-overlay],
+  .cinematic-video-scroll [data-cinematic-hint] {
+    will-change: opacity, transform;
+  }
+
+  .cinematic-video-scroll .backdrop-blur-md,
+  .product-video-scroll .backdrop-blur-md {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   .cinematic-video-scroll__wrap,
@@ -915,6 +928,11 @@ html.site-intro-active body {
     width: 100% !important;
     max-width: 100vw;
     transform: translateZ(0);
+  }
+
+  html.native-scroll .cinematic-video-scroll,
+  html.native-scroll .product-video-scroll-zone {
+    touch-action: pan-y;
   }
 
   .shilajit-hero-zoom__stage {
