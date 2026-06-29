@@ -3,27 +3,64 @@ export interface VideoScrubOptions {
   seekThreshold?: number;
   seekMinIntervalMs?: number;
   seekUnlockMs?: number;
-  /** Fire-and-forget rAF seeks — best for short homepage brand films and touch scrub. */
+  /** Immediate sync seeks on every scroll frame (touch). */
+  immediateMode?: boolean;
+  /** Fire-and-forget rAF seeks — desktop brand films. */
   performanceMode?: boolean;
 }
 
-function applyVideoTime(video: HTMLVideoElement, time: number) {
+function applyVideoTime(
+  video: HTMLVideoElement,
+  time: number,
+  useFastSeek = false
+) {
   if (!Number.isFinite(time)) return;
+  const clamped = Math.max(
+    0,
+    Math.min(Number.isFinite(video.duration) ? video.duration - 0.04 : time, time)
+  );
   try {
     if (
+      useFastSeek &&
       "fastSeek" in video &&
       typeof (video as HTMLVideoElement & { fastSeek?: (t: number) => void })
         .fastSeek === "function"
     ) {
       (video as HTMLVideoElement & { fastSeek: (t: number) => void }).fastSeek(
-        time
+        clamped
       );
       return;
     }
-    video.currentTime = time;
+    video.currentTime = clamped;
   } catch {
     /* ignore seek races while metadata loads */
   }
+}
+
+/** Synchronous seek — used on touch where rAF coalescing feels like stuck frames. */
+function createImmediateVideoScrubSeeker(
+  video: HTMLVideoElement,
+  seekThreshold: number
+) {
+  let lastApplied = -1;
+
+  return {
+    setTargetTime(time: number) {
+      if (!Number.isFinite(time)) return;
+      if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+
+      const clamped = Math.max(0, Math.min(video.duration - 0.04, time));
+      if (lastApplied >= 0 && Math.abs(clamped - lastApplied) < seekThreshold) {
+        return;
+      }
+
+      lastApplied = clamped;
+      applyVideoTime(video, clamped, false);
+    },
+    detach() {
+      lastApplied = -1;
+    },
+  };
 }
 
 function createPerformanceVideoScrubSeeker(
@@ -43,7 +80,7 @@ function createPerformanceVideoScrubSeeker(
     if (lastApplied >= 0 && Math.abs(delta) < seekThreshold) return;
 
     lastApplied = clamped;
-    applyVideoTime(video, clamped);
+    applyVideoTime(video, clamped, delta < 0);
   };
 
   return {
@@ -60,25 +97,23 @@ function createPerformanceVideoScrubSeeker(
   };
 }
 
-/** Coalesced video.currentTime updates for scroll-scrubbed films on touch devices. */
+/** Coalesced video.currentTime updates for scroll-scrubbed films. */
 export function createVideoScrubSeeker(
   video: HTMLVideoElement,
   options: VideoScrubOptions = {}
 ) {
   const touchScroll = options.touchScroll ?? false;
-  const usePerformanceSeeker =
-    options.performanceMode === true ||
-    (options.performanceMode !== false && touchScroll);
+  const threshold = options.seekThreshold ?? (touchScroll ? 0.035 : 0.08);
 
-  if (usePerformanceSeeker) {
-    return createPerformanceVideoScrubSeeker(
-      video,
-      options.seekThreshold ?? (touchScroll ? 0.1 : 0.08)
-    );
+  if (options.immediateMode === true || (touchScroll && options.immediateMode !== false)) {
+    return createImmediateVideoScrubSeeker(video, threshold);
   }
 
-  const SEEK_THRESHOLD =
-    options.seekThreshold ?? 1 / 30;
+  if (options.performanceMode === true) {
+    return createPerformanceVideoScrubSeeker(video, threshold);
+  }
+
+  const SEEK_THRESHOLD = options.seekThreshold ?? 1 / 30;
   const SEEK_MIN_INTERVAL_MS = options.seekMinIntervalMs ?? 0;
   const SEEK_UNLOCK_MS = options.seekUnlockMs ?? 140;
 
@@ -120,7 +155,7 @@ export function createVideoScrubSeeker(
     seekUnlockTimer = window.setTimeout(releaseSeekLock, SEEK_UNLOCK_MS);
 
     try {
-      applyVideoTime(video, clamped);
+      applyVideoTime(video, clamped, false);
     } catch {
       releaseSeekLock();
     }

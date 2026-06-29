@@ -24,6 +24,11 @@ import {
 } from "@/lib/scroll/smoothProgress";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 import { createVideoScrubSeeker } from "@/lib/scroll/videoScrub";
+import {
+  resolveVideoScrubOptions,
+  scrollTriggerProgress,
+  isImmediateVideoScrub,
+} from "@/lib/scroll/touchVideoScroll";
 import { isVideoFrameReady } from "@/lib/scroll/videoReadiness";
 import { markHomeHeroScrollReady } from "@/lib/scroll/heroMediaGate";
 import {
@@ -205,6 +210,11 @@ export default function CinematicFullscreenVideoScrollSection({
 
       const { gsap, ScrollTrigger } = getGsap();
       const touchScroll = preferNativeScroll();
+      const immediateVideoScrub = isImmediateVideoScrub(
+        touchScroll,
+        directVideoScrub
+      );
+      const useProgressLock = !touchScroll;
       detachVideoScrub?.();
       ctx?.revert();
 
@@ -241,7 +251,8 @@ export default function CinematicFullscreenVideoScrollSection({
         }
         videoScrub = createVideoScrubSeeker(video, {
           touchScroll,
-          ...videoScrubOptions,
+          immediateMode: touchScroll,
+          ...resolveVideoScrubOptions(touchScroll, videoScrubOptions),
         });
         detachVideoScrub = () => {
           stopWaitingForScrub();
@@ -318,7 +329,7 @@ export default function CinematicFullscreenVideoScrollSection({
           mediaProgress: number,
           skipVideoSeek = false
         ) => {
-          const scrollProgress = directVideoScrub
+          const scrollProgress = immediateVideoScrub
             ? gsap.utils.clamp(0, 1, visualProgress)
             : easeInOutCubic(gsap.utils.clamp(0, 1, visualProgress));
           const media = gsap.utils.clamp(0, 1, mediaProgress);
@@ -450,25 +461,8 @@ export default function CinematicFullscreenVideoScrollSection({
           }
         };
 
-        const scrollTriggerConfig = directVideoScrub
-          ? {
-              onEnter: () => {
-                sectionActive = true;
-              },
-              onEnterBack: () => {
-                sectionActive = true;
-              },
-              onLeave: () => {
-                sectionActive = false;
-              },
-              onLeaveBack: () => {
-                sectionActive = false;
-              },
-              onUpdate: (self: { progress: number }) => {
-                scrollTarget = gsap.utils.clamp(0, 1, self.progress);
-              },
-            }
-          : bindScrollProgressLock(progressLock, {
+        const scrollTriggerConfig = useProgressLock
+          ? bindScrollProgressLock(progressLock, {
               onEnter: () => {
                 sectionActive = true;
               },
@@ -486,7 +480,24 @@ export default function CinematicFullscreenVideoScrollSection({
                 scrollTarget = progress;
               },
               onLockedEnd: snapLockedEnd,
-            });
+            })
+          : {
+              onEnter: () => {
+                sectionActive = true;
+              },
+              onEnterBack: () => {
+                sectionActive = true;
+              },
+              onLeave: () => {
+                sectionActive = false;
+              },
+              onLeaveBack: () => {
+                sectionActive = false;
+              },
+              onUpdate: (self: { progress: number }) => {
+                scrollTarget = gsap.utils.clamp(0, 1, self.progress);
+              },
+            };
 
         ScrollTrigger.create({
           id: scrollId,
@@ -508,7 +519,11 @@ export default function CinematicFullscreenVideoScrollSection({
           if (!priority && !isScrollExperienceReady()) return;
           if (!sectionActive) return;
 
-          if (directVideoScrub) {
+          if (touchScroll) {
+            scrollTarget = scrollTriggerProgress(scrollId, scrollTarget);
+          }
+
+          if (immediateVideoScrub) {
             applyVideoFromScroll(scrollTarget);
             applyProgress(scrollTarget, scrollTarget, true);
             return;
@@ -518,8 +533,7 @@ export default function CinematicFullscreenVideoScrollSection({
             scrollTarget,
             tickerDeltaSeconds(gsap)
           );
-          const videoMedia = touchScroll ? scrollTarget : media;
-          applyProgress(visual, videoMedia);
+          applyProgress(visual, media);
         };
 
         gsap.ticker.add(syncScroll);

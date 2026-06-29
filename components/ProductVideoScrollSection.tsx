@@ -21,6 +21,11 @@ import {
 } from "@/lib/scroll/responsiveScroll";
 import { preloadVideoAsset } from "@/lib/scroll/preloadMedia";
 import { createVideoScrubSeeker } from "@/lib/scroll/videoScrub";
+import {
+  resolveVideoScrubOptions,
+  scrollTriggerProgress,
+  isImmediateVideoScrub,
+} from "@/lib/scroll/touchVideoScroll";
 import { isVideoFrameReady } from "@/lib/scroll/videoReadiness";
 
 type Theme = {
@@ -255,7 +260,11 @@ export default function ProductVideoScrollSection({
           /* ignore */
         }
         const touchScroll = preferNativeScroll();
-        videoScrub = createVideoScrubSeeker(video, { touchScroll });
+        videoScrub = createVideoScrubSeeker(video, {
+          touchScroll,
+          immediateMode: touchScroll,
+          ...resolveVideoScrubOptions(touchScroll),
+        });
         detachVideoScrub = () => {
           stopWaitingForScrub();
           videoScrub?.detach();
@@ -300,6 +309,8 @@ export default function ProductVideoScrollSection({
           "(prefers-reduced-motion: reduce)"
         ).matches;
         const touchScroll = preferNativeScroll();
+        const immediateVideoScrub = isImmediateVideoScrub(touchScroll);
+        const useProgressLock = !touchScroll;
 
         if (touchScroll) {
           gsap.ticker.lagSmoothing(500, 33);
@@ -480,39 +491,65 @@ export default function ProductVideoScrollSection({
           onToggle: (self) => {
             sectionActive = self.isActive;
           },
-          ...bindScrollProgressLock(progressLock, {
-            onEnter: () => {
-              sectionActive = true;
-            },
-            onEnterBack: () => {
-              sectionActive = true;
-            },
-            onLeave: () => {
-              sectionActive = false;
-            },
-            onLeaveBack: () => {
-              sectionActive = false;
-              if (scrollTarget < 0.12) {
-                snapUnlockedStart();
-              }
-            },
-            onUpdate: (progress) => {
-              scrollTarget = progress;
-            },
-            onLockedEnd: snapLockedEnd,
-          }),
+          ...(useProgressLock
+            ? bindScrollProgressLock(progressLock, {
+                onEnter: () => {
+                  sectionActive = true;
+                },
+                onEnterBack: () => {
+                  sectionActive = true;
+                },
+                onLeave: () => {
+                  sectionActive = false;
+                },
+                onLeaveBack: () => {
+                  sectionActive = false;
+                  if (scrollTarget < 0.12) {
+                    snapUnlockedStart();
+                  }
+                },
+                onUpdate: (progress) => {
+                  scrollTarget = progress;
+                },
+                onLockedEnd: snapLockedEnd,
+              })
+            : {
+                onEnter: () => {
+                  sectionActive = true;
+                },
+                onEnterBack: () => {
+                  sectionActive = true;
+                },
+                onLeave: () => {
+                  sectionActive = false;
+                },
+                onLeaveBack: () => {
+                  sectionActive = false;
+                },
+                onUpdate: (self: { progress: number }) => {
+                  scrollTarget = gsap.utils.clamp(0, 1, self.progress);
+                },
+              }),
         });
 
         syncScroll = () => {
           if (!priority && !isScrollExperienceReady()) return;
           if (!sectionActive) return;
 
+          if (touchScroll) {
+            scrollTarget = scrollTriggerProgress(scrollId, scrollTarget);
+          }
+
+          if (immediateVideoScrub) {
+            applyProgress(scrollTarget, scrollTarget);
+            return;
+          }
+
           const { visual, media } = progressSmoother.step(
             scrollTarget,
             tickerDeltaSeconds(gsap)
           );
-          const videoMedia = touchScroll ? scrollTarget : media;
-          applyProgress(visual, videoMedia);
+          applyProgress(visual, media);
         };
 
         gsap.ticker.add(syncScroll);

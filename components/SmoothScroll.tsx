@@ -42,7 +42,8 @@ function bootNativeScroll(ScrollTrigger: ReturnType<typeof getGsap>["ScrollTrigg
   window.__lenisInitialized = true;
 
   ScrollTrigger.config({
-    limitCallbacks: true,
+    // Must stay false on touch — throttled onUpdate makes scrub video feel stuck.
+    limitCallbacks: false,
     ignoreMobileResize: true,
   });
 
